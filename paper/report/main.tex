@@ -19,6 +19,7 @@
 \usepackage{ragged2e}
 \usepackage{amsmath}
 \usepackage{multirow}
+\usepackage{placeins}
 
 \hypersetup{
   colorlinks=true,
@@ -128,7 +129,22 @@ Five a priori hypotheses structured the evaluation: (H1) many reviews will use B
 The review followed a pre-registered staged protocol (OSF DOI: 10.17605/OSF.IO/T4FAM) and PRISMA-oriented reporting logic \citep{page2021, moher2009}, adapted for conceptual synthesis. Governance in the registration (eligibility, coding boundaries, reliability checks, and reconciliation expectations) was implemented as explicit pipeline checkpoints rather than implicit narrative decisions. Automation was used for retrieval normalization, rule-based triage, structured coding support, and reproducible summaries; final interpretive authority was retained in manual adjudication forms and reconciliation templates exported at each stage.
 
 \subsection{Computational Reproducibility}
-Operational execution used version-controlled CLI stages in \texttt{bps\_review} (Python~3.11), with runtime parameters loaded from \texttt{config/protocol.yaml}, \texttt{config/search\_queries.yaml}, and \texttt{config/pipeline.yaml}. The executable sequence was \texttt{search-pubmed}, \texttt{search-wos}, \texttt{search-psycinfo} (or \texttt{run-all} with graceful credential fallback), then \texttt{dedupe}, \texttt{prepare-screening}, \texttt{screen-stage1}, \texttt{extract-stage2}, \texttt{prepare-stage3}, \texttt{semantic-loading}, and \texttt{build-assets}. Stage artifacts were written to stable paths: retrieval/screening/extraction outputs under \texttt{src/review\_stages/*/outputs}, screening and coding forms under \texttt{src/review\_stages/*/inputs} and \texttt{src/review\_stages/04\_extraction/forms}, semantic vector artifacts under \texttt{src/vector\_db/semantic\_loading}, and manuscript-ready tables/figures/fragments under \texttt{paper/assets} and \texttt{paper/report/generated}. Deterministic seeds were fixed where stochastic methods were used (for example, random-state-controlled reliability subsampling and t-SNE projection).
+Operational execution used version-controlled CLI stages in \path{bps_review} (Python~3.11), with runtime parameters loaded from \path{config/protocol.yaml}, \path{config/search_queries.yaml}, and \path{config/pipeline.yaml}. Executable stages were run in sequence:
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Retrieval: \path{search-pubmed}, \path{search-wos}, \path{search-psycinfo} (or \path{run-all} with graceful credential fallback).
+  \item Screening pipeline: \path{dedupe}, \path{prepare-screening}, \path{screen-stage1}, and \path{extract-stage2}.
+  \item Synthesis pipeline: \path{prepare-stage3}, \path{semantic-loading}, and \path{build-assets}.
+\end{itemize}
+
+Stage artifacts were written to stable paths:
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item Retrieval/screening/extraction outputs: \path{src/review_stages/*/outputs}.
+  \item Screening and coding forms: \path{src/review_stages/*/inputs} and \path{src/review_stages/04_extraction/forms}.
+  \item Semantic vector artifacts: \path{src/vector_db/semantic_loading}.
+  \item Manuscript-ready tables/figures/fragments: \path{paper/assets} and \path{paper/report/generated}.
+\end{itemize}
+
+Deterministic seeds were fixed where stochastic methods were used (for example, random-state-controlled reliability subsampling and t-SNE projection).
 
 \subsection{Eligibility Criteria}
 Eligibility criteria were operationalized from the PICOS framework:
@@ -180,11 +196,12 @@ The review was pre-registered prior to data collection (Van Severen et al., 2026
 \end{minipage}
 \par\medskip
 
+\FloatBarrier
+\input{generated/characteristics_table.tex}
+
 \subsection{Temporal and Structural Characteristics of Included Reviews}
 
 The included corpus spanned publication years 1990 to 2026, with a marked acceleration in BPS-invoking review output after 2005. Narrative and expert reviews were the dominant review type (73 of 111; 65.8\%), consistent with the predominantly conceptual and clinical orientation of BPS-invoking pain literature; systematic reviews comprised 27 records (24.3\%), with scoping reviews, meta-analyses, and one network meta-analysis accounting for the remainder. By ICD-11 classification, mixed or unspecified chronic pain was the most prevalent category (43 records; 38.7\%), followed by musculoskeletal pain (36; 32.4\%), headache or orofacial pain (15; 13.5\%), and visceral pain (5; 4.5\%). The remaining 12 records span primary chronic pain, postsurgical, neuropathic, and cancer-related categories. Temporal trends, review-type composition, ICD-11 distribution, and BPS domain coverage are shown in Figure~\ref{fig.descriptive.panel}.
-
-\input{generated/characteristics_table.tex}
 
 \begin{figure}[!ht]
   \caption{Descriptive structure of the included evidence base across four dimensions.}
@@ -258,9 +275,9 @@ The joint embedding landscape (Figure~\ref{fig.semantic.landscape.integrated}, P
 \subsection{Psychological Concepts and Frameworks}
 \label{subsec:rq3}
 
-Addressing \ref{rq3}, Stage~2 abstract-level extraction identified the most frequently occurring psychological construct terms. The concept profile reveals a markedly concentrated pattern: depression (27.5\%), stress (23.8\%), and anxiety (20.0\%) together account for more than 70\% of detected concept occurrences. Coping strategies (8.8\%), catastrophizing (5.0\%), and fear-avoidance (5.0\%) follow as a secondary cluster, while self-efficacy (3.8\%), resilience (2.5\%), acceptance (2.5\%), and illness perception (1.2\%) appear at lower frequencies.
+Addressing \ref{rq3}, Stage~2 abstract-level extraction identified psychological construct tokens in 51/111 records (45.9\%). Across all detected mentions, 95 construct occurrences were recorded: depression (22; 23.2\%), stress (19; 20.0\%), anxiety (16; 16.8\%), coping (8; 8.4\%), catastrophizing (4; 4.2\%), and fear-avoidance (4; 4.2\%). The top three concepts (depression, stress, anxiety) therefore account for 60.0\% of all detected psychological construct occurrences, indicating concentration in broad affective labels rather than dispersion across mechanism-specific constructs.
 
-This distribution supports study hypothesis H5 about conceptual clarity. The dominance of general affect labels (depression, anxiety, stress) relative to theoretically specific constructs (catastrophizing, fear-avoidance, self-efficacy) suggests that chronic pain review literature characterizes the psychological domain through symptom burden rather than through the BPS-grounded motivational, cognitive, and self-regulatory mechanisms that have the strongest theoretical support \citep{vlaeyen2000, vlaeyen2012, mccracken2014, bandura1977, sullivan1995}. Stage~3 full-text coding will map construct definitions, hierarchical relationships, and theoretical framework membership for the musculoskeletal subset.
+Framework language was comparatively sparse at abstract level (9 mentions in total), with neuroscience (2; 22.2\%) the most frequent label and several singletons (for example, mechanistic approach and fear-avoidance model). This profile supports study hypothesis H5: psychological content is commonly present, but it is often framed through high-level symptom categories rather than through explicit BPS-linked cognitive, motivational, and self-regulatory mechanisms \citep{vlaeyen2000, vlaeyen2012, mccracken2014, bandura1977, sullivan1995}. Because Stage~2 is abstract-constrained, these findings remain provisional; Stage~3 full-text coding will adjudicate construct definitions, hierarchical relations, and framework attribution depth for the musculoskeletal subset.
 
 \subsection{Conceptual Problems in BPS Usage}
 \label{subsec:srq1}

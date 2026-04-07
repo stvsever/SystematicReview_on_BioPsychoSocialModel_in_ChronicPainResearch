@@ -3413,7 +3413,6 @@ def build_assets() -> dict[str, int]:
             "percent",
         ].sum()
     ) if not bps_function_counts.empty else 0.0
-    q3_top_concept = psych_concepts.iloc[0]["psychological_concept"] if not psych_concepts.empty else "not available"
     secondary_top_problem = conceptual_problems.iloc[0]["conceptual_problem_flag"] if not conceptual_problems.empty else "none identified"
     q1_top_typology = typology_counts.iloc[0]["provisional_typology"] if not typology_counts.empty else "not available"
 
@@ -3441,6 +3440,62 @@ def build_assets() -> dict[str, int]:
     # Top-3 psych concepts
     top3_concepts = [_latex_escape(str(r["psychological_concept"])) for _, r in psych_concepts.head(3).iterrows()] if not psych_concepts.empty else ["not available"]
     top3_concept_str = ", ".join(top3_concepts) if len(top3_concepts) >= 3 else top3_concepts[0]
+
+    # Psychological concept profile detail
+    psych_total_occ = int(pd.to_numeric(psych_concepts.get("n", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not psych_concepts.empty else 0
+    psych_records_with_any = int(stage2["psychological_concepts_detected"].astype(str).str.strip().ne("").sum()) if "psychological_concepts_detected" in stage2.columns else 0
+    psych_records_pct = round((psych_records_with_any / len(stage2)) * 100, 1) if len(stage2) else 0.0
+    psych_top_rows = psych_concepts.head(6).to_dict("records") if not psych_concepts.empty else []
+    psych_top3_share = round(float(pd.to_numeric(psych_concepts.head(3)["n"], errors="coerce").fillna(0).sum()) / psych_total_occ * 100, 1) if psych_total_occ else 0.0
+
+    # Framework mentions at abstract level
+    framework_tokens: list[str] = []
+    if "theoretical_frameworks_detected" in stage2.columns:
+        for value in stage2["theoretical_frameworks_detected"].astype(str):
+            for token in value.split("|"):
+                cleaned = token.strip().lower()
+                if cleaned:
+                    framework_tokens.append(cleaned)
+    framework_counts = pd.Series(framework_tokens).value_counts().rename_axis("framework").reset_index(name="n") if framework_tokens else pd.DataFrame(columns=["framework", "n"])
+    framework_total_occ = int(framework_counts["n"].sum()) if not framework_counts.empty else 0
+    if not framework_counts.empty and framework_total_occ:
+        framework_counts["percent"] = (framework_counts["n"] / framework_total_occ) * 100.0
+    framework_top = framework_counts.head(3).to_dict("records") if not framework_counts.empty else []
+
+    # Conceptual problem detail
+    flag_total_occ = int(pd.to_numeric(conceptual_problems.get("n", pd.Series(dtype=float)), errors="coerce").fillna(0).sum()) if not conceptual_problems.empty else 0
+    flag_top_rows = conceptual_problems.head(5).to_dict("records") if not conceptual_problems.empty else []
+    known_flag_tokens = [
+        "parallel_listing_without_integration",
+        "mechanistic_absence",
+        "missing_biology",
+        "missing_social",
+        "tokenistic_bps",
+        "vague_definition",
+        "construct_overlap",
+    ]
+    conceptual_records_with_any = 0
+    if "conceptual_problem_flags" in stage2.columns:
+        for value in stage2["conceptual_problem_flags"].astype(str):
+            lowered = value.lower()
+            if any(token in lowered for token in known_flag_tokens):
+                conceptual_records_with_any += 1
+    conceptual_records_pct = round((conceptual_records_with_any / len(stage2)) * 100, 1) if len(stage2) else 0.0
+
+    def _fmt_ranked(rows: list[dict[str, object]], name_key: str, n_key: str = "n", pct_key: str = "percent", max_items: int = 3) -> str:
+        if not rows:
+            return "not available"
+        pieces: list[str] = []
+        for row in rows[:max_items]:
+            label = _latex_escape(str(row.get(name_key, "")))
+            n_val = int(float(row.get(n_key, 0) or 0))
+            pct_val = float(row.get(pct_key, 0.0) or 0.0)
+            pieces.append(f"{label} ({n_val}; {pct_val:.1f}\\%)")
+        return "; ".join(pieces)
+
+    psych_ranked_str = _fmt_ranked(psych_top_rows, "psychological_concept", max_items=6)
+    framework_ranked_str = _fmt_ranked(framework_top, "framework", max_items=3)
+    conceptual_ranked_str = _fmt_ranked(flag_top_rows, "conceptual_problem_flag", max_items=5)
 
     n_records = summary["stage2_records"]
 
@@ -3472,25 +3527,25 @@ def build_assets() -> dict[str, int]:
         "Evidence is in Figure~\\ref{fig.operationalization.combined} (Panel~D), Figure~\\ref{fig.semantic.loading.combined}, and Figure~\\ref{fig.semantic.landscape.integrated}.\n\n"
         "\\par\\medskip\n"
         "\\noindent\\textbf{Psychological Concepts and Frameworks.} "
-        f"Stage~2 abstract-level extraction identified the dominant psychological construct cluster as {top3_concept_str}, "
-        "which together account for the majority of detected concept occurrences. "
-        "Theory-specific constructs with established BPS relevance---catastrophizing, fear-avoidance, self-efficacy, illness perception---appear at considerably lower frequencies in abstracts, "
-        "consistent with the hypothesis that BPS pain reviews emphasize general affect labels over specific cognitive-behavioral mechanisms. "
-        f"Ontology-based subdomain loading shows that within the psychological domain, constructs mapped to cognitive-behavioral and third-wave therapy subdomains carry the highest relative loading weight, "
-        "while fear-avoidance and self-efficacy subdomains show lower absolute loading---a pattern that may reflect the differential between treatment-oriented and mechanistic research orientations. "
-        "Full-text Stage~3 coding will map construct definitions, theoretical framework membership, and hierarchical relationships. "
+        f"Across {n_records} Stage~2 records, {psych_records_with_any}/{n_records} ({psych_records_pct:.1f}\\%) contained at least one explicit psychological construct token in abstract-level coding. "
+        f"A total of {psych_total_occ} construct occurrences were detected; ranked frequencies were: {psych_ranked_str}. "
+        f"The top three concepts ({top3_concept_str}) accounted for {psych_top3_share:.1f}\\% of all detected construct occurrences, indicating concentration in high-level affect labels. "
+        "By contrast, theoretically specific mechanism-oriented constructs (for example, catastrophizing, fear-avoidance, self-efficacy, and illness perception) appeared less frequently, supporting a profile in which symptom-language is more prevalent than explicit mechanism-language at abstract level. "
+        f"Framework mentions were comparatively sparse ({framework_total_occ} total mentions); top entries were: {framework_ranked_str}. "
+        f"Ontology-based subdomain loading further indicated that psychological-domain weight is carried primarily by broad cognitive-behavioral and affective clusters rather than narrowly specified mechanistic frameworks. "
+        "Stage~3 full-text coding will refine construct definitions, framework attribution, and hierarchical mapping under manual adjudication. "
         "Evidence is in Figure~\\ref{fig.semantic.loading.combined} (Panel~A) and the supplementary semantic tables.\n"
     )
     ensure_parent(project_path("paper", "report", "generated", "primary_answers.tex")).write_text(primary_answers, encoding="utf-8")
 
     secondary_answer = (
         "\\noindent\\textbf{Conceptual Problems in BPS Usage.} "
-        f"Structured semantic extraction of conceptual problem flags from the Stage~2 coding layer identified "
-        f"\\textit{{{_latex_escape(str(secondary_top_problem))}}} as the most frequent provisional flag. "
-        "Common patterns include invocation of BPS framing without operational definition of domain interactions, "
-        "parallel domain listing without integration statements, tokenistic treatment of the social domain, "
-        "and inconsistent mapping between stated BPS theoretical framework and empirical content. "
-        "These flags are hypothesis-generating signals for Stage~3 full-text adjudication and should not be treated as confirmed findings.\n"
+        f"From {n_records} Stage~2 records, {conceptual_records_with_any}/{n_records} ({conceptual_records_pct:.1f}\\%) contained at least one non-none conceptual-problem flag. "
+        f"At the occurrence level (multi-label flags; not mutually exclusive), {flag_total_occ} flags were recorded in total. "
+        f"The highest-frequency provisional flags were: {conceptual_ranked_str}. "
+        f"The most frequent single flag was \\textit{{{_latex_escape(str(secondary_top_problem))}}}. "
+        "Taken together, this pattern indicates that BPS terminology is often accompanied by parallel domain listing and limited mechanistic specification, with additional signals of tokenistic framing and uneven domain coverage. "
+        "These indicators are treated as hypothesis-generating and provisional until Stage~3 full-text adjudication confirms or revises them at full-text depth.\n"
     )
     ensure_parent(project_path("paper", "report", "generated", "secondary_answer.tex")).write_text(secondary_answer, encoding="utf-8")
 
@@ -3505,7 +3560,8 @@ def build_assets() -> dict[str, int]:
         f"of which {summary['stage3_pmc_open_fulltexts']} were retrieved from open-access repositories and "
         f"{summary['stage3_manual_retrieval_required']} remain in the manual retrieval queue. "
         f"Ontology-aligned semantic loading was applied to all {summary['semantic_records']} Stage~2 records "
-        f"using {_latex_escape(semantic_result.method)} ({_latex_escape(semantic_result.model)}).\n"
+        f"using {_latex_escape(semantic_result.method)} ({_latex_escape(semantic_result.model)}). "
+        "The study-selection workflow is shown in Figure~\\ref{fig.prisma}, and descriptive characteristics are summarized in Table~\\ref{tab.characteristics}.\n"
     )
     ensure_parent(project_path("paper", "report", "generated", "results_summary.tex")).write_text(results_text, encoding="utf-8")
 
