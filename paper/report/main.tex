@@ -32,6 +32,15 @@
 \captionsetup[figure]{position=top}
 \captionsetup[table]{position=top}
 
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{8pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\makeatother
+
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\small BPS model in chronic pain review literature}
@@ -116,10 +125,10 @@ Five a priori hypotheses structured the evaluation: (H1) many reviews will use B
 \label{sec:methods}
 
 \subsection{Protocol and Reporting}
-The study was designed as a pre-registered, staged mixed-method systematic review and reported using PRISMA-oriented flow logic \citep{page2021, moher2009} adapted for conceptual synthesis. The OSF registration defines the governing framework for eligibility, coding, reliability checks, and reconciliation; the implemented pipeline preserves those constraints by separating automated preprocessing from human decision authority at eligibility and adjudication steps.
+The review followed a pre-registered staged protocol (OSF DOI: 10.17605/OSF.IO/T4FAM) and PRISMA-oriented reporting logic \citep{page2021, moher2009}, adapted for conceptual synthesis. Governance in the registration (eligibility, coding boundaries, reliability checks, and reconciliation expectations) was implemented as explicit pipeline checkpoints rather than implicit narrative decisions. Automation was used for retrieval normalization, rule-based triage, structured coding support, and reproducible summaries; final interpretive authority was retained in manual adjudication forms and reconciliation templates exported at each stage.
 
 \subsection{Computational Reproducibility}
-All operational steps were executed through version-controlled command-line stages in the \texttt{bps\_review} package (Python 3.11 environment), with configuration loaded from the project \texttt{config/} files. The run order was database retrieval, deduplication, screening preparation, Stage~1 screening, Stage~2 extraction, Stage~3 preparation, semantic loading, and asset build. Each stage writes structured outputs to fixed \texttt{review\_stages/} and \texttt{paper/assets/tables} locations, enabling exact reruns and file-level audit trails. Deterministic settings were enforced for stochastic procedures (for example, fixed random seed in projection steps).
+Operational execution used version-controlled CLI stages in \texttt{bps\_review} (Python~3.11), with runtime parameters loaded from \texttt{config/protocol.yaml}, \texttt{config/search\_queries.yaml}, and \texttt{config/pipeline.yaml}. The executable sequence was \texttt{search-pubmed}, \texttt{search-wos}, \texttt{search-psycinfo} (or \texttt{run-all} with graceful credential fallback), then \texttt{dedupe}, \texttt{prepare-screening}, \texttt{screen-stage1}, \texttt{extract-stage2}, \texttt{prepare-stage3}, \texttt{semantic-loading}, and \texttt{build-assets}. Stage artifacts were written to stable paths: retrieval/screening/extraction outputs under \texttt{src/review\_stages/*/outputs}, screening and coding forms under \texttt{src/review\_stages/*/inputs} and \texttt{src/review\_stages/04\_extraction/forms}, semantic vector artifacts under \texttt{src/vector\_db/semantic\_loading}, and manuscript-ready tables/figures/fragments under \texttt{paper/assets} and \texttt{paper/report/generated}. Deterministic seeds were fixed where stochastic methods were used (for example, random-state-controlled reliability subsampling and t-SNE projection).
 
 \subsection{Eligibility Criteria}
 Eligibility criteria were operationalized from the PICOS framework:
@@ -129,28 +138,28 @@ Eligibility criteria were operationalized from the PICOS framework:
   \item \textit{Outcome.} Operationalization of the BPS model: domain coverage, integration signals, conceptual function, and psychological construct architecture.
   \item \textit{Study design.} Review articles in any form: systematic review, meta-analysis, scoping review, narrative review, umbrella review, or expert synthesis.
 \end{itemize}
-Records were excluded if they were primary studies, protocols without results, editorials, commentaries, letters, conference abstracts, books or book chapters, pediatric-only populations, acute-pain-only studies, animal studies, non-English language sources, or grey literature.
+In implementation, Stage~1 rule logic required explicit BPS lexical variants in title/abstract, checked chronic-pain relevance markers, excluded records outside the operational date window, excluded protocol/commentary/editorial patterns, animal-focused records without human context, pediatric-only focus, acute-only focus, and non-English records, and flagged uncertain review design as \textit{unclear} rather than forced exclusion. Publication date was parsed from full date when available, month-level date when available, and year fallback otherwise.
 
 \subsection{Information Sources and Search Execution}
-Searches were executed in MEDLINE (via PubMed API) and Web of Science Core Collection (Starter API). The protocol also specifies PsycINFO (EBSCOhost/EDS); PsycINFO retrieval was unavailable in this run because credentials were not available at execution time and was logged as a protocol deviation. The operational date window was January~1977 to March~2026. Registered search expressions combine biopsychosocial lexical variants with chronic-pain and review-design filters; all query keys, retrieval metadata, and normalized exports are stored in the audit outputs.
+Search execution covered MEDLINE via PubMed API and Web of Science Core Collection via Starter API. PsycINFO was specified in the registration and query configuration but remained dependent on EDS credentials; unavailable access was handled as an explicit operational deviation (logged, not silently omitted). Query execution was keyed by named \texttt{query\_key} definitions (for example, \texttt{pubmed\_operational\_primary}, \texttt{pubmed\_audit\_sensitivity}, \texttt{wos\_starter\_operational}, \texttt{psycinfo\_eds\_operational}) with per-run metadata in \texttt{search\_manifest.csv}. Downstream merge logic loaded the latest normalized output per database-query pair. Manual imports (CSV/XLSX/RIS/NBIB) were supported through \texttt{data/manual\_imports} and normalized into the same schema before deduplication.
 
 \subsection{Screening, Deduplication, and Decision Governance}
-All retrieval outputs were normalized to a common schema before deduplication. Deduplication used title/abstract similarity and identifier checks, then produced a single merged screening set. Stage~1 applied explicit title/abstract decision rules derived from the registered criteria and generated exclusion labels, borderline flags, and reliability materials. In line with the OSF framework, reliability templates target 20\% double-screening subsets (capped at 50 for Stage~1/2 and 20 for Stage~3 full-text checks). Discrepancies are resolved by consensus and principal investigator adjudication. Titles, abstracts, authors, journal, and year remained visible (no masking).
+All retrieval outputs were normalized to a shared table schema before deduplication. Deduplication was deterministic and identifier-prioritized: normalized DOI was used as the primary dedupe key; when DOI was absent, a fallback key was constructed as normalized title plus publication year. Records were sorted by dedupe key and source metadata, first-in-key records were retained, and subsequent records were flagged as duplicates; \texttt{combined\_records.csv}, \texttt{deduplicated\_records.csv}, and \texttt{deduplication\_summary.csv} were generated as auditable outputs. Screening preparation exported Rayyan-compatible queues and internal stage queues. Stage~1 rule screening wrote explicit decision labels (include/exclude/unclear), reasons, and confidence fields. Reliability templates were generated prospectively using fixed sampling rules consistent with protocol governance (20\% subsets with caps of 50 for Stage~1/2 and 20 for Stage~3); reconciliation structure and adjudication fields were exported as forms rather than post hoc narrative edits.
 
 \subsection{Stage 2 Extraction and Coding}
-Stage~2 extracted bibliographic metadata and BPS-operationalization variables from title and abstract for all Stage~1-included records. The implemented extraction stack combined deterministic metadata parsing with structured LLM-first coding using schema-constrained outputs, archived response payloads, and post-hoc validation. Variables included review design, objective category, ICD-11 pain category \citep{treede2019, nicholas2019}, BPS mention location/function, substantive domain indicators, quality-reporting indicators, psychological concepts, framework mentions, conceptual-problem flags, provisional typology, and auditable rationale fields. To avoid lexical inflation, coding rules explicitly disallowed counting the token ``biopsychosocial'' as sufficient evidence of triadic substantive coverage.
+Stage~2 extracted bibliographic metadata and BPS-operationalization variables from title/abstract fields for all Stage~1-included records. Implementation used a two-layer stack: (i) deterministic base extraction (record metadata, objective-text extraction from structured abstract cues, BPS mention location, and screening provenance), then (ii) structured LLM coding in schema-constrained batches with Pydantic-enforced enumerations. The Stage~2 LLM layer included deterministic normalization and repair (including alias normalization and required-field completion), automatic fallback to batch-level rule-based coding on parse or API failures, and explicit \texttt{coding\_method} provenance flags. Output artifacts included merged coding tables, LLM-only coding outputs, and batch JSONL audits containing raw and repaired payloads for traceability. Extracted variables included review design, objective category, ICD-11 pain category \citep{treede2019, nicholas2019}, musculoskeletal flag, BPS function, biological/psychological/social mention indicators, quality-reporting indicator, detected psychological constructs, framework mentions, conceptual-problem flags, provisional typology, Stage~3 candidate status/priority, and rationale text. Coding policy explicitly disallowed counting the lexical BPS token alone as evidence of substantive triadic domain coverage.
 
 \subsection{Stage 3 Full-Text Preparation, Retrieval, and Manual Governance}
-Stage~3 preparation targeted musculoskeletal and musculoskeletal-unclear records for full-text deep coding (RQ2/RQ3). The pipeline generated a candidate manifest with retrieval source, retrieval status, cached-text path, content-length checks, manual retrieval flags, and manual relevance flags. Open-access retrieval from PubMed Central was attempted first; unresolved records were routed to a manual retrieval queue. A run-level manual relevance checklist and OSF-alignment checklist were exported so that final inclusion relevance and interpretive coding remain human-adjudicated, consistent with the registration's governance model.
+Stage~3 preparation consumed Stage~2 candidates marked for deep coding (primarily musculoskeletal and musculoskeletal-unclear records relevant to RQ2/RQ3). Retrieval logic attempted PMCID resolution in sequence: existing PMCID metadata, PubMed \texttt{elink}, then Europe PMC identifier search fallback. When a PMCID was available, full text was fetched from PMC and cached as both XML and extracted TXT; low-content full texts (threshold: 250 words) were explicitly flagged for manual verification rather than auto-acceptance. Candidate manifests recorded retrieval source, retrieval status, cache paths, word-count checks, manual retrieval need, and manual relevance priority/flags. Exported governance artifacts included candidate manifests, manual full-text queue, retrieval-validation tables, pilot and reliability subsets, manual relevance checklist, and structured Stage~3 coding templates with adjudication fields, preserving manual authority for final full-text relevance and interpretive coding.
 
 \subsection{Semantic Loading Analysis}
-To complement structured coding, we applied an ontology-aligned semantic loading procedure over a shared embedding space. For each record, a composite text (title + abstract + objective) was embedded using \texttt{text-embedding-3-small}. Ontology prompts for 42 subdomains (10 biological, 20 psychological, 12 social) were embedded independently; cosine similarities were softmax-normalized to obtain record-level domain loadings and weighted subdomain contributions. Pairwise products (bio$\times$psycho, bio$\times$social, psycho$\times$social) and triadic products were computed to quantify co-loading intensity relative to equal-balance benchmarks. For landscape visualization, joint record-plus-ontology embeddings were projected with PCA-preconditioned t-SNE under fixed random seed settings to preserve rerun stability.
+To complement structured coding, an ontology-aligned semantic loading pipeline was applied to composite record text (title + abstract + extracted objective sentence). Domain and subdomain prompts (42 total: biological 10, psychological 20, social 12) were embedded through OpenRouter with \texttt{openai/text-embedding-3-small} as default model; when embedding credentials were unavailable, a deterministic TF-IDF fallback path was used. Record-domain cosine similarities were transformed to record-level domain loadings via softmax normalization. Subdomain loadings were computed by within-domain normalization and then weighted by each record's corresponding domain loading. Pairwise co-loading terms (bio$\times$psych, bio$\times$social, psych$\times$social) and triadic products were computed per record and summarized. Vector artifacts and summaries were exported to dedicated semantic-loading directories, including NPY embeddings, corpus JSONL, domain/subdomain summaries, and pairwise loading tables. For integrated landscape visualization, combined record/domain/subdomain vectors were standardized, reduced with PCA (adaptive component count), then projected with t-SNE using adaptive perplexity and fixed random state for rerun-stable layouts.
 
 \subsection{Synthesis Strategy and Inference Boundaries}
-The synthesis integrates descriptive statistics (frequencies, cross-tabulations, proportions, and benchmark-relative deviations), provisional typological classification, and qualitative interpretation. Stage~2 assigns one of four provisional operationalization categories: potential integrative signal, multifactorial signal, rhetorical label signal, and pseudo-BPS or partial signal. These categories are explicit interim bridges to the Stage~3 full-text typology (True Integrative BPS, Multifactorial, Pseudo-BPS, Rhetorical BPS). Because Stage~3 retrieval and adjudication are ongoing, integration-quality claims are interpreted as provisional and bounded to currently available full-text evidence.
+Synthesis integrated descriptive frequencies, cross-tabulations, benchmark-relative semantic contrasts, and structured qualitative interpretation. Stage~2 used four provisional operationalization categories (potential integrative signal, multifactorial signal, pseudo-BPS or partial signal, rhetorical label signal) as interim indicators pending Stage~3 full-text adjudication. Inferential boundaries were enforced explicitly: integration-quality claims were treated as provisional until full-text retrieval/adjudication completion, and machine-assisted coding was interpreted as auditable support rather than autonomous final judgment.
 
 \subsection{Pre-registration}
-The review was pre-registered prior to data collection (Van Severen et al., 2026). The registration defines screening, extraction, reliability, reconciliation, and governance expectations; run-specific deviations (for example, source-availability constraints) are logged in reproducible audit outputs and supplementary documentation.
+The review was pre-registered prior to data collection (Van Severen et al., 2026). Registered expectations for screening, extraction, reliability, reconciliation, and governance were operationalized as explicit pipeline outputs and forms. Run-specific deviations (for example, source-access constraints such as PsycINFO credentials) were documented as reproducible audit artifacts rather than post hoc narrative adjustments.
 
 % ============================================================
 \section{Results}
@@ -160,22 +169,22 @@ The review was pre-registered prior to data collection (Van Severen et al., 2026
 
 \input{generated/results_summary.tex}
 
-\begin{figure}[htbp]
-  \caption{PRISMA-style study selection workflow from identification through full-text planning.}
-  \label{fig.prisma}
-  \centering
-  \includegraphics[width=0.98\textwidth]{../assets/figures/prisma_flow.png}
-  \caption*{\textit{Note.} Three stages: Identification (database searches and deduplication), Screening (title/abstract screening with exclusions), and Included (Stage~2 eligible records and Stage~3 full-text planning). The workflow reflects the operational run covering January~1977--March~2026.}
-\end{figure}
-
-\captionsetup{type=table}
-\captionof{table}{Characteristics of all 111 included reviews.}
-\label{tab.characteristics}
-\input{generated/characteristics_table.tex}
+\par\medskip
+\noindent\begin{minipage}{\linewidth}
+\captionsetup{type=figure}
+\captionof{figure}{PRISMA-style study selection workflow from identification through full-text planning.}
+\label{fig.prisma}
+\centering
+\includegraphics[width=0.94\linewidth,height=0.40\textheight,keepaspectratio]{../assets/figures/prisma_flow.png}
+\caption*{\textit{Note.} Three stages: Identification (database searches and deduplication), Screening (title/abstract screening with exclusions), and Included (Stage~2 eligible records and Stage~3 full-text planning). The workflow reflects the operational run covering January~1977--March~2026.}
+\end{minipage}
+\par\medskip
 
 \subsection{Temporal and Structural Characteristics of Included Reviews}
 
 The included corpus spanned publication years 1990 to 2026, with a marked acceleration in BPS-invoking review output after 2005. Narrative and expert reviews were the dominant review type (73 of 111; 65.8\%), consistent with the predominantly conceptual and clinical orientation of BPS-invoking pain literature; systematic reviews comprised 27 records (24.3\%), with scoping reviews, meta-analyses, and one network meta-analysis accounting for the remainder. By ICD-11 classification, mixed or unspecified chronic pain was the most prevalent category (43 records; 38.7\%), followed by musculoskeletal pain (36; 32.4\%), headache or orofacial pain (15; 13.5\%), and visceral pain (5; 4.5\%). The remaining 12 records span primary chronic pain, postsurgical, neuropathic, and cancer-related categories. Temporal trends, review-type composition, ICD-11 distribution, and BPS domain coverage are shown in Figure~\ref{fig.descriptive.panel}.
+
+\input{generated/characteristics_table.tex}
 
 \begin{figure}[!ht]
   \caption{Descriptive structure of the included evidence base across four dimensions.}

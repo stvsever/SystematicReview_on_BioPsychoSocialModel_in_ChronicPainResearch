@@ -118,7 +118,7 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/ # project root
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch.git
+git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach.git
 cd SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch
 
 # 2. Create and activate a Python environment
@@ -145,7 +145,7 @@ Recommended `.env` keys:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch.git
+git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach.git
 cd SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch
 
 # 2. Configure environment variables
@@ -321,7 +321,7 @@ If you use this repository, manuscript, or outputs, cite the paper and OSF regis
   title        = {How the Biopsychosocial Model Frames Chronic Pain Research},
   author       = {Van Severen, Stijn and Eccleston, Christopher and De Paepe, Annick and Braun, Maya and Dendauw, Julie and Socorro Cumplido, Jose Luis and Crombez, Geert},
   year         = {2026},
-        howpublished = {\url{https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch}},
+        howpublished = {\url{https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach}},
   note         = {OSF registration DOI: 10.17605/OSF.IO/T4FAM}
 }
 ```

@@ -1975,11 +1975,11 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
 
     def _short_type(v: str) -> str:
         mapping = {
-            "narrative or expert review": "Narrative",
-            "systematic review": "Systematic",
-            "meta-analysis": "Meta-anal.",
-            "scoping or mapping review": "Scoping",
-            "network meta-analysis": "Network MA",
+            "narrative or expert review": "Narrative review",
+            "systematic review": "Systematic review",
+            "meta-analysis": "Meta-analysis",
+            "scoping or mapping review": "Scoping review",
+            "network meta-analysis": "Network meta-analysis",
         }
         return mapping.get(str(v).lower().strip(), str(v))
 
@@ -2000,8 +2000,8 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         mapping = {
             "clinical": "Clinical",
             "conceptual": "Conceptual",
-            "epidemiological": "Epidemiol.",
-            "methodological": "Methods",
+            "epidemiological": "Epidemiological",
+            "methodological": "Methodological",
             "mixed": "Mixed",
             "unclear": "Unclear",
         }
@@ -2009,11 +2009,11 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
 
     def _short_func(v: str) -> str:
         mapping = {
-            "intervention rationale": "Intervention",
-            "explanatory framework": "Framework",
-            "organizing principle": "Organizing",
-            "background framing": "Background",
-            "rhetorical label": "Rhetorical",
+            "intervention rationale": "Intervention rationale",
+            "explanatory framework": "Explanatory framework",
+            "organizing principle": "Organizing principle",
+            "background framing": "Background framing",
+            "rhetorical label": "Rhetorical label",
             "justification": "Justification",
             "conclusion": "Conclusion",
             "unclear": "Unclear",
@@ -2040,13 +2040,22 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         return ", ".join(parts) if parts else "---"
 
     def _latex_cite_cell(author_label: str, year: int, doi: str, pmid: str) -> str:
-        """Author+year citation label for table cells.
-
-        Keep this as plain text to preserve line wrapping in narrow p{} columns.
-        DOI/PMID links remain available in the full references artifact.
-        """
+        """Hyperlinked author+year: DOI first, then PubMed PMID, then plain text.
+        author_label is already LaTeX-escaped (done in _author_label)."""
         year_str = str(year) if year != 9999 else "n.d."
-        return f"{author_label} ({year_str})"
+        display = f"{author_label} ({year_str})"
+        doi_val = str(doi).strip()
+        if doi_val and doi_val not in ("", "nan"):
+            return f"\\href{{https://doi.org/{doi_val}}}{{{display}}}"
+        pmid_val = str(pmid).strip()
+        if pmid_val and pmid_val not in ("", "nan", "0"):
+            try:
+                pmid_int = int(float(pmid_val))
+                if pmid_int > 0:
+                    return f"\\href{{https://pubmed.ncbi.nlm.nih.gov/{pmid_int}/}}{{{display}}}"
+            except (ValueError, OverflowError):
+                pass
+        return display
 
     section_prefix = re.compile(
         r"^(objectives?|purpose(?:\s+of\s+review)?|aims?|background|introduction|methods?|results?|conclusions?|reviewers?'?\s+conclusions?|authors?'?\s+conclusions?)\s*:\s*",
@@ -2221,13 +2230,6 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         """Escaped one-sentence technical description; p{} column wraps automatically."""
         return _latex_escape(_clean_text(text))
 
-    def _wrap_breaks(text: str) -> str:
-        """Escape text and add discretionary breaks around common separators."""
-        escaped = _latex_escape(str(text))
-        escaped = escaped.replace("/", r"/\allowbreak ")
-        escaped = escaped.replace("-", r"-\allowbreak ")
-        return escaped
-
     # ── Build rows ────────────────────────────────────────────────────────────
     df = stage2.copy()
     df["_year_int"] = df.apply(_parse_year, axis=1)
@@ -2244,12 +2246,12 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         cite    = _latex_cite_cell(author_label, year_int, doi, pmid)
         description_text, description_source, description_focus, fulltext_path = _description_from_row(row)
         summary = _summary_cell(description_text)
-        rtype   = _wrap_breaks(_short_type(row.get("review_type", "")))
-        pain    = _wrap_breaks(_short_pain(row.get("icd11_pain_category", "")))
-        obj     = _wrap_breaks(_short_obj(row.get("objective_category", "")))
-        func    = _wrap_breaks(_short_func(row.get("bps_function", "")))
+        rtype   = _latex_escape(_short_type(row.get("review_type", "")))
+        pain    = _latex_escape(_short_pain(row.get("icd11_pain_category", ""))).replace("/", r"/\allowbreak ")
+        obj     = _latex_escape(_short_obj(row.get("objective_category", "")))
+        func    = _latex_escape(_short_func(row.get("bps_function", "")))
         doms    = _domain_cell(row.get("bio_mentioned", ""), row.get("psych_mentioned", ""), row.get("social_mentioned", ""))
-        typo    = _wrap_breaks(_short_typology(row.get("provisional_typology", "")))
+        typo    = _latex_escape(_short_typology(row.get("provisional_typology", "")))
         stage3_entry = stage3_lookup.get(str(row.get("record_id", "")), {})
         rows_tex.append(
             f"{cite} & {summary} & {rtype} & {pain} & {obj} & {func} & {doms} & {typo} \\\\"
@@ -2294,17 +2296,18 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
             }
         )
 
-    # ── Column spec: compact 8-col fit with ragged wrapping for stable longtable output ──
-    # Ragged-right paragraph columns reduce persistent overflow from unbreakable tokens.
+    # ── Column spec: full-width 8-col layout for landscape A4 pages ──
+    # Keep columns broad enough to avoid cramped wrapping while fitting landscape width.
+    _C = r">{\RaggedRight\arraybackslash\hbadness=10000\hfuzz=20pt}"
     colspec = (
-        "L{1.8cm}\n"  # Reference
-        "L{3.9cm}\n"  # Description
-        "L{1.4cm}\n"  # Type
-        "L{1.8cm}\n"  # Pain Condition
-        "L{1.4cm}\n"  # Objective
-        "L{1.9cm}\n"  # BPS Role
-        "L{0.8cm}\n"  # Domains (B, P, S)
-        "L{2.0cm}"      # Typology
+        f"{_C}p{{2.6cm}}"   # Reference
+        f"{_C}p{{8.1cm}}"   # Description
+        f"{_C}p{{1.9cm}}"   # Type
+        f"{_C}p{{2.5cm}}"   # Pain Condition
+        f"{_C}p{{2.0cm}}"   # Objective
+        f"{_C}p{{3.0cm}}"   # BPS Role
+        f"{_C}p{{1.0cm}}"   # Domains (B, P, S)
+        f"{_C}p{{2.4cm}}"   # Typology
     )
 
     N_COLS = 8
@@ -2317,12 +2320,15 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         fr"\multicolumn{{{N_COLS}}}{{r}}{{\scriptsize\textit{{Continued on next page}}}} \\"
     )
     note_text = (
-        fr"\multicolumn{{{N_COLS}}}{{p{{14.8cm}}}}{{\scriptsize\textit{{Note.}} "
+        fr"\multicolumn{{{N_COLS}}}{{p{{0.98\linewidth}}}}{{\footnotesize\textit{{Note.}} "
+        r"Type: review-design class (for example, narrative, systematic, meta-analysis, or scoping). "
+        r"Pain Condition: ICD-11-oriented chronic pain grouping inferred at abstract level. "
+        r"Objective: primary objective class (clinical, conceptual, methodological, epidemiological, mixed, or unclear). "
         r"BPS Role: primary declared functional role of BPS language in the review. "
         r"Dom.: substantive domain mentions in title/objective/abstract after excluding lexical BPS token matches (B\,=\,biological, P\,=\,psychological, S\,=\,social). "
         r"Typology: provisional BPS operationalization class from Stage~2 abstract-level coding. "
         r"Description: concise past-tense one-sentence summary generated from cached full-text objective statements when available; otherwise from objective text, abstract, and finally title fallback. "
-        r"Full DOI/PMID links are provided in the generated included-review catalog.} \\"
+        r"References link to DOI (where available) or PubMed record.} \\"
     )
 
     body = "\n".join(rows_tex)
@@ -2332,15 +2338,16 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         "\\begin{landscape}\n"
         "\\setlength{\\LTleft}{0pt}\n"
         "\\setlength{\\LTright}{0pt}\n"
-        "\\setlength{\\LTcapwidth}{\\textwidth}\n"
-        "\\setlength{\\tabcolsep}{1.2pt}\n"
+        "\\setlength{\\LTcapwidth}{\\linewidth}\n"
+        "\\captionsetup{justification=raggedright,singlelinecheck=false}\n"
+        "\\setlength{\\tabcolsep}{2.0pt}\n"
         "\\renewcommand{\\arraystretch}{1.18}\n"
-        "\\newcolumntype{L}[1]{>{\\RaggedRight\\arraybackslash}p{#1}}\n"
         "\\hbadness=10000\n"
-        "\\hfuzz=1000pt\n"
-        "\\sloppy\n"
-        "\\tiny\n"
+        "\\hfuzz=20pt\n"
+        "\\scriptsize\n"
         f"\\begin{{longtable}}{{{colspec}}}\n"
+        f"  \\caption{{Characteristics of all {len(df)} included reviews.}}\n"
+        "  \\label{tab.characteristics}\\\\\n"
         "  \\toprule\n"
         f"  {header}\n"
         "  \\midrule\n"
@@ -2358,8 +2365,6 @@ def _write_characteristics_table(stage2: pd.DataFrame, path: Path, stage3_manife
         f"{body}\n"
         "\\end{longtable}\n"
         "\\renewcommand{\\arraystretch}{1}\n"
-        "\\fussy\n"
-        "\\hfuzz=0pt\n"
         "\\normalsize\n"
         "\\end{landscape}\n"
     )
@@ -3420,6 +3425,7 @@ def build_assets() -> dict[str, int]:
         f"rhetorical label signal {rhetorical_pct:.1f}\\%. "
         "This distribution provides empirical support for the pre-specified hypothesis that BPS language is often used as a rhetorical or contextualizing device rather than as a specification of triadic mechanistic integration. "
         "Evidence is visualized in Figure~\\ref{fig.operationalization.combined} (Panels~A and~B).\n\n"
+        "\\par\\medskip\n"
         "\\noindent\\textbf{Scope, Balance, and Integration in Musculoskeletal Reviews.} "
         f"Using the substantive domain-coding layer (lexical BPS token matches excluded), coverage within the {msk_n} musculoskeletal reviews was: "
         f"biological {msk_bio_n}/{msk_n} ({round(msk_bio_n/msk_n*100,1) if msk_n else 0}\\%), "
@@ -3435,6 +3441,7 @@ def build_assets() -> dict[str, int]:
         f"Mean domain loadings were: biological {sem_bio_mean:.3f}, psychological {sem_psy_mean:.3f}, social {sem_soc_mean:.3f}. "
         "Taken together, the two layers indicate divergence between domain naming and semantic weight: social content is often present but comparatively light in semantic centrality. "
         "Evidence is in Figure~\\ref{fig.operationalization.combined} (Panel~D), Figure~\\ref{fig.semantic.loading.combined}, and Figure~\\ref{fig.semantic.landscape.integrated}.\n\n"
+        "\\par\\medskip\n"
         "\\noindent\\textbf{Psychological Concepts and Frameworks.} "
         f"Stage~2 abstract-level extraction identified the dominant psychological construct cluster as {top3_concept_str}, "
         "which together account for the majority of detected concept occurrences. "
