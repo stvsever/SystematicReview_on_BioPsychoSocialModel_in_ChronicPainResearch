@@ -1572,7 +1572,7 @@ def _semantic_landscape_integrated_plot(
 
     fig = plt.figure(figsize=(18, 13))
     fig.patch.set_facecolor("white")
-    gs = fig.add_gridspec(2, 2, hspace=0.36, wspace=0.36, left=0.05, right=0.97, top=0.96, bottom=0.07)
+    gs = fig.add_gridspec(2, 2, hspace=0.24, wspace=0.36, left=0.05, right=0.97, top=0.96, bottom=0.07)
 
     # === Panel A: Embedding landscape ===
     ax_a = fig.add_subplot(gs[0, 0])
@@ -1619,6 +1619,16 @@ def _semantic_landscape_integrated_plot(
                 records_plot["year"] = pd.to_numeric(records_plot["year"], errors="coerce")
                 records_plot["dominant_loading"] = records_plot[
                     ["loading_biological", "loading_psychological", "loading_social"]].max(axis=1)
+                record_center = np.array([np.median(record_xy[:, 0]), np.median(record_xy[:, 1])], dtype=float)
+
+                # Precompute plotting bounds before layers that need grids.
+                raw_all_x = np.concatenate([record_xy[:, 0], domain_xy[:, 0], subdomain_xy[:, 0]])
+                raw_all_y = np.concatenate([record_xy[:, 1], domain_xy[:, 1], subdomain_xy[:, 1]])
+                pad_x = max((raw_all_x.max() - raw_all_x.min()) * 0.10, 1.0)
+                pad_y = max((raw_all_y.max() - raw_all_y.min()) * 0.10, 1.0)
+                grid_x = np.linspace(raw_all_x.min() - pad_x, raw_all_x.max() + pad_x, 160)
+                grid_y = np.linspace(raw_all_y.min() - pad_y, raw_all_y.max() + pad_y, 160)
+                Xi, Yi = np.meshgrid(grid_x, grid_y)
 
                 dominant_strength = pd.to_numeric(records_plot["dominant_loading"], errors="coerce").fillna(1/3).to_numpy(dtype=float)
                 strength_scaled = np.clip((dominant_strength - (1/3)) / (2/3), 0.0, 1.0)
@@ -1628,9 +1638,6 @@ def _semantic_landscape_integrated_plot(
                 if n_rec >= 5:
                     try:
                         kde = gaussian_kde(record_xy.T, bw_method=0.24)
-                        xi = np.linspace(all_x.min() - pad_x, all_x.max() + pad_x, 160)
-                        yi = np.linspace(all_y.min() - pad_y, all_y.max() + pad_y, 160)
-                        Xi, Yi = np.meshgrid(xi, yi)
                         Zi = kde(np.vstack([Xi.ravel(), Yi.ravel()])).reshape(Xi.shape)
                         cmap_d = mcolors.LinearSegmentedColormap.from_list(
                             "emb_dens", ["#fbfdff", "#d7e7f3", "#a9c7de", "#5c8cb3", "#16324a"])
@@ -1639,20 +1646,43 @@ def _semantic_landscape_integrated_plot(
                     except Exception:
                         pass
 
+                # Domain-specific contour lines reveal local structure in the record cloud.
+                for domain in domain_order:
+                    mask = records_plot["dominant_domain"].eq(domain).to_numpy()
+                    if mask.sum() < 10:
+                        continue
+                    try:
+                        kde_dom = gaussian_kde(record_xy[mask].T, bw_method=0.34)
+                        Zi_dom = kde_dom(np.vstack([Xi.ravel(), Yi.ravel()])).reshape(Xi.shape)
+                        ax_a.contour(
+                            Xi,
+                            Yi,
+                            Zi_dom,
+                            levels=4,
+                            colors=[domain_colors[domain]],
+                            linewidths=0.9,
+                            alpha=0.26,
+                            zorder=2.4,
+                        )
+                    except Exception:
+                        pass
+
                 # Cluster subdomain anchors around domain centroids for clearer ontology fields.
                 subdomain_xy_plot = subdomain_xy.copy()
                 subdomain_domains_arr = np.array(subdomain_domains)
                 domain_anchor_lookup: dict[str, tuple[float, float]] = {}
                 for idx, domain in enumerate(domain_order):
+                    rec_mask = records_plot["dominant_domain"].eq(domain).to_numpy()
+                    rec_centroid = record_xy[rec_mask].mean(axis=0) if rec_mask.any() else record_center
+                    target_anchor = 0.60 * domain_xy[idx] + 0.40 * rec_centroid
                     domain_mask = subdomain_domains_arr == domain
                     if not domain_mask.any():
-                        domain_anchor_lookup[domain] = (float(domain_xy[idx, 0]), float(domain_xy[idx, 1]))
+                        domain_anchor_lookup[domain] = (float(target_anchor[0]), float(target_anchor[1]))
                         continue
                     domain_points = subdomain_xy_plot[domain_mask]
-                    centroid = domain_points.mean(axis=0)
-                    anchored = 0.78 * domain_points + 0.22 * centroid
+                    anchored = 0.74 * domain_points + 0.26 * target_anchor
                     subdomain_xy_plot[domain_mask] = anchored
-                    cluster_center = anchored.mean(axis=0)
+                    cluster_center = 0.70 * anchored.mean(axis=0) + 0.30 * target_anchor
                     domain_anchor_lookup[domain] = (float(cluster_center[0]), float(cluster_center[1]))
 
                 subdomain_frame_inner = pd.DataFrame(
@@ -1718,7 +1748,6 @@ def _semantic_landscape_integrated_plot(
                                  alpha=0.88, edgecolors="white", linewidths=0.85, zorder=5)
 
                 # Domain anchors
-                record_center = np.array([np.median(record_xy[:, 0]), np.median(record_xy[:, 1])], dtype=float)
                 for idx, domain in enumerate(domain_order):
                     dx, dy = domain_anchor_lookup[domain]
                     ax_a.scatter([dx], [dy], s=480, marker="H", facecolors="white",
