@@ -200,10 +200,10 @@ def _panel_descriptive_plot(
     publication_year_counts: pd.DataFrame,
     review_type_counts: pd.DataFrame,
     icd11_counts: pd.DataFrame,
-    core_bps_counts: pd.DataFrame,
+    objective_counts: pd.DataFrame,
     out_path: Path,
 ) -> None:
-    if publication_year_counts.empty and review_type_counts.empty and icd11_counts.empty and core_bps_counts.empty:
+    if publication_year_counts.empty and review_type_counts.empty and icd11_counts.empty and objective_counts.empty:
         return
 
     fig = plt.figure(figsize=(14.5, 10.2))
@@ -305,58 +305,31 @@ def _panel_descriptive_plot(
     ax.set_title("C. ICD-11 category concentration", fontsize=11.5, fontweight="bold", pad=8, loc="left")
     ax.set_xlabel("Included reviews", fontsize=10)
 
-    # Panel D: Core BPS mention structure
+    # Panel D: Objective-category distribution
     ax = fig.add_subplot(gs[1, 1])
     _style_panel(ax)
-    if not core_bps_counts.empty:
-        core_slice = core_bps_counts.copy()
-        core_slice["percent"] = pd.to_numeric(core_slice["percent"], errors="coerce").fillna(0.0)
-        core_slice["n"] = pd.to_numeric(core_slice["n"], errors="coerce").fillna(0.0)
-        y_pos = np.arange(len(core_slice))
-        color_map = {
-            "Biological mention": "#1a6b8a",
-            "Psychological mention": "#c45e2a",
-            "Social mention": "#3a7d44",
-            "Triadic co-mention": "#2f3e4e",
-        }
-        ax.barh(y_pos, np.full(len(core_slice), 100.0), color="#e7eef4", height=0.58, edgecolor="none", zorder=1)
-        bars = ax.barh(
-            y_pos,
-            core_slice["percent"],
-            color=[color_map.get(label, "#7f8c8d") for label in core_slice["indicator"]],
-            height=0.58,
-            edgecolor="white",
-            linewidth=0.9,
-            zorder=3,
-        )
-        for y_idx, indicator, pct, count, bar in zip(
-            y_pos,
-            core_slice["indicator"],
-            core_slice["percent"],
-            core_slice["n"],
-            bars,
-        ):
+    if not objective_counts.empty:
+        obj_slice = objective_counts.copy()
+        obj_slice["n"] = pd.to_numeric(obj_slice["n"], errors="coerce").fillna(0.0)
+        obj_slice["percent"] = pd.to_numeric(obj_slice["percent"], errors="coerce").fillna(0.0)
+        obj_slice = obj_slice.sort_values("n", ascending=True).reset_index(drop=True)
+        labels = [_shorten_label(str(v), max_len=30) for v in obj_slice["objective_category"]]
+        colors_d = ["#3a7d44" if "clinical" in str(v).lower() else "#2b7da6" for v in obj_slice["objective_category"]]
+        bars = ax.barh(labels, obj_slice["n"], color=colors_d, height=0.70, edgecolor="white", linewidth=0.9)
+        for bar, count, pct in zip(bars, obj_slice["n"], obj_slice["percent"]):
             ax.text(
-                min(float(pct) + 1.6, 101.4),
-                y_idx,
-                f"{pct:.1f}% (n = {int(count)})",
+                bar.get_width() + 0.35,
+                bar.get_y() + bar.get_height() / 2.0,
+                f"{int(count)} ({pct:.1f}%)",
                 va="center",
                 ha="left",
-                fontsize=9.2,
+                fontsize=9,
                 color="#16324a",
-                fontweight="bold" if indicator == "Triadic co-mention" else "normal",
             )
-        ax.set_yticks(y_pos)
-        ax.set_yticklabels(core_slice["indicator"], fontsize=9.5)
-        for tick in ax.get_yticklabels():
-            tick.set_color(color_map.get(tick.get_text(), "#516170"))
-            if tick.get_text() == "Triadic co-mention":
-                tick.set_fontweight("bold")
-        ax.axvline(100, color="#9db0c1", linestyle=":", linewidth=1.0)
-        ax.set_xlim(0, 108)
-        ax.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
-    ax.set_title("D. Substantive BPS coverage and triadic co-mention", fontsize=11.5, fontweight="bold", pad=8, loc="left")
-    ax.set_xlabel("Share of included reviews", fontsize=10)
+        ax.set_xlim(0, max(1.0, float(obj_slice["n"].max()) * 1.45))
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax.set_title("D. Objective-category distribution", fontsize=11.5, fontweight="bold", pad=8, loc="left")
+    ax.set_xlabel("Included reviews", fontsize=10)
 
     fig.subplots_adjust(top=0.97, left=0.08, right=0.98, bottom=0.08)
     ensure_parent(out_path)
@@ -1229,7 +1202,7 @@ def _operationalization_combined_plot(
     core_bps_counts: pd.DataFrame,
     out_path: Path,
 ) -> None:
-    """2×2 figure: A=typology, B=function×objective heatmap, C=MSK scope, D=domain mentions."""
+    """2×2 figure: A=typology, B=function×objective heatmap, C=full corpus mentions, D=MSK scope."""
     fig = plt.figure(figsize=(15.5, 11.0))
     fig.patch.set_facecolor("white")
     gs = fig.add_gridspec(2, 2, hspace=0.42, wspace=0.35,
@@ -1293,55 +1266,95 @@ def _operationalization_combined_plot(
         ax_b.spines[:].set_visible(False)
     ax_b.set_title("B.  BPS function by review objective category", fontsize=11, fontweight="bold", pad=8, loc="left")
 
-    # Panel C: MSK domain coverage
+    # Panel C: Full corpus domain and triadic mentions
     ax_c = fig.add_subplot(gs[1, 0])
     _style(ax_c)
+    if not domain_counts.empty or not core_bps_counts.empty:
+        dc = domain_counts.copy()
+        dc["n"] = pd.to_numeric(dc["n"], errors="coerce").fillna(0)
+        dc["percent"] = pd.to_numeric(dc["percent"], errors="coerce").fillna(0)
+
+        triad_n = 0.0
+        triad_pct = 0.0
+        if not core_bps_counts.empty:
+            core = core_bps_counts.copy()
+            core["n"] = pd.to_numeric(core["n"], errors="coerce").fillna(0)
+            core["percent"] = pd.to_numeric(core["percent"], errors="coerce").fillna(0)
+            triad = core.loc[core["indicator"].astype(str).str.lower().str.contains("triadic")]
+            if not triad.empty:
+                triad_n = float(triad["n"].iloc[0])
+                triad_pct = float(triad["percent"].iloc[0])
+
+        domain_lookup = {
+            str(row["domain"]).strip().lower(): {
+                "n": float(row["n"]),
+                "percent": float(row["percent"]),
+            }
+            for _, row in dc.iterrows()
+        }
+        panel_rows = [
+            ("Biological", domain_lookup.get("biological", {}).get("n", 0.0), domain_lookup.get("biological", {}).get("percent", 0.0)),
+            ("Psychological", domain_lookup.get("psychological", {}).get("n", 0.0), domain_lookup.get("psychological", {}).get("percent", 0.0)),
+            ("Social", domain_lookup.get("social", {}).get("n", 0.0), domain_lookup.get("social", {}).get("percent", 0.0)),
+            ("Triadic", triad_n, triad_pct),
+        ]
+        panel_df = pd.DataFrame(panel_rows, columns=["label", "n", "percent"])
+
+        color_map_c = {
+            "Biological": "#1a6b8a",
+            "Psychological": "#c45e2a",
+            "Social": "#3a7d44",
+            "Triadic": "#6b3fa0",
+        }
+        bars_c = ax_c.bar(
+            panel_df["label"],
+            panel_df["n"],
+            color=[color_map_c.get(v, "#7f8c8d") for v in panel_df["label"]],
+            width=0.55,
+            edgecolor="white",
+            linewidth=0.9,
+        )
+        max_n = max(float(panel_df["n"].max()), 1.0)
+        for bar, count, pct in zip(bars_c, panel_df["n"], panel_df["percent"]):
+            ax_c.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + max(max_n * 0.01, 0.3),
+                      f"{int(count)}\n({pct:.1f}%)", ha="center", va="bottom", fontsize=10, fontweight="bold",
+                      color="#16324a")
+        ax_c.set_ylim(0, max_n * 1.24)
+        ax_c.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax_c.set_title("C.  Substantive domain and triadic coverage across full corpus", fontsize=11, fontweight="bold", pad=8, loc="left")
+    ax_c.set_ylabel("Number of included reviews", fontsize=10)
+
+    # Panel D: MSK domain coverage
+    ax_d = fig.add_subplot(gs[1, 1])
+    _style(ax_d)
     if not msk_scope.empty:
         msk = msk_scope.loc[msk_scope["indicator"] != "Musculoskeletal reviews in Stage 2"].copy()
         msk["n"] = pd.to_numeric(msk["n"], errors="coerce").fillna(0)
         msk["percent"] = pd.to_numeric(msk["percent"], errors="coerce").fillna(0)
         msk = msk.sort_values("n", ascending=True)
-        c_map = {
+        d_map = {
             "Biological mention present": "#1a6b8a",
             "Psychological mention present": "#c45e2a",
             "Social mention present": "#3a7d44",
-            "Triadic BPS mention present": "#2f3e4e",
+            "Triadic BPS mention present": "#6b3fa0",
         }
         msk_total = int(msk_scope.loc[msk_scope["indicator"] == "Musculoskeletal reviews in Stage 2", "n"].iloc[0]) if "Musculoskeletal reviews in Stage 2" in msk_scope["indicator"].values else 1
-        ax_c.barh(range(len(msk)), np.full(len(msk), 100.0), color="#e7eef4", height=0.62, edgecolor="none", zorder=1)
-        bars = ax_c.barh(range(len(msk)), msk["percent"],
-                         color=[c_map.get(str(ind), "#7f8c8d") for ind in msk["indicator"]],
+        ax_d.barh(range(len(msk)), np.full(len(msk), 100.0), color="#e7eef4", height=0.62, edgecolor="none", zorder=1)
+        bars = ax_d.barh(range(len(msk)), msk["percent"],
+                         color=[d_map.get(str(ind), "#7f8c8d") for ind in msk["indicator"]],
                          height=0.62, edgecolor="white", linewidth=0.9, zorder=3)
         for idx, (ind, pct, count, bar) in enumerate(zip(msk["indicator"], msk["percent"], msk["n"], bars)):
-            ax_c.text(min(float(pct) + 1.8, 103), idx, f"{pct:.1f}% (n={int(count)}/{msk_total})",
+            ax_d.text(min(float(pct) + 1.8, 103), idx, f"{pct:.1f}% (n={int(count)}/{msk_total})",
                       va="center", ha="left", fontsize=9, color="#16324a",
                       fontweight="bold" if "Triadic" in str(ind) else "normal")
-        labels_c = [_shorten_label(str(v), 30) for v in msk["indicator"]]
-        ax_c.set_yticks(range(len(msk)))
-        ax_c.set_yticklabels(labels_c, fontsize=9.2)
-        ax_c.set_xlim(0, 110)
-        ax_c.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
-        ax_c.axvline(100, color="#9db0c1", linestyle=":", linewidth=1.0)
-    ax_c.set_title("C.  Substantive domain coverage in musculoskeletal reviews (RQ2)", fontsize=11, fontweight="bold", pad=8, loc="left")
-    ax_c.set_xlabel("Percentage of musculoskeletal reviews", fontsize=10)
-
-    # Panel D: Full corpus domain mentions
-    ax_d = fig.add_subplot(gs[1, 1])
-    _style(ax_d)
-    if not domain_counts.empty:
-        dc = domain_counts.copy()
-        dc["n"] = pd.to_numeric(dc["n"], errors="coerce").fillna(0)
-        dc["percent"] = pd.to_numeric(dc["percent"], errors="coerce").fillna(0)
-        dc_colors = [DOMAIN_COLORS.get(str(v).lower(), "#7f8c8d") for v in dc["domain"]]
-        bars_d = ax_d.bar(dc["domain"], dc["n"], color=dc_colors, width=0.55, edgecolor="white", linewidth=0.9)
-        for bar, count, pct in zip(bars_d, dc["n"], dc["percent"]):
-            ax_d.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + max(dc["n"].max() * 0.01, 0.3),
-                      f"{int(count)}\n({pct:.1f}%)", ha="center", va="bottom", fontsize=10, fontweight="bold",
-                      color="#16324a")
-        ax_d.set_ylim(0, dc["n"].max() * 1.22)
-        ax_d.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-    ax_d.set_title("D.  Substantive domain coverage across full corpus", fontsize=11, fontweight="bold", pad=8, loc="left")
-    ax_d.set_ylabel("Number of included reviews", fontsize=10)
+        labels_d = [_shorten_label(str(v), 30) for v in msk["indicator"]]
+        ax_d.set_yticks(range(len(msk)))
+        ax_d.set_yticklabels(labels_d, fontsize=9.2)
+        ax_d.set_xlim(0, 110)
+        ax_d.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
+        ax_d.axvline(100, color="#9db0c1", linestyle=":", linewidth=1.0)
+    ax_d.set_title("D.  Substantive domain coverage in musculoskeletal reviews (RQ2)", fontsize=11, fontweight="bold", pad=8, loc="left")
+    ax_d.set_xlabel("Percentage of musculoskeletal reviews", fontsize=10)
 
     ensure_parent(out_path)
     fig.savefig(out_path, dpi=300, bbox_inches="tight", facecolor="white")
@@ -3220,7 +3233,7 @@ def build_assets() -> dict[str, int]:
     _bar_plot(review_type_counts.head(8), "review_type", "n", "Review types among Stage 2 included records", figure_dir / "review_type_counts.png")
     _bar_plot(icd11_counts.head(10), "icd11_pain_category", "n", "ICD-11 pain categories in Stage 2", figure_dir / "icd11_counts.png")
     _bar_plot(domain_counts, "domain", "n", "Substantive domain mentions among included reviews", figure_dir / "domain_mentions.png")
-    _panel_descriptive_plot(publication_year_counts, review_type_counts, icd11_counts, core_bps_counts, figure_dir / "descriptive_panel_abcd.png")
+    _panel_descriptive_plot(publication_year_counts, review_type_counts, icd11_counts, objective_counts, figure_dir / "descriptive_panel_abcd.png")
     _bar_plot(typology_counts, "provisional_typology", "n", "Provisional BPS operationalization typology", figure_dir / "bps_typology_counts.png")
     _line_plot(publication_year_counts, "year", "n", "Included review publications across time", figure_dir / "publication_year_trend.png")
     _heatmap_plot(function_by_review_type_display, "BPS function by objective category (top categories)", figure_dir / "review_type_function_heatmap.png")
@@ -3524,7 +3537,7 @@ def build_assets() -> dict[str, int]:
         f"({round(sem_soc_dom/semantic_n*100,1) if semantic_n else 0}\\%). "
         f"Mean domain loadings were: biological {sem_bio_mean:.3f}, psychological {sem_psy_mean:.3f}, social {sem_soc_mean:.3f}. "
         "Taken together, the two layers indicate divergence between domain naming and semantic weight: social content is often present but comparatively light in semantic centrality. "
-        "Evidence is in Figure~\\ref{fig.operationalization.combined} (Panel~D), Figure~\\ref{fig.semantic.loading.combined}, and Figure~\\ref{fig.semantic.landscape.integrated}.\n\n"
+        "Evidence is in Figure~\\ref{fig.operationalization.combined} (Panels~C and~D), Figure~\\ref{fig.semantic.loading.combined}, and Figure~\\ref{fig.semantic.landscape.integrated}.\n\n"
         "\\par\\medskip\n"
         "\\noindent\\textbf{Psychological Concepts and Frameworks.} "
         f"Across {n_records} Stage~2 records, {psych_records_with_any}/{n_records} ({psych_records_pct:.1f}\\%) contained at least one explicit psychological construct token in abstract-level coding. "

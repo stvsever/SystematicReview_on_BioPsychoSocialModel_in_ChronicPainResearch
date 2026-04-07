@@ -2,10 +2,10 @@ record_id,year,review_type,bio_psych,bio_social,psych_social,triadic_product
 pubmed_10908542,2000.0,systematic review,0.1104,0.1127,0.1102,0.037
 pubmed_19160209,2009.0,systematic review,0.1107,0.1125,0.1101,0.037
 pubmed_40170347,2025.0,scoping or mapping review,0.114,0.1061,0.113,0.037
-pubmed_28371175,2017.0,narrative or expert review,0.1171,0.1097,0.1063,0.037
+pubmed_28371175,2017.0,narrative or expert review,0.1171,0.1097,0.1063,0.0369
 pubmed_35434749,2022.0,narrative or expert review,0.119,0.1107,0.103,0.0368
 pubmed_7866373,1994.0,narrative or expert review,0.1109,0.1098,0.1126,0.037
-pubmed_21373784,2011.0,narrative or expert review,0.1094,0.1122,0.1117,0.037
+pubmed_21373784,2011.0,narrative or expert review,0.1095,0.1122,0.1117,0.037
 pubmed_38063895,2024.0,narrative or expert review,0.1169,0.1093,0.1069,0.037
 pubmed_29460009,2018.0,systematic review,0.1102,0.1151,0.108,0.037
 pubmed_20425201,2010.0,narrative or expert review,0.122,0.1066,0.1039,0.0368
@@ -25,7 +25,7 @@ pubmed_26614718,2016.0,narrative or expert review,0.1166,0.107,0.1096,0.037
 pubmed_26614715,2016.0,narrative or expert review,0.1208,0.1062,0.1056,0.0368
 pubmed_19289225,2009.0,systematic review,0.1221,0.1055,0.105,0.0368
 pubmed_40675665,2025.0,systematic review,0.1221,0.1113,0.0987,0.0366
-pubmed_27325001,2016.0,systematic review,0.1203,0.1042,0.1081,0.0368
+pubmed_27325001,2016.0,systematic review,0.1204,0.1041,0.1082,0.0368
 pubmed_27246519,2016.0,systematic review,0.118,0.1075,0.1076,0.0369
 pubmed_24602442,2014.0,systematic review,0.1151,0.1075,0.1106,0.037
 pubmed_28947182,2018.0,systematic review,0.1174,0.1073,0.1083,0.0369
@@ -39,8 +39,8 @@ pubmed_11092802,2000.0,narrative or expert review,0.1147,0.1106,0.1078,0.037
 pubmed_37575343,2023.0,systematic review,0.1174,0.1073,0.1084,0.037
 pubmed_32988440,2020.0,narrative or expert review,0.1115,0.1112,0.1106,0.037
 pubmed_27351769,2016.0,narrative or expert review,0.1193,0.107,0.1067,0.0369
-pubmed_35645164,2023.0,narrative or expert review,0.1152,0.1098,0.1081,0.037
-pubmed_11762878,2001.0,narrative or expert review,0.1127,0.1089,0.1118,0.037
+pubmed_35645164,2023.0,narrative or expert review,0.1153,0.1098,0.1082,0.037
+pubmed_11762878,2001.0,narrative or expert review,0.1127,0.1088,0.1117,0.037
 pubmed_33682560,2021.0,systematic review,0.1198,0.1055,0.1074,0.0369
 pubmed_36706441,2023.0,narrative or expert review,0.1177,0.1045,0.1108,0.0369
 pubmed_16968689,2006.0,narrative or expert review,0.108,0.1144,0.1108,0.037
@@ -51,11 +51,11 @@ pubmed_30520741,2019.0,narrative or expert review,0.1175,0.1074,0.1081,0.0369
 pubmed_26889614,2016.0,systematic review,0.1119,0.1095,0.112,0.037
 pubmed_29494401,2018.0,narrative or expert review,0.1233,0.1082,0.1008,0.0367
 pubmed_35467583,2022.0,narrative or expert review,0.1194,0.1072,0.1063,0.0369
-pubmed_27023418,2016.0,meta-analysis,0.1173,0.1091,0.1068,0.037
-pubmed_27902569,2017.0,narrative or expert review,0.1176,0.1065,0.109,0.0369
+pubmed_27023418,2016.0,meta-analysis,0.1172,0.1091,0.1068,0.0369
+pubmed_27902569,2017.0,narrative or expert review,0.1175,0.1065,0.109,0.0369
 pubmed_31977935,2020.0,systematic review,0.1145,0.1082,0.1105,0.037
 pubmed_40101218,2025.0,systematic review,0.1147,0.1073,0.1112,0.037
-pubmed_32871946,2020.0,meta-analysis,0.1176,0.106,0.1094,0.0369
+pubmed_32871946,2020.0,meta-analysis,0.1177,0.1061,0.1094,0.0369
 pubmed_27496639,2016.0,narrative or expert review,0.1093,0.1158,0.1081,0.037
 pubmed_24080806,2013.0,narrative or expert review,0.1183,0.1008,0.1135,0.0368
 pubmed_24690764,2014.0,narrative or expert review,0.1176,0.1066,0.1088,0.0369
@@ -70,7 +70,7 @@ pubmed_17371358,2007.0,narrative or expert review,0.1188,0.1017,0.1121,0.0368
 pubmed_29722923,2018.0,systematic review,0.1157,0.1112,0.1062,0.037
 pubmed_35990762,2022.0,narrative or expert review,0.1187,0.1064,0.1079,0.0369
 pubmed_12421777,2002.0,narrative or expert review,0.1154,0.1074,0.1104,0.037
-pubmed_32870949,2020.0,narrative or expert review,0.1186,0.1072,0.1071,0.0369
+pubmed_32870949,2020.0,narrative or expert review,0.1187,0.1072,0.1072,0.0369
 pubmed_26600874,2015.0,narrative or expert review,0.1163,0.1068,0.11,0.037
 pubmed_22435173,2012.0,meta-analysis,0.1121,0.11,0.1112,0.037
 pubmed_23786498,2013.0,narrative or expert review,0.1215,0.1058,0.1054,0.0368
@@ -87,7 +87,7 @@ pubmed_25953594,2015.0,systematic review,0.1192,0.1136,0.0995,0.0367
 pubmed_38754116,2024.0,narrative or expert review,0.122,0.1078,0.1027,0.0368
 pubmed_39629040,2024.0,narrative or expert review,0.1248,0.1085,0.0984,0.0365
 pubmed_38137395,2023.0,narrative or expert review,0.1192,0.1094,0.1041,0.0369
-pubmed_26039013,2015.0,narrative or expert review,0.1168,0.1017,0.1143,0.0368
+pubmed_26039013,2015.0,narrative or expert review,0.1168,0.1016,0.1143,0.0368
 pubmed_38132273,2023.0,narrative or expert review,0.1194,0.1075,0.106,0.0369
 pubmed_38470686,2024.0,systematic review,0.1135,0.1098,0.11,0.037
 pubmed_33396262,2020.0,scoping or mapping review,0.109,0.1104,0.1139,0.037
