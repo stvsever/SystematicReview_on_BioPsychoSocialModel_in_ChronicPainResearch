@@ -17,19 +17,19 @@
 
 </div>
 
-## Table of Contents
+## 📋 Table of Contents
 
-- [Abstract](#abstract)
-- [Key Findings](#key-findings)
-- [Full Paper](#full-paper)
-- [Repository Structure](#repository-structure)
-- [Setup and Installation](#setup-and-installation)
-- [Usage](#usage)
-- [Pipeline Overview](#pipeline-overview)
-- [Outputs](#outputs)
-- [Methodological Notes](#methodological-notes)
-- [Citation](#citation)
-- [License](#license)
+- [📝 Abstract](#-abstract)
+- [📌 Key Findings](#-key-findings)
+- [📄 Full Paper](#-full-paper)
+- [🗂️ Repository Structure](#-repository-structure)
+- [🛠️ Setup and Installation](#-setup-and-installation)
+- [🚀 Usage](#-usage)
+- [🧬 Pipeline Overview](#-pipeline-overview)
+- [📦 Outputs](#-outputs)
+- [🔬 Methodological Notes](#-methodological-notes)
+- [📚 Citation](#-citation)
+- [⚖️ License](#-license)
 
 ## 📝 Abstract
 
