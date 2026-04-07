@@ -1,0 +1,4 @@
+("biopsychosocial"[Title/Abstract] OR "bio-psycho-social"[Title/Abstract] OR "bio psycho social"[Title/Abstract]) AND ("chronic pain"[Title/Abstract] OR "persistent pain"[Title/Abstract]) AND Review[ptyp]
+
+Date window: 1977-01-01 to 2025-11-30
+Purpose: protocol-faithful operationalized query for direct PubMed API retrieval

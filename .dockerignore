@@ -1,0 +1,17 @@
+.git
+.gitignore
+.idea
+.pytest_cache
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
+.DS_Store
+
+# Local runtime data and outputs
+src/data
+src/review_stages
+src/artifacts
+paper/report/main.pdf

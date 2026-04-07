@@ -1,0 +1,11 @@
+services:
+  bps-review:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file:
+      - ../.env
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
+    command: ["python", "-m", "bps_review", "run-all"]

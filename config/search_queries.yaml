@@ -1,0 +1,113 @@
+queries:
+  pubmed_registered:
+    label: "Registered PubMed query"
+    database: "PubMed"
+    interface: "MEDLINE via PubMed"
+    type: "canonical_protocol"
+    string: '("biopsychosocial"[All Fields] OR "bio-psycho-social"[All Fields] OR "bio psycho social"[All Fields]) AND ("chronic pain"[All Fields] OR "persistent pain"[All Fields])'
+    filters:
+      - "Review"
+    notes:
+      - "Stored verbatim from the registration for transparency."
+      - "This broad All Fields form may over-translate in PubMed."
+
+  pubmed_operational_primary:
+    label: "Operational PubMed query"
+    database: "PubMed"
+    interface: "MEDLINE via PubMed"
+    type: "operationalized_protocol"
+    string: '("biopsychosocial"[Title/Abstract] OR "bio-psycho-social"[Title/Abstract] OR "bio psycho social"[Title/Abstract]) AND ("chronic pain"[Title/Abstract] OR "persistent pain"[Title/Abstract]) AND Review[ptyp]'
+    notes:
+      - "This preserves the protocol logic while constraining PubMed field expansion."
+      - "Use the operational date window from config/protocol.yaml."
+
+  pubmed_audit_sensitivity:
+    label: "PubMed audit query"
+    database: "PubMed"
+    interface: "MEDLINE via PubMed"
+    type: "sensitivity_check"
+    string: '("biopsychosocial"[Title/Abstract] OR "bio-psycho-social"[Title/Abstract] OR "bio psycho social"[Title/Abstract]) AND Review[ptyp]'
+    notes:
+      - "Use only as an audit or recall check."
+      - "Do not silently replace the registered search."
+
+  wos_registered:
+    label: "Registered Web of Science query"
+    database: "Web of Science Core Collection"
+    interface: "Web of Science"
+    type: "canonical_protocol"
+    string: 'TS=("biopsychosocial" OR "bio-psycho-social" OR "bio psycho social")'
+    filters:
+      - "Document Types = Review"
+    notes:
+      - "Stored verbatim from the registration."
+      - "Registered Web of Science logic is broader than the PubMed/PsycINFO logic and relies more heavily on screening."
+
+  wos_starter_operational:
+    label: "Operational Web of Science Starter API query"
+    database: "Web of Science Core Collection"
+    interface: "Web of Science Starter API"
+    type: "operationalized_protocol"
+    string: 'TS=("biopsychosocial" OR "bio-psycho-social" OR "bio psycho social") AND DT=(Review)'
+    notes:
+      - "Designed for Clarivate Starter API syntax."
+      - "Chronic-pain restriction remains a downstream screening criterion to stay closer to the registered Web of Science query."
+
+  psycinfo_registered:
+    label: "Registered PsycINFO query"
+    database: "PsycINFO"
+    interface: "EBSCOhost"
+    type: "canonical_protocol"
+    string: 'TX ("biopsychosocial" OR "bio-psycho-social" OR "bio psycho social") AND TX ("chronic pain" OR "persistent pain") AND TX ("systematic review" OR "meta-analysis" OR "scoping review" OR "narrative review")'
+    notes:
+      - "Stored verbatim from the registration."
+
+  psycinfo_eds_operational:
+    label: "Operational PsycINFO EDS API query"
+    database: "PsycINFO"
+    interface: "EBSCO Discovery Service API"
+    type: "operationalized_protocol"
+    string: '("biopsychosocial" OR "bio-psycho-social" OR "bio psycho social") AND ("chronic pain" OR "persistent pain") AND ("systematic review" OR "meta-analysis" OR "scoping review" OR "narrative review")'
+    notes:
+      - "Assumes an EDS API profile that includes PsycINFO."
+      - "If institutional EDS API access is unavailable, fall back to manual EBSCOhost export."
+
+pubmed:
+  protocol_query: '("biopsychosocial"[All Fields] OR "bio-psycho-social"[All Fields] OR "bio psycho social"[All Fields]) AND ("chronic pain"[All Fields] OR "persistent pain"[All Fields]) AND (review[Publication Type] OR systematic[sb])'
+  date_window:
+    start: "1977/01/01"
+    end: "2025/11/30"
+  language: "english"
+
+screening_keywords:
+  include_pain:
+    - "chronic pain"
+    - "persistent pain"
+    - "musculoskeletal"
+    - "low back pain"
+    - "back pain"
+    - "neck pain"
+    - "fibromyalgia"
+    - "osteoarthritis"
+    - "whiplash"
+    - "temporomandibular"
+    - "complex regional pain"
+    - "neuropathic pain"
+    - "headache"
+    - "orofacial pain"
+  exclude_pain:
+    - "acute pain"
+    - "postoperative"
+    - "perioperative"
+    - "pediatric"
+    - "children"
+    - "adolescent"
+    - "animal"
+
+review_type_terms:
+  - "review"
+  - "systematic review"
+  - "meta-analysis"
+  - "meta analysis"
+  - "scoping review"
+  - "narrative review"

@@ -1,0 +1,20 @@
+field,stage,description,allowed_values
+record_id,stage2,Internal unique record identifier,free_text
+database,stage2,Source database,"PubMed; Web of Science; PsycINFO"
+title,stage2,Record title,free_text
+year,stage2,Publication year,integer
+journal,stage2,Journal name,free_text
+review_type,stage2,Review design label,"systematic review; meta-analysis; scoping review; narrative review; umbrella review; integrative review; other review"
+objective_text,stage2,Review objective as abstract text,free_text
+objective_category,stage2,High-level objective class,"conceptual; clinical; methodological; epidemiological; mixed; unclear"
+icd11_pain_category,stage2,ICD-11 pain classification,"chronic primary pain; chronic secondary musculoskeletal pain; chronic neuropathic pain; chronic postsurgical pain; chronic secondary visceral pain; chronic cancer-related pain; mixed or unspecified chronic pain; unclear"
+bps_mention_location,stage2,Where BPS language appears,"title only; abstract only; title and abstract"
+bps_function,stage2,Function of BPS mention,"justification; organizing principle; intervention rationale; explanatory framework; conclusion; unclear"
+bio_mentioned,stage2,Biological domain mentioned,"yes; no"
+psych_mentioned,stage2,Psychological domain mentioned,"yes; no"
+social_mentioned,stage2,Social domain mentioned,"yes; no"
+spiritual_existential_mentioned,stage2,Spiritual or existential domain mentioned,"yes; no"
+lifestyle_mentioned,stage2,Lifestyle domain mentioned,"yes; no"
+quality_assessment_reported,stage2,Whether the review reports any quality or risk-of-bias appraisal,"yes; no; unclear"
+screening_status,stage2,Status after stage 1,"include; exclude; unclear"
+screening_reason,stage2,Primary reason for exclusion if excluded,free_text

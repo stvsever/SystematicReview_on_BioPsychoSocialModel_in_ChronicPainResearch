@@ -1,0 +1,6 @@
+checkpoint,osf_requirement,pipeline_value,status
+Stage 2 includes all Stage 1 included records,All eligible records proceed to Stage 2 abstract coding,stage2=111; expected=111,aligned
+Stage 3 candidate manifest coverage,Musculoskeletal/unspecified candidates proceed to Stage 3 preparation,manifest=92; expected=92,aligned
+Stage 3 manual full-text queue tracked,Full-text screening requires human review when retrieval is pending,manual_queue=63,aligned
+Stage 3 reliability subset capped,20% Stage 3 reliability subset with cap at 20,reliability_subset=18,aligned
+Manual relevance adjudication sheet,Eligibility and coding decisions remain human-adjudicated,rows=111,aligned

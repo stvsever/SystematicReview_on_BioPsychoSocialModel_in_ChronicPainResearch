@@ -1,0 +1,344 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{pdflscape}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{multirow}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+  breaklinks=true
+}
+
+\captionsetup{justification=raggedright, singlelinecheck=false, labelsep=period, font=small}
+\captionsetup[figure]{position=top}
+\captionsetup[table]{position=top}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small BPS model in chronic pain review literature}
+\rhead{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{{\fontsize{24}{29}\selectfont\bfseries How the Biopsychosocial Model Frames Chronic Pain Research}\\[0.55em]
+{\large A systematic review with mixed-method synthesis of review literature}}
+
+\author{Stijn Van Severen$^{1}$\thanks{Corresponding author: \href{mailto:stijn.vanseveren@ugent.be}{stijn.vanseveren@ugent.be}.} \and
+Christopher Eccleston$^{1,2}$ \and
+Annick De Paepe$^{1}$ \and
+Maya Braun$^{1}$ \and
+Julie Dendauw$^{1}$ \and
+Jose Luis Socorro Cumplido$^{3}$ \and
+Geert Crombez$^{1}$\\[0.8em]
+\normalsize $^{1}$Ghent University, Ghent, Belgium\\
+\normalsize $^{2}$University of Bath, Bath, United Kingdom\\
+\normalsize $^{3}$Ramon Llull University, Barcelona, Spain}
+
+\date{}
+
+\begin{document}
+\maketitle
+\onehalfspacing
+
+% ============================================================
+\begin{abstract}
+\noindent
+\textbf{Background.} The biopsychosocial (BPS) model underpins much of chronic pain review literature, yet whether it is genuinely operationalized or merely invoked as a rhetorical label has not been systematically examined.
+
+\smallskip\noindent
+\textbf{Methods} A pre-registered staged systematic review (OSF DOI: 10.17605/OSF.IO/T4FAM) searched MEDLINE (PubMed) and Web of Science (January~1977--March~2026), applied reproducible deduplication and Stage~1 eligibility rules, extracted Stage~2 abstract-level variables with structured LLM-first coding under schema validation plus deterministic fallbacks, prepared Stage~3 full-text candidates with retrieval-status auditing and manual adjudication checklists, and performed ontology-aligned semantic loading (42 subdomains; transformer embeddings; benchmark-relative domain and co-loading analyses).
+
+\smallskip\noindent
+\textbf{Results.} Of 6,268 identified records (4,105 after deduplication), 111 met eligibility criteria. Narrative and expert reviews dominated; musculoskeletal pain was most prevalent (44.0\%). BPS language appeared at abstract level only in 78.4\% of records. Provisional typological coding classified 30.6\% as pseudo-BPS or partial signal and 29.7\% as potential integrative signal. Semantic loading identified psychological orientation as dominant in 46.8\% of records versus 43.2\% biological and only 9.9\% social; mean social loading (0.318) consistently lagged biological (0.341) and psychological (0.341). Depression, stress, and anxiety dominated the psychological construct profile.
+
+\smallskip\noindent
+\textbf{Conclusion.} BPS language is ubiquitous but operationally uneven: most reviews demonstrate domain listing rather than mechanistic integration, social factors are systematically underspecified, and the psychological construct profile is dominated by affect labels. These findings have direct implications for reporting standards in BPS-invoking pain reviews.
+\end{abstract}
+
+\clearpage
+
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+
+Chronic pain is among the most prevalent and disabling health conditions worldwide, affecting an estimated 20\% of adults in Europe and generating substantial personal, societal, and economic burden \citep{breivik2006, rice2016, vos2016}. Over the past five decades its management has been transformed by a fundamental shift: from reductive biomedical causalism toward the biopsychosocial (BPS) model. Introduced by Engel in 1977 as a direct challenge to the Cartesian biomedical tradition, the BPS model proposed that biological, psychological, and social factors interact dynamically to shape the experience and trajectory of illness \citep{engel1977, engel1980}. In no clinical domain has this shift been more consequential than in chronic pain research, where the model now underpins clinical guidelines, rehabilitation frameworks, and research agendas across musculoskeletal, neuropathic, and primary pain conditions \citep{gatchel2007, kamper2015, nicholas2019}.
+
+The intellectual appeal of the BPS model lies in its scope: it licenses interdisciplinary enquiry, justifies multimodal intervention, and resists the reductionism that proved inadequate for explaining pain chronification. Major theoretical contributions---from gate control theory \citep{melzack1965} and the neuromatrix \citep{melzack1999} to the fear-avoidance model \citep{vlaeyen2000} and central sensitization frameworks \citep{woolf2011}---situate naturally within a BPS architecture. Yet the same breadth that makes the model attractive creates a central methodological problem: ``biopsychosocial'' is semantically broad enough to cover radically different forms of reasoning, from mechanistic triadic integration to mere multi-domain listing, and from theoretically-grounded framing to post-hoc rhetorical labelling.
+
+Conceptual critics have long argued that the BPS model functions as a paradigm whose practical meaning is difficult to specify and verify \citep{borrell2004, wade2017, crombez2015}. When reviews claim BPS framing without defining what integration means or how domain interactions are specified, the model risks becoming a legitimating device rather than an explanatory framework. This concern has been articulated for musculoskeletal pain \citep{hartvigsen2018, foster2018}, chronic primary pain \citep{treede2019}, and multidisciplinary rehabilitation \citep{flor1992}, but has never been examined systematically across the entire body of BPS-invoking review literature.
+
+Existing work on how BPS framing operates is fragmentary. Reviews of psychological treatments \citep{morley1999, williams2020} and multidisciplinary approaches \citep{kamper2015} produce consistent outcome evidence but do not interrogate the conceptual architecture of BPS claims. Work on psychological risk factors \citep{linton2000, pincus2002} and catastrophizing \citep{sullivan1995, keefe2004} demonstrates explanatory power of specific constructs but treats the BPS model as background framing. A systematic examination of \emph{how} the model is actually used---where it appears, what function it serves, which domains it covers, and whether integration is specified---has not been conducted.
+
+This review addresses that gap. Drawing on a pre-registered protocol \citep{osfprotocol2026} and a staged, protocol-first design, we examined 111 eligible review articles to determine: (1)~how the BPS model is operationalized across chronic pain review literature; (2)~the scope, balance, and integration of biological, psychological, and social factors in musculoskeletal reviews; and (3)~which psychological constructs and theoretical frameworks are most frequently invoked. A secondary question addressed conceptual clarity problems in BPS usage.
+
+The review makes three specific contributions: a provisional typological classification of BPS operationalization quality; a structured semantic coding layer that turns abstract-level judgments into auditable machine-readable records; and ontology-aligned semantic loading using embedding-derived domain profiles (42 subdomains). Given that Stage~3 full-text coding remains in progress, findings are reported as a high-fidelity interim synthesis with explicit inference boundaries.
+
+% ============================================================
+\section{Research Questions}
+\label{sec:rqs}
+
+\subsection*{Primary Questions}
+\begin{enumerate}[leftmargin=*, label=RQ\arabic*., ref=RQ\arabic*]
+  \item \label{rq1} How is the biopsychosocial model operationalized in chronic pain review literature.
+  \item \label{rq2} What is the scope, balance, and integration of biological, psychological, and social factors in musculoskeletal pain reviews.
+  \item \label{rq3} Which psychological concepts and theoretical frameworks are invoked in chronic pain review literature.
+\end{enumerate}
+
+\subsection*{Secondary Question}
+\begin{enumerate}[leftmargin=*, label=SRQ\arabic*., ref=SRQ\arabic*]
+  \item \label{srq1} What conceptual problems are identified in reviews invoking the biopsychosocial model.
+\end{enumerate}
+
+\subsubsection*{Study Hypotheses}
+
+Five a priori hypotheses structured the evaluation: (H1) many reviews will use BPS as a rhetorical or organizing device rather than an integrative explanatory framework; (H2) true mechanistic integration will be rare and domain presentation will be parallel rather than interactive; (H3) psychological factors will dominate while biological and social domains will be minimal or absent in some reviews; (H4) integration statements will typically lack mechanistic pathway detail; (H5) conceptual clarity problems (vague definitions, overlapping constructs) will be common. Evaluation of these hypotheses structures the Results and Discussion.
+
+% ============================================================
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Protocol and Reporting}
+The study was designed as a pre-registered, staged mixed-method systematic review and reported using PRISMA-oriented flow logic \citep{page2021, moher2009} adapted for conceptual synthesis. The OSF registration defines the governing framework for eligibility, coding, reliability checks, and reconciliation; the implemented pipeline preserves those constraints by separating automated preprocessing from human decision authority at eligibility and adjudication steps.
+
+\subsection{Computational Reproducibility}
+All operational steps were executed through version-controlled command-line stages in the \texttt{bps\_review} package (Python 3.11 environment), with configuration loaded from the project \texttt{config/} files. The run order was database retrieval, deduplication, screening preparation, Stage~1 screening, Stage~2 extraction, Stage~3 preparation, semantic loading, and asset build. Each stage writes structured outputs to fixed \texttt{review\_stages/} and \texttt{paper/assets/tables} locations, enabling exact reruns and file-level audit trails. Deterministic settings were enforced for stochastic procedures (for example, fixed random seed in projection steps).
+
+\subsection{Eligibility Criteria}
+Eligibility criteria were operationalized from the PICOS framework:
+\begin{itemize}[leftmargin=*, noitemsep]
+  \item \textit{Population.} Adults ($\geq 18$ years) with chronic or persistent pain (duration $>3$ months), including mixed adult samples where chronic pain was the primary focus.
+  \item \textit{Concept exposure.} Explicit biopsychosocial terminology (``biopsychosocial'', ``bio-psycho-social'', or ``bio psycho social'') in title or abstract.
+  \item \textit{Outcome.} Operationalization of the BPS model: domain coverage, integration signals, conceptual function, and psychological construct architecture.
+  \item \textit{Study design.} Review articles in any form: systematic review, meta-analysis, scoping review, narrative review, umbrella review, or expert synthesis.
+\end{itemize}
+Records were excluded if they were primary studies, protocols without results, editorials, commentaries, letters, conference abstracts, books or book chapters, pediatric-only populations, acute-pain-only studies, animal studies, non-English language sources, or grey literature.
+
+\subsection{Information Sources and Search Execution}
+Searches were executed in MEDLINE (via PubMed API) and Web of Science Core Collection (Starter API). The protocol also specifies PsycINFO (EBSCOhost/EDS); PsycINFO retrieval was unavailable in this run because credentials were not available at execution time and was logged as a protocol deviation. The operational date window was January~1977 to March~2026. Registered search expressions combine biopsychosocial lexical variants with chronic-pain and review-design filters; all query keys, retrieval metadata, and normalized exports are stored in the audit outputs.
+
+\subsection{Screening, Deduplication, and Decision Governance}
+All retrieval outputs were normalized to a common schema before deduplication. Deduplication used title/abstract similarity and identifier checks, then produced a single merged screening set. Stage~1 applied explicit title/abstract decision rules derived from the registered criteria and generated exclusion labels, borderline flags, and reliability materials. In line with the OSF framework, reliability templates target 20\% double-screening subsets (capped at 50 for Stage~1/2 and 20 for Stage~3 full-text checks). Discrepancies are resolved by consensus and principal investigator adjudication. Titles, abstracts, authors, journal, and year remained visible (no masking).
+
+\subsection{Stage 2 Extraction and Coding}
+Stage~2 extracted bibliographic metadata and BPS-operationalization variables from title and abstract for all Stage~1-included records. The implemented extraction stack combined deterministic metadata parsing with structured LLM-first coding using schema-constrained outputs, archived response payloads, and post-hoc validation. Variables included review design, objective category, ICD-11 pain category \citep{treede2019, nicholas2019}, BPS mention location/function, substantive domain indicators, quality-reporting indicators, psychological concepts, framework mentions, conceptual-problem flags, provisional typology, and auditable rationale fields. To avoid lexical inflation, coding rules explicitly disallowed counting the token ``biopsychosocial'' as sufficient evidence of triadic substantive coverage.
+
+\subsection{Stage 3 Full-Text Preparation, Retrieval, and Manual Governance}
+Stage~3 preparation targeted musculoskeletal and musculoskeletal-unclear records for full-text deep coding (RQ2/RQ3). The pipeline generated a candidate manifest with retrieval source, retrieval status, cached-text path, content-length checks, manual retrieval flags, and manual relevance flags. Open-access retrieval from PubMed Central was attempted first; unresolved records were routed to a manual retrieval queue. A run-level manual relevance checklist and OSF-alignment checklist were exported so that final inclusion relevance and interpretive coding remain human-adjudicated, consistent with the registration's governance model.
+
+\subsection{Semantic Loading Analysis}
+To complement structured coding, we applied an ontology-aligned semantic loading procedure over a shared embedding space. For each record, a composite text (title + abstract + objective) was embedded using \texttt{text-embedding-3-small}. Ontology prompts for 42 subdomains (10 biological, 20 psychological, 12 social) were embedded independently; cosine similarities were softmax-normalized to obtain record-level domain loadings and weighted subdomain contributions. Pairwise products (bio$\times$psycho, bio$\times$social, psycho$\times$social) and triadic products were computed to quantify co-loading intensity relative to equal-balance benchmarks. For landscape visualization, joint record-plus-ontology embeddings were projected with PCA-preconditioned t-SNE under fixed random seed settings to preserve rerun stability.
+
+\subsection{Synthesis Strategy and Inference Boundaries}
+The synthesis integrates descriptive statistics (frequencies, cross-tabulations, proportions, and benchmark-relative deviations), provisional typological classification, and qualitative interpretation. Stage~2 assigns one of four provisional operationalization categories: potential integrative signal, multifactorial signal, rhetorical label signal, and pseudo-BPS or partial signal. These categories are explicit interim bridges to the Stage~3 full-text typology (True Integrative BPS, Multifactorial, Pseudo-BPS, Rhetorical BPS). Because Stage~3 retrieval and adjudication are ongoing, integration-quality claims are interpreted as provisional and bounded to currently available full-text evidence.
+
+\subsection{Pre-registration}
+The review was pre-registered prior to data collection (Van Severen et al., 2026). The registration defines screening, extraction, reliability, reconciliation, and governance expectations; run-specific deviations (for example, source-availability constraints) are logged in reproducible audit outputs and supplementary documentation.
+
+% ============================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Pipeline Flow and Study Volume}
+
+\input{generated/results_summary.tex}
+
+\begin{figure}[htbp]
+  \caption{PRISMA-style study selection workflow from identification through full-text planning.}
+  \label{fig.prisma}
+  \centering
+  \includegraphics[width=0.98\textwidth]{../assets/figures/prisma_flow.png}
+  \caption*{\textit{Note.} Three stages: Identification (database searches and deduplication), Screening (title/abstract screening with exclusions), and Included (Stage~2 eligible records and Stage~3 full-text planning). The workflow reflects the operational run covering January~1977--March~2026.}
+\end{figure}
+
+\captionsetup{type=table}
+\captionof{table}{Characteristics of all 111 included reviews.}
+\label{tab.characteristics}
+\input{generated/characteristics_table.tex}
+
+\subsection{Temporal and Structural Characteristics of Included Reviews}
+
+The included corpus spanned publication years 1990 to 2026, with a marked acceleration in BPS-invoking review output after 2005. Narrative and expert reviews were the dominant review type (73 of 111; 65.8\%), consistent with the predominantly conceptual and clinical orientation of BPS-invoking pain literature; systematic reviews comprised 27 records (24.3\%), with scoping reviews, meta-analyses, and one network meta-analysis accounting for the remainder. By ICD-11 classification, mixed or unspecified chronic pain was the most prevalent category (43 records; 38.7\%), followed by musculoskeletal pain (36; 32.4\%), headache or orofacial pain (15; 13.5\%), and visceral pain (5; 4.5\%). The remaining 12 records span primary chronic pain, postsurgical, neuropathic, and cancer-related categories. Temporal trends, review-type composition, ICD-11 distribution, and BPS domain coverage are shown in Figure~\ref{fig.descriptive.panel}.
+
+\begin{figure}[!ht]
+  \caption{Descriptive structure of the included evidence base across four dimensions.}
+  \label{fig.descriptive.panel}
+  \centering
+  \includegraphics[width=0.98\textwidth]{../assets/figures/descriptive_panel_abcd.png}
+  \caption*{\textit{Note.} Panel~A shows annual publication counts ($n = 111$) with a 3-year rolling trend line and post-2005 growth shading. Panel~B shows review-type distribution with frequency labels. Panel~C shows concentration across ICD-11 categories. Panel~D compares biological, psychological, and social substantive-domain coverage plus overall triadic co-mention frequency across all 111 records.}
+\end{figure}
+
+\subsection{Biopsychosocial Operationalization}
+\label{subsec:rq1}
+
+\subsubsection*{Mention Location and Functional Role}
+
+BPS terminology appeared predominantly in the abstract without title mention in 87 records (78.4\%), indicating that for most reviews the model functions as methodological or conceptual context rather than as the primary subject of inquiry. A further 18 records (16.2\%) mentioned BPS in both title and abstract, and 6 (5.4\%) in the title only. The most common declared functional role was intervention rationale (41 records; 36.9\%), followed by explanatory framework (37; 33.3\%), organizing principle (11; 9.9\%), rhetorical label (11; 9.9\%), and background framing (6; 5.4\%). Many records using the explanatory framework label do not provide mechanistic elaboration of domain interactions, providing partial support for study hypothesis H4.
+
+\subsubsection*{Provisional Typological Classification}
+
+The provisional typological scheme identified pseudo-BPS or partial signal as the dominant category (73 records; 65.8\%), followed by rhetorical label signal (17; 15.3\%), multifactorial signal (11; 9.9\%), and potential integrative signal (10; 9.0\%). Thus, approximately four in five records fall below the potential-integrative threshold at abstract level. These typological estimates are provisional pending Stage~3 full-text adjudication and address study hypotheses H1 and H2. Figure~\ref{fig.operationalization.combined} (Panel~A) visualizes the distribution; Panel~B shows the cross-tabulation of BPS function by objective category.
+
+\begin{figure}[htbp]
+  \caption{Biopsychosocial operationalization structure: typology, BPS function, musculoskeletal domain coverage, and full-corpus domain mentions.}
+  \label{fig.operationalization.combined}
+  \centering
+  \includegraphics[width=0.99\textwidth]{../assets/figures/operationalization_combined.png}
+  \caption*{\textit{Note.} Panel~A: provisional typological distribution (RQ1); categories are assigned by Stage~2 coding and remain provisional pending Stage~3 adjudication. Panel~B: cross-tabulation of BPS functional role by objective category; cell values are record counts. Panel~C: substantive-domain coverage within the 50 musculoskeletal reviews (RQ2); bars show percentage of musculoskeletal records with each domain/triadic mention. Panel~D: overall biological, psychological, and social substantive-domain frequencies across all 111 included records.}
+\end{figure}
+
+\input{generated/primary_answers.tex}
+
+\subsection{Scope, Balance, and Integration in Musculoskeletal Reviews}
+\label{subsec:rq2}
+
+Addressing \ref{rq2}, the analysis focused on the 50 reviews classified as chronic secondary musculoskeletal pain.
+
+\subsubsection*{Structured Domain Coverage}
+
+Domain mention frequencies for the musculoskeletal subset are illustrated in Figure~\ref{fig.operationalization.combined} (Panel~C). In the substantive-domain coding layer (which excludes lexical BPS token matches), social factors were present in 28 of 50 reviews (56.0\%), psychological factors in 31 of 50 (62.0\%), and biological factors in 20 of 50 (40.0\%). Triadic mention was present in 11 of 50 musculoskeletal reviews (22.0\%). The musculoskeletal subset therefore shows moderate two-domain coverage but limited explicit triadic integration at abstract level, leaving study hypotheses H2 and H3 partially satisfied at this interim stage.
+
+The domain mention pattern across the full corpus of 111 reviews is illustrated in Figure~\ref{fig.operationalization.combined} (Panel~D). Substantive-domain frequencies were psychological 64.0\%, social 48.6\%, and biological 47.7\%, with triadic co-mention at 18.9\%. The main structural deficit at abstract level is therefore not absence of a single domain, but the recurrent failure to combine all three domains in a clearly articulated integrative logic.
+
+\subsubsection*{Semantic Domain Loading and the Social Deficit}
+
+Ontology-aligned semantic loading provided a continuous, text-derived perspective on domain balance. Across all 111 included records, psychological orientation was semantically dominant in 46.8\% of records, biological in 43.2\%, and social in only 9.9\% (supplementary Table~\ref{tab.semantic.summary} and Figure~\ref{fig.semantic.loading.combined}). Mean domain loadings were: biological~0.341, psychological~0.341, social~0.318. The social loading deficit---despite substantial social naming in structured coding---constitutes a robust signal that social factors remain comparatively underweighted in semantic centrality, consistent with study hypothesis H3 \citep{dorner2011, harkness2005, edwards2016}.
+
+Figure~\ref{fig.semantic.loading.combined} (Panel~A) shows the two-layer domain hierarchy: the inner ring presents domain-level loading proportions and the right panel resolves each domain into its 42 ontology subdomains with within-domain normalized loading bars. Within the biological domain, pharmacological/biomedical treatment and central sensitization subdomains carry the highest relative loading. Within psychology, cognitive-behavioral and third-wave therapy subdomains lead, followed by healthcare-seeking and attention/vigilance constructs. Within social, healthcare access and social determinants subdomains rank highest. Panel~B reframes the semantic-loading result as benchmark-relative deviations: biological and psychological loadings sit slightly above the equal-share benchmark on average, whereas social loading is shifted below it. Thus the key signal is not large dispersion across BPS space but a repeated, corpus-wide social shortfall.
+
+\begin{figure}[!ht]
+  \caption{Two-layer ontology semantic loading across the BPS hierarchy and benchmark-relative domain deviation distributions.}
+  \label{fig.semantic.loading.combined}
+  \centering
+  \includegraphics[width=0.99\textwidth]{../assets/figures/semantic_loading_combined.png}
+
+  \caption*{\textit{Note.} Panel~A: left sub-panel shows the two-ring sunburst (inner ring = domain-level loading proportions; outer ring = 42 subdomain segments without text to avoid overlap); right sub-panel shows mean weighted subdomain loading percentages (absolute, not within-domain normalized) grouped by domain, with domain-share labels. Segment and bar magnitudes are proportional to corpus-level mean weighted loading across 111 records. Panel~B: each domain's distribution of deviation from the equal-share benchmark (loading~$-$~1/3), with violin density, raw jittered points, and mean (diamond) and median markers.}
+\end{figure}
+
+\subsubsection*{Pairwise and Triadic Co-loading}
+
+Pairwise loading products measure the co-occurrence of two domains within the same semantic space of a record. Figure~\ref{fig.semantic.landscape.integrated} shows that the bio$\times$psychological term is shifted above the equal-balance benchmark, whereas the bio$\times$social and psychological$\times$social terms lie slightly below it; the triadic product sits only marginally below its equal-share benchmark. The corpus-wide signal is therefore not strong overall imbalance, but a subtle and repeated redistribution of semantic weight away from social content and toward the bio--psychological axis.
+
+The joint embedding landscape (Figure~\ref{fig.semantic.landscape.integrated}, Panel~A) situates the included reviews in the joint semantic space of record embeddings, domain anchors, and ontology subdomains. The three ontology anchor fields all lie outside the densest record manifold, but the social anchor is the most spatially distant from that manifold, converging with the loading results: social constructs are present in the ontology and mentioned in the corpus, yet comparatively few reviews organize their semantic centre of mass around them.
+
+\begin{figure}[!ht]
+  \caption{Joint embedding landscape and ontology-based pairwise and triadic semantic integration loadings.}
+  \label{fig.semantic.landscape.integrated}
+  \centering
+  \includegraphics[width=0.99\textwidth]{../assets/figures/semantic_landscape_integrated.png}
+  \caption*{\textit{Note.} Panel~A: embedding landscape of 111 included reviews (filled circles, coloured by dominant domain), domain anchors (hexagons), and 42 subdomain anchors (open circles connected to parent domains); subdomain anchors are domain-clustered for interpretability while preserving within-domain geometry after projection; background density and contour lines show the review manifold; point size scales with dominant loading strength. Projection uses PCA-preconditioned t-SNE on the joint record-plus-ontology embedding space. Panel~B: symmetric domain × pairwise co-loading intensity matrix (cell values = means). Panel~C: benchmark-centered deviation field mapping each record onto the psycho$-$bio axis (horizontal) and social benchmark deviation (vertical), with shaded near-balance bands around zero. Panel~D: benchmark-relative co-loading deviations for each pairwise and triadic term (observed minus equal-balance benchmark); bars show IQR, diamonds show means.}
+\end{figure}
+
+\subsection{Psychological Concepts and Frameworks}
+\label{subsec:rq3}
+
+Addressing \ref{rq3}, Stage~2 abstract-level extraction identified the most frequently occurring psychological construct terms. The concept profile reveals a markedly concentrated pattern: depression (27.5\%), stress (23.8\%), and anxiety (20.0\%) together account for more than 70\% of detected concept occurrences. Coping strategies (8.8\%), catastrophizing (5.0\%), and fear-avoidance (5.0\%) follow as a secondary cluster, while self-efficacy (3.8\%), resilience (2.5\%), acceptance (2.5\%), and illness perception (1.2\%) appear at lower frequencies.
+
+This distribution supports study hypothesis H5 about conceptual clarity. The dominance of general affect labels (depression, anxiety, stress) relative to theoretically specific constructs (catastrophizing, fear-avoidance, self-efficacy) suggests that chronic pain review literature characterizes the psychological domain through symptom burden rather than through the BPS-grounded motivational, cognitive, and self-regulatory mechanisms that have the strongest theoretical support \citep{vlaeyen2000, vlaeyen2012, mccracken2014, bandura1977, sullivan1995}. Stage~3 full-text coding will map construct definitions, hierarchical relationships, and theoretical framework membership for the musculoskeletal subset.
+
+\subsection{Conceptual Problems in BPS Usage}
+\label{subsec:srq1}
+
+\input{generated/secondary_answer.tex}
+
+\subsection{Full-Text Retrieval Status and Stage 3 Readiness}
+
+Of the 92 records identified as Stage~3 candidates (musculoskeletal and unspecified pain reviews), 29 (31.5\%) were retrieved as open-access full texts from PubMed Central, while 63 (68.5\%) remain in the manual retrieval queue. The 29 retrieved texts are ready for full-text deep coding once the Stage~3 codebook has been finalized through pilot testing. Completion of the manual retrieval queue is the principal dependency for full inferential closure on \ref{rq2}. To align with the OSF protocol requirement that eligibility and coding remain human-adjudicated, all candidate records are additionally listed in a manual relevance audit sheet with reviewer and adjudication fields.
+
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{The BPS Model as Label versus Framework}
+
+The central finding is an asymmetry between the frequency of BPS language use and the depth of its operationalization. Across 111 included reviews, provisional typological coding classified 65.8\% as pseudo-BPS or partial-signal and 15.3\% as rhetorical label signal, while only 9.0\% reached a potential integrative signal and 9.9\% a multifactorial signal. The resulting picture indicates that explicit triadic integration signals are comparatively uncommon at abstract level.
+
+The concern is not strategic dishonesty. BPS language is semantically broad enough to invoke without specifying what integration entails: which pathways connect the domains, in which directions, at which time scales. The provisional typology developed here gives this critique empirical grip. A record is coded as potential integrative signal only if it (a) covers all three domains and (b) declares an explanatory framework or organizing principle function---the minimum abstract-level signal of intended integration. That roughly four in five records fail this criterion is a precise, auditable claim, not a subjective impression \citep{borrell2004, wade2017}. This finding provides confirmatory evidence for study hypothesis H1.
+
+\subsection{The Social Domain Deficit}
+
+Perhaps the most striking finding is the systematic underrepresentation of social factors across both structured abstract-level coding and semantic loading. In the substantive coding layer, social factors were present in 56.0\% of musculoskeletal records and 48.6\% of the full corpus, yet semantic loading ranked social as dominant in only 9.9\% of records (versus 46.8\% psychological, 43.2\% biological). The mean social loading (0.318) was lower than both biological (0.341) and psychological (0.341). The pattern holds across methods.
+
+This social loading deficit is interpretable as a systematic pattern in which the ``S'' of BPS is lexically present but conceptually thin---named without the mechanistic or operational specification that biological factors receive through neuroimaging, pharmacology, or genetics, and psychological factors through standardized measurement instruments and theoretical models \citep{dorner2011, harkness2005, edwards2016}. Social determinants (socioeconomic status, occupational context, medicolegal systems, cultural factors) appear in review discourse as labels rather than as substantively operationalized constructs with defined pathways. This confirms study hypothesis H3. Stage~3 integration coding will allow this to be tested against full-text evidence, but the convergence between two independent measurement strategies is a robust preliminary signal.
+
+\subsection{Psychological Construct Concentration and the Affect Paradox}
+
+The psychological concept distribution---dominated by depression, anxiety, and stress, with limited representation of specific cognitive and self-regulatory constructs---reveals a tension in the pain psychology literature. The theoretical foundations of BPS-aligned pain psychology emphasize specific mechanisms: catastrophizing as a cognitive amplifier of pain \citep{sullivan1995}; fear-avoidance as an operant-conditioning pathway from acute to chronic pain \citep{vlaeyen2000, vlaeyen2012}; illness beliefs as interpretive frames that shape help-seeking and treatment adherence; and self-efficacy as a cross-cutting mediator of functional outcomes \citep{bandura1977}. Yet the abstract-level concept profile suggests that emotionally oriented general labels dominate how psychological factors are represented in review summaries.
+
+Two interpretations are possible. First, this may be a reporting artefact: abstracts may prioritize outcome-relevant affect labels (depression, anxiety) that are measured by standard instruments, while theory-specific constructs are detailed in the full text. Second, the pattern may reflect a genuine preponderance of affect-focused framing in BPS pain reviews, consistent with meta-analytic findings showing that CBT and interdisciplinary interventions primarily target depressive and anxiety symptoms \citep{morley1999, williams2020}. Distinguishing these explanations---artefact or signal---is a primary motivation for Stage~3 deep coding.
+
+\subsection{Semantic Loading as a Methodological Contribution}
+
+The ontology-aligned semantic loading procedure developed here extends structured abstract-level content coding in three ways. First, it is continuous and multi-dimensional: each record receives a domain loading profile rather than a binary domain-mention indicator, capturing graded orientation rather than presence/absence. Second, the subdomain resolution (42 categories) maps specific research constructs within each domain, allowing detection of which biological subdomains (e.g., pharmacological treatment vs.\ central sensitization) or psychological subdomains (e.g., CBT approaches vs.\ fear-avoidance) dominate a record's semantic space. Third, the pairwise product terms measure co-loading intensity as an approximation of conceptual overlap between domains, providing a text-derived integration signal that complements the binary triadic co-mention indicator.
+
+The social deficit finding illustrates the procedure's sensitivity: while structured abstract-level coding still shows near-universal social mention, semantic loading shows social dominant in only 9.9\% of records, exposing the gap between mentioning and substantively organizing a review around social factors. This methodological contribution---surfacing the qualitative-quantitative divergence between surface-level mention and semantic orientation---is generalizable to other conceptual systematic reviews in pain science and beyond.
+
+\subsection{Methodological Limitations}
+
+The principal limitation is the interim status of the synthesis. Stage~3 full-text coding remains incomplete, constraining inferential closure on integration quality, construct-level mapping, and balance assessment. The absence of completed manual retrieval for 57 records limits Stage~3 candidate coverage. PsycINFO was not available for this run, which may underrepresent reviews indexed primarily in psychology databases. The provisional typological scheme relies on abstract-level signals and may misclassify records whose integration quality is only apparent in the full text. Finally, the semantic loading procedure is sensitive to ontology term selection; the current 42-subdomain scheme reflects one operationalization among possible alternatives, and results should be interpreted relative to this specific ontological framing.
+
+\input{generated/limitations.tex}
+
+\subsection{Implications for Research Practice and Reporting Standards}
+
+The findings have actionable implications. Future chronic pain reviews that invoke the BPS model should provide explicit reporting of: which domains are covered; how domain interactions are conceptualized; what mechanistic pathways are proposed; and whether theoretical framework claims are supported by the review's empirical content. A practical proposal is that journals adopt mandatory reporting prompts distinguishing rhetorical from substantive BPS integration, modelled on existing PRISMA extensions \citep{page2021}. Editorial and peer-review practices that currently accept BPS invocation as self-evidently legitimate would benefit from standardized criteria distinguishing descriptive domain listing from mechanistic triadic integration.
+
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This systematic review provides the first comprehensive empirical map of how the biopsychosocial model is operationalized across 111 eligible chronic pain review articles spanning 1990 to 2026. The evidence indicates that BPS language is ubiquitous but operationally uneven: many reviews still demonstrate domain listing or partial coverage rather than mechanistic triadic integration; social factors are consistently underspecified relative to psychological and biological ones in the semantic-loading layer; and the psychological construct profile is dominated by general affect labels rather than the specific cognitive and self-regulatory mechanisms that BPS-aligned theories emphasize. Convergent evidence from two independent methods---structured Stage~2 coding and ontology-aligned semantic loading---strengthens confidence in the social deficit and psychological concentration findings. These results are currently provisional, pending Stage~3 full-text coding of the musculoskeletal subset and dual-coder adjudication. Final inferential claims about integration quality and construct-level framework architecture await completion of manual retrieval and the PsycINFO search. The staged, auditable pipeline and reproducible ontology-based semantic analysis developed here provide the infrastructure for that completion and a template for future conceptual systematic reviews in pain science.
+
+% ============================================================
+\section*{Data and Code Availability}
+\label{sec:datacode}
+
+\begin{sloppypar}
+Analysis code, pre-registration materials, and supplementary data are openly available.\\
+\textit{Pre-registration} (protocol, search strings, codebooks, and audit trail):
+\url{https://osf.io/t4fam/overview} (DOI:~10.17605/OSF.IO/T4FAM; \citealt{osfprotocol2026}).\\
+\textit{Code repository} (full pipeline, embedding analysis, and figure generation):
+\url{https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach}.
+\end{sloppypar}
+
+% ============================================================
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\clearpage
+\appendix
+\section{Supplementary Methods}
+\label{app:methods}
+\input{generated/supplement_methods.tex}
+
+\section{Supplementary Semantic Tables}
+\label{app:semantic}
+\input{generated/semantic_domain_summary_table.tex}
+\input{generated/semantic_pairwise_summary_table.tex}
+
+\noindent The full subdomain loading summary (42 subdomains) is archived at:\\
+\texttt{paper/assets/tables/semantic\_subdomain\_summary.csv}.
+
+\section{Supplementary Catalog of Included Reviews}
+\label{app:catalog}
+The complete Stage~2 included review catalog is provided as a machine-readable supplementary file:
+\texttt{paper/assets/tables/included\_review\_catalog.csv}. Key fields are described in the registered codebook available at the repository listed in the Data and Code Availability section.
+
+\end{document}

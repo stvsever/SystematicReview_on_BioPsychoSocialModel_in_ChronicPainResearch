@@ -1,0 +1,9 @@
+.git
+../.venv
+.idea
+__pycache__
+paper/report/*.pdf
+paper/report/*.log
+paper/report/*.aux
+paper/report/*.out
+paper/report/*.toc

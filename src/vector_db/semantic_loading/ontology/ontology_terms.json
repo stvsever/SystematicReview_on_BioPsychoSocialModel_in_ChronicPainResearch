@@ -1,0 +1,64 @@
+{
+  "domains": {
+    "biological": [
+      "Central Sensitization and Neuroplasticity",
+      "Musculoskeletal and Structural Pathology",
+      "Pharmacological and Biomedical Treatment",
+      "Sleep Disruption and Circadian Dysregulation",
+      "Immune Inflammatory and Neuroinflammatory Processes",
+      "Genetic Epigenetic and Biological Vulnerability",
+      "Neuroimaging Brain Structure and Function",
+      "Nociceptive Transmission and Pain Pathways",
+      "Physical Function Mobility and Deconditioning",
+      "Metabolic Nutritional and Hormonal Factors"
+    ],
+    "psychological": [
+      "Catastrophizing and Negative Cognitive Appraisal",
+      "Fear Avoidance and Pain Related Fear",
+      "Depression Emotional Distress and Affect",
+      "Anxiety and Psychological Reactivity",
+      "Self Efficacy Control Beliefs and Perceived Mastery",
+      "Acceptance Psychological Flexibility and Mindfulness",
+      "Pain Coping Strategies and Adjustment",
+      "Attention Vigilance and Pain Processing",
+      "Illness Beliefs Pain Representations and Meaning",
+      "Cognitive Behavioral and Psychotherapeutic Approaches",
+      "Third Wave Therapies ACT and Contextual Approaches",
+      "Resilience Positive Psychology and Post Traumatic Growth",
+      "Identity Self Concept and Chronic Pain Biography",
+      "Trauma Adverse Childhood and Life Events",
+      "Personality Psychological Traits and Individual Differences",
+      "Cognitive Function Executive Processes and Brain Health",
+      "Motivational Processes Goal Pursuit and Engagement",
+      "Healthcare Seeking Treatment Adherence and Engagement",
+      "Emotional Regulation and Pain Affect Processing",
+      "Mental Health Comorbidity and Psychological Wellbeing"
+    ],
+    "social": [
+      "Social Support Network and Interpersonal Resources",
+      "Work Disability Occupational Function and Productivity",
+      "Family Caregiver and Household Dynamics",
+      "Socioeconomic Status and Health Inequity",
+      "Healthcare Access Navigation and System Factors",
+      "Cultural Ethnic and Demographic Context",
+      "Community Participation and Social Role Functioning",
+      "Legal Compensation and Medicolegal Systems",
+      "Health Literacy Education and Patient Empowerment",
+      "Stigma Social Isolation and Exclusion",
+      "Return to Work Vocational Rehabilitation and Employment",
+      "Social Determinants of Pain and Environment"
+    ]
+  },
+  "prompts": {
+    "biological": "biological chronic pain ontology. Central Sensitization and Neuroplasticity; Musculoskeletal and Structural Pathology; Pharmacological and Biomedical Treatment; Sleep Disruption and Circadian Dysregulation; Immune Inflammatory and Neuroinflammatory Processes; Genetic Epigenetic and Biological Vulnerability; Neuroimaging Brain Structure and Function; Nociceptive Transmission and Pain Pathways; Physical Function Mobility and Deconditioning; Metabolic Nutritional and Hormonal Factors.",
+    "psychological": "psychological chronic pain ontology. Catastrophizing and Negative Cognitive Appraisal; Fear Avoidance and Pain Related Fear; Depression Emotional Distress and Affect; Anxiety and Psychological Reactivity; Self Efficacy Control Beliefs and Perceived Mastery; Acceptance Psychological Flexibility and Mindfulness; Pain Coping Strategies and Adjustment; Attention Vigilance and Pain Processing; Illness Beliefs Pain Representations and Meaning; Cognitive Behavioral and Psychotherapeutic Approaches; Third Wave Therapies ACT and Contextual Approaches; Resilience Positive Psychology and Post Traumatic Growth; Identity Self Concept and Chronic Pain Biography; Trauma Adverse Childhood and Life Events; Personality Psychological Traits and Individual Differences; Cognitive Function Executive Processes and Brain Health; Motivational Processes Goal Pursuit and Engagement; Healthcare Seeking Treatment Adherence and Engagement; Emotional Regulation and Pain Affect Processing; Mental Health Comorbidity and Psychological Wellbeing.",
+    "social": "social chronic pain ontology. Social Support Network and Interpersonal Resources; Work Disability Occupational Function and Productivity; Family Caregiver and Household Dynamics; Socioeconomic Status and Health Inequity; Healthcare Access Navigation and System Factors; Cultural Ethnic and Demographic Context; Community Participation and Social Role Functioning; Legal Compensation and Medicolegal Systems; Health Literacy Education and Patient Empowerment; Stigma Social Isolation and Exclusion; Return to Work Vocational Rehabilitation and Employment; Social Determinants of Pain and Environment."
+  },
+  "domain_order": [
+    "biological",
+    "psychological",
+    "social"
+  ],
+  "method": "openrouter_embedding",
+  "model": "openai/text-embedding-3-small"
+}

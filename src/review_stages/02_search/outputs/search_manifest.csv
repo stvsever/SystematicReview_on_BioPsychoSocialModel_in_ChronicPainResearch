@@ -1,0 +1,6 @@
+database,query_key,query_label,search_date,date_start,date_end,record_count,output_file
+PubMed,pubmed_operational_primary,Operational PubMed query,2026-04-06,1977-01-01,2026-03-31,500,review_stages/02_search/outputs/pubmed_pubmed_operational_primary_2026-04-06_records.csv
+PubMed,pubmed_audit_sensitivity,PubMed audit query,2026-04-06,1977-01-01,2026-03-31,3374,review_stages/02_search/outputs/pubmed_pubmed_audit_sensitivity_2026-04-06_records.csv
+Web of Science,wos_starter_operational,WoS Starter API operational query,2026-04-07,1977-01-01,2026-03-31,2394,review_stages/02_search/outputs/wos_wos_starter_operational_2026-04-06_records.csv
+PubMed,pubmed_operational_primary,Operational PubMed query,2026-04-07,1977-01-01,2026-03-31,500,review_stages/02_search/outputs/pubmed_pubmed_operational_primary_2026-04-07_records.csv
+PubMed,pubmed_audit_sensitivity,PubMed audit query,2026-04-07,1977-01-01,2026-03-31,3374,review_stages/02_search/outputs/pubmed_pubmed_audit_sensitivity_2026-04-07_records.csv

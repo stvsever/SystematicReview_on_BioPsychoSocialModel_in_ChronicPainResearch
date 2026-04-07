@@ -1,0 +1,112 @@
+record_id,objective_category_llm,conceptual_problem_flags
+pubmed_10908542,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_19160209,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_40170347,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_28371175,clinical,none
+pubmed_35434749,conceptual,tokenistic_bps | vague_definition
+pubmed_7866373,clinical,missing_biology
+pubmed_21373784,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_38063895,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_29460009,clinical,none
+pubmed_20425201,conceptual,missing_social
+pubmed_22102156,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_36527589,epidemiological,none
+pubmed_28752491,conceptual,none
+pubmed_33563380,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_17350550,clinical,none
+pubmed_23218435,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_26096090,clinical,tokenistic_bps | vague_definition | missing_biology
+pubmed_41271285,clinical,missing_biology
+pubmed_30594766,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_29729787,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+WOS:000453643300005,clinical,vague_definition | parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_27344405,clinical,none
+pubmed_26614718,clinical,vague_definition | tokenistic_bps | missing_biology
+pubmed_26614715,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_19289225,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_40675665,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_27325001,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_27246519,conceptual,none
+pubmed_24602442,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_28947182,conceptual,missing_social
+pubmed_22814445,clinical,none
+pubmed_1477890,unclear,vague_definition | parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_12948346,clinical,missing_biology
+pubmed_17592957,conceptual,none
+pubmed_18235536,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_24113949,clinical,tokenistic_bps | vague_definition | missing_biology
+pubmed_11092802,conceptual,missing_biology
+pubmed_37575343,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_32988440,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_27351769,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_35645164,conceptual,vague_definition | tokenistic_bps
+pubmed_11762878,conceptual,none
+pubmed_33682560,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_36706441,clinical,missing_biology
+pubmed_16968689,conceptual,none
+pubmed_40418249,epidemiological,parallel_listing_without_integration | mechanistic_absence
+pubmed_10870733,conceptual,vague_definition | tokenistic_bps
+pubmed_2181358,conceptual,none
+pubmed_30520741,clinical,tokenistic_bps | vague_definition
+pubmed_26889614,epidemiological,missing_biology
+pubmed_29494401,conceptual,tokenistic_bps | vague_definition
+pubmed_35467583,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_27023418,epidemiological,tokenistic_bps | vague_definition
+pubmed_27902569,conceptual,none
+pubmed_31977935,clinical,none
+pubmed_40101218,epidemiological,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_32871946,clinical,missing_biology
+pubmed_27496639,clinical,tokenistic_bps | vague_definition
+pubmed_24080806,conceptual,none
+pubmed_24690764,conceptual,missing_biology
+pubmed_30893103,conceptual,parallel_listing_without_integration
+pubmed_22406986,conceptual,none
+pubmed_23314014,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_26148424,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+pubmed_41268985,clinical,missing_biology | parallel_listing_without_integration | mechanistic_absence
+pubmed_41105043,conceptual,missing_social
+pubmed_24261452,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_17371358,conceptual,missing_social
+pubmed_29722923,clinical,tokenistic_bps | vague_definition
+pubmed_35990762,clinical,none
+pubmed_12421777,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_32870949,clinical,tokenistic_bps | vague_definition | missing_biology
+pubmed_26600874,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_22435173,conceptual,tokenistic_bps | vague_definition
+pubmed_23786498,clinical,none
+pubmed_24405725,epidemiological,parallel_listing_without_integration | mechanistic_absence
+pubmed_40624502,conceptual,missing_social
+pubmed_39468650,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_17420400,mixed,parallel_listing_without_integration | mechanistic_absence
+pubmed_39137213,methodological,parallel_listing_without_integration | mechanistic_absence
+pubmed_36791365,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_22550985,mixed,none
+pubmed_19418887,conceptual,none
+pubmed_24966693,conceptual,none
+pubmed_25953594,clinical,none
+pubmed_38754116,conceptual,none
+pubmed_39629040,conceptual,none
+pubmed_38137395,clinical,missing_social | tokenistic_bps | vague_definition
+pubmed_26039013,clinical,none
+pubmed_38132273,clinical,vague_definition | parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_38470686,epidemiological,tokenistic_bps | vague_definition | missing_biology
+pubmed_33396262,methodological,missing_biology
+pubmed_36675454,clinical,tokenistic_bps | parallel_listing_without_integration | mechanistic_absence
+WOS:001116314900001,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_31466408,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_36278735,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_31878346,clinical,tokenistic_bps | vague_definition
+pubmed_39768944,clinical,none
+pubmed_24716562,conceptual,none
+pubmed_32010899,clinical,parallel_listing_without_integration | missing_biology
+pubmed_12720511,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_28359011,clinical,vague_definition | parallel_listing_without_integration | mechanistic_absence
+pubmed_2094850,conceptual,none
+pubmed_17149465,clinical,missing_biology
+pubmed_10711057,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_11858295,clinical,parallel_listing_without_integration | mechanistic_absence | missing_biology
+pubmed_8940956,clinical,none
+pubmed_10635197,conceptual,none
+pubmed_9927896,clinical,tokenistic_bps | vague_definition | missing_biology
+pubmed_34793635,clinical,parallel_listing_without_integration | mechanistic_absence
+pubmed_8842824,methodological,missing_biology

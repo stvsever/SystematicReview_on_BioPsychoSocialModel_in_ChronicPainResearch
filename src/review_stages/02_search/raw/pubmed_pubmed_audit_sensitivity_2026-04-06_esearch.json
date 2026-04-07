@@ -1,0 +1,16 @@
+{
+  "header": {
+    "type": "esearch",
+    "version": "0.3"
+  },
+  "esearchresult": {
+    "count": "3390",
+    "retmax": "0",
+    "retstart": "0",
+    "querykey": "1",
+    "webenv": "MCID_69d41bc643dceb8cd50e39b6",
+    "idlist": [],
+    "translationset": [],
+    "querytranslation": "(\"biopsychosocial\"[Title/Abstract] OR \"bio-psycho-social\"[Title/Abstract] OR \"bio-psycho-social\"[Title/Abstract]) AND \"Review\"[Publication Type] AND 1977/01/01:2026/03/31[Date - Publication]"
+  }
+}

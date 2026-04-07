@@ -1,0 +1,16 @@
+{
+  "header": {
+    "type": "esearch",
+    "version": "0.3"
+  },
+  "esearchresult": {
+    "count": "504",
+    "retmax": "0",
+    "retstart": "0",
+    "querykey": "1",
+    "webenv": "MCID_69d41bbc083ce8bdcd0cde52",
+    "idlist": [],
+    "translationset": [],
+    "querytranslation": "(\"biopsychosocial\"[Title/Abstract] OR \"bio-psycho-social\"[Title/Abstract] OR \"bio-psycho-social\"[Title/Abstract]) AND (\"chronic pain\"[Title/Abstract] OR \"persistent pain\"[Title/Abstract]) AND \"Review\"[Publication Type] AND 1977/01/01:2026/03/31[Date - Publication]"
+  }
+}

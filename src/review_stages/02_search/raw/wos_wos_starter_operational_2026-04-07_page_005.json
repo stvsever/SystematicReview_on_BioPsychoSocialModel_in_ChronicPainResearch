@@ -1,0 +1,3353 @@
+{
+  "metadata": {
+    "total": 2396,
+    "page": 5,
+    "limit": 50
+  },
+  "hits": [
+    {
+      "uid": "WOS:000238764100007",
+      "title": "Obesity in patients with bipolar disorder: A biopsychosocial-behavioral model",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF CLINICAL PSYCHIATRY",
+        "publishYear": 2006,
+        "publishMonth": "JUN",
+        "volume": "67",
+        "issue": "6",
+        "pages": {
+          "range": "904-915",
+          "begin": "904",
+          "end": "915",
+          "count": 14
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Wildes, Jennifer E.",
+            "wosStandard": "Wildes, JE",
+            "researcherId": "DXD-7795-2022"
+          },
+          {
+            "displayName": "Marcus, Marsha D.",
+            "wosStandard": "Marcus, MD",
+            "researcherId": "DGY-4326-2022"
+          },
+          {
+            "displayName": "Fagiolini, Andrea",
+            "wosStandard": "Fagiolini, A",
+            "researcherId": "GFA-7679-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000238764100007&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000238764100007&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000238764100007&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000238764100007&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 74
+        }
+      ],
+      "identifiers": {
+        "doi": "10.4088/JCP.v67n0607",
+        "issn": "0160-6689",
+        "eissn": "1555-2101",
+        "pmid": "16848650"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000239445600001",
+      "title": "Psychotherapy in the life sciences",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "NERVENARZT",
+        "publishYear": 2006,
+        "publishMonth": "JUL",
+        "volume": "77",
+        "issue": "7",
+        "pages": {
+          "range": "775-+",
+          "begin": "775",
+          "end": "+",
+          "count": 6
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Braeutigam, W.",
+            "wosStandard": "Bräutigam, W",
+            "researcherId": "EMG-2241-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000239445600001&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000239445600001&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000239445600001&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 0
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1007/s00115-006-2074-2",
+        "issn": "0028-2804",
+        "pmid": "16596427"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "developmental psychology",
+          "life sciences"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000240143500008",
+      "title": "A review of awareness interventions in brain injury rehabilitation",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "NEUROPSYCHOLOGICAL REHABILITATION",
+        "publishYear": 2006,
+        "publishMonth": "AUG",
+        "volume": "16",
+        "issue": "4",
+        "pages": {
+          "range": "474-500",
+          "begin": "474",
+          "end": "500",
+          "count": 27
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Fleming, J. M.",
+            "wosStandard": "Fleming, JM",
+            "researcherId": "AAH-5108-2020"
+          },
+          {
+            "displayName": "Ownsworth, T.",
+            "wosStandard": "Ownsworth, T",
+            "researcherId": "ABB-6961-2021"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240143500008&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240143500008&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240143500008&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240143500008&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 103
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1080/09602010500505518",
+        "issn": "0960-2011",
+        "eissn": "1464-0694",
+        "pmid": "16864483"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000241933300017",
+      "title": "Psychoeducational treatment for school-aged children with bipolar disorder",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "DEVELOPMENT AND PSYCHOPATHOLOGY",
+        "publishYear": 2006,
+        "publishMonth": "FAL",
+        "volume": "18",
+        "issue": "4",
+        "pages": {
+          "range": "1289-1306",
+          "begin": "1289",
+          "end": "1306",
+          "count": 18
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Fristad, Mary A.",
+            "wosStandard": "Fristad, MA",
+            "researcherId": "E-3088-2011"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241933300017&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241933300017&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241933300017&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241933300017&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 90
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1017/S0954579406060627",
+        "issn": "0954-5794",
+        "eissn": "1469-2198",
+        "pmid": "17064439"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000242534400004",
+      "title": "The education of health practitioners supporting breastfeeding women: time for critical reflection",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "MATERNAL AND CHILD NUTRITION",
+        "publishYear": 2006,
+        "publishMonth": "OCT",
+        "volume": "2",
+        "issue": "4",
+        "pages": {
+          "range": "204-216",
+          "begin": "204",
+          "end": "216",
+          "count": 13
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Dykes, Fiona",
+            "wosStandard": "Dykes, F",
+            "researcherId": "FZR-9351-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242534400004&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242534400004&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242534400004&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242534400004&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 71
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1740-8709.2006.00071.x",
+        "issn": "1740-8695",
+        "eissn": "1740-8709",
+        "pmid": "16999766"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "breastfeeding",
+          "education",
+          "multidisciplinary",
+          "critical reflection"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000241075600010",
+      "title": "Family processes in pediatric asthma",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CURRENT OPINION IN PEDIATRICS",
+        "publishYear": 2006,
+        "publishMonth": "OCT",
+        "volume": "18",
+        "issue": "5",
+        "pages": {
+          "range": "539-544",
+          "begin": "539",
+          "end": "544",
+          "count": 6
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Celano, Marianne F.",
+            "wosStandard": "Celano, MF",
+            "researcherId": "FZQ-2457-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241075600010&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241075600010&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241075600010&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241075600010&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 14
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1097/01.mop.0000245355.60583.74",
+        "issn": "1040-8703",
+        "eissn": "1531-698X",
+        "pmid": "16969169"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "asthma",
+          "family processes",
+          "family therapy",
+          "psychoeducation"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000240404300022",
+      "title": "Early maturation as a risk factor for aggression and delinquency in adolescent girls: a review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "INTERNATIONAL JOURNAL OF CLINICAL PRACTICE",
+        "publishYear": 2006,
+        "publishMonth": "OCT",
+        "volume": "60",
+        "issue": "10",
+        "pages": {
+          "range": "1254-1262",
+          "begin": "1254",
+          "end": "1262",
+          "count": 9
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Celio, M.",
+            "wosStandard": "Celio, M",
+            "researcherId": "CJT-5027-2022"
+          },
+          {
+            "displayName": "Karnik, N. S.",
+            "wosStandard": "Karnik, NS",
+            "researcherId": "FBW-5791-2022"
+          },
+          {
+            "displayName": "Steiner, H.",
+            "wosStandard": "Steiner, H",
+            "researcherId": "MMF-9543-2025"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240404300022&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240404300022&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240404300022&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240404300022&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 28
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1742-1241.2006.00972.x",
+        "issn": "1368-5031",
+        "pmid": "16930146"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "early physical maturation",
+          "females",
+          "girls",
+          "juvenile delinquency",
+          "puberty"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000244875500002",
+      "title": "Clinical pictures and classification of somatoform disorders in dermatology",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "EUROPEAN JOURNAL OF DERMATOLOGY",
+        "publishYear": 2006,
+        "publishMonth": "NOV-DEC",
+        "volume": "16",
+        "issue": "6",
+        "pages": {
+          "range": "607-614",
+          "begin": "607",
+          "end": "614",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Harth, W.",
+            "wosStandard": "Harth, W",
+            "researcherId": "CTG-6771-2022"
+          },
+          {
+            "displayName": "Hermes, B.",
+            "wosStandard": "Hermes, B",
+            "researcherId": "DXE-4031-2022"
+          },
+          {
+            "displayName": "Niemeier, V.",
+            "wosStandard": "Niemeier, V",
+            "researcherId": "DIW-4109-2022"
+          },
+          {
+            "displayName": "Gieler, U.",
+            "wosStandard": "Gieler, U",
+            "researcherId": "CQN-6177-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244875500002&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244875500002&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244875500002&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244875500002&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 14
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1684/ejd.2006.0006",
+        "issn": "1167-1122",
+        "pmid": "17229599"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "somatoform",
+          "itching",
+          "hyperhidrosis",
+          "erythrophobia",
+          "glossodynia",
+          "hypochondria",
+          "body dysmorphic disorder"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000242255100001",
+      "title": "Evidence-based scientific data documenting the treatment and cost-effectiveness of comprehensive pain programs for chronic nonmalignant pain",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF PAIN",
+        "publishYear": 2006,
+        "publishMonth": "NOV",
+        "volume": "7",
+        "issue": "11",
+        "pages": {
+          "range": "779-793",
+          "begin": "779",
+          "end": "793",
+          "count": 15
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Gatchel, Robert J.",
+            "wosStandard": "Gatchel, RJ",
+            "researcherId": "GDI-7819-2022"
+          },
+          {
+            "displayName": "Okifuji, Akiko",
+            "wosStandard": "Okifuji, A",
+            "researcherId": "GGC-8188-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242255100001&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242255100001&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242255100001&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242255100001&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 335
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.jpain.2006.08.005",
+        "issn": "1526-5900",
+        "pmid": "17074616"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "chronic pain",
+          "comprehensive pain programs",
+          "biopsychosocial",
+          "interdisciplinary treatment",
+          "cost-effectiveness",
+          "treatment efficacy"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000241237100008",
+      "title": "Factors contributing to frailty: literature review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF ADVANCED NURSING",
+        "publishYear": 2006,
+        "publishMonth": "NOV",
+        "volume": "56",
+        "issue": "3",
+        "pages": {
+          "range": "282-291",
+          "begin": "282",
+          "end": "291",
+          "count": 10
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Levers, Merry-Jo",
+            "wosStandard": "Levers, MJ",
+            "researcherId": "DBZ-4489-2022"
+          },
+          {
+            "displayName": "Estabrooks, Carole A.",
+            "wosStandard": "Estabrooks, CA",
+            "researcherId": "A-3423-2009"
+          },
+          {
+            "displayName": "Kerr, Janet C. Ross",
+            "wosStandard": "Kerr, JCR",
+            "researcherId": "CZM-7430-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241237100008&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241237100008&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241237100008&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000241237100008&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 160
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1365-2648.2006.04021.x",
+        "issn": "0309-2402",
+        "eissn": "1365-2648",
+        "pmid": "17042807"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "elder care",
+          "frailty",
+          "gerontology",
+          "literature review",
+          "nursing",
+          "older people"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000240824900014",
+      "title": "Incorporating a gender dimension in food allergy research: a review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "ALLERGY",
+        "publishYear": 2006,
+        "publishMonth": "NOV",
+        "volume": "61",
+        "issue": "11",
+        "pages": {
+          "range": "1336-1343",
+          "begin": "1336",
+          "end": "1343",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "DunnGalvin, A.",
+            "wosStandard": "DunnGalvin, A",
+            "researcherId": "G-1741-2012"
+          },
+          {
+            "displayName": "Hourihane, J. O'B.",
+            "wosStandard": "Hourihane, JO",
+            "researcherId": "FCA-9671-2022"
+          },
+          {
+            "displayName": "Frewer, L.",
+            "wosStandard": "Frewer, L",
+            "researcherId": "KGL-3723-2024"
+          },
+          {
+            "displayName": "Knibb, R. C.",
+            "wosStandard": "Knibb, RC",
+            "researcherId": "DXB-5701-2022"
+          },
+          {
+            "displayName": "Elberink, J. N. G. Oude",
+            "wosStandard": "Elberink, JNGO",
+            "researcherId": "ETZ-3665-2022"
+          },
+          {
+            "displayName": "Klinge, I.",
+            "wosStandard": "Klinge, I",
+            "researcherId": "DVE-2656-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240824900014&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240824900014&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240824900014&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000240824900014&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 81
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1398-9995.2006.01181.x",
+        "issn": "0105-4538",
+        "eissn": "1398-9995",
+        "pmid": "17002711"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "biopsychosocial determinants",
+          "food allergy",
+          "gender",
+          "research gaps",
+          "sex"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000242651900004",
+      "title": "Depression research and treatment: Are we skating to where the puck is going to be?",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CLINICAL PSYCHOLOGY REVIEW",
+        "publishYear": 2006,
+        "publishMonth": "DEC",
+        "volume": "26",
+        "issue": "8",
+        "pages": {
+          "range": "985-999",
+          "begin": "985",
+          "end": "999",
+          "count": 15
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Luyten, Patrick",
+            "wosStandard": "Luyten, P",
+            "researcherId": "DDH-8617-2022"
+          },
+          {
+            "displayName": "Blatt, Sidney J.",
+            "wosStandard": "Blatt, SJ",
+            "researcherId": "CGZ-4978-2022"
+          },
+          {
+            "displayName": "Van Houdenhove, Boudewijn",
+            "wosStandard": "Van Houdenhove, B",
+            "researcherId": "GGA-5744-2022"
+          },
+          {
+            "displayName": "Corveleyn, Jozef",
+            "wosStandard": "Corveleyn, J",
+            "researcherId": "NPI-7412-2025"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900004&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900004&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900004&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900004&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 67
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.cpr.2005.12.003",
+        "issn": "0272-7358",
+        "eissn": "1873-7811",
+        "pmid": "16473443"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "depression",
+          "classification",
+          "treatment",
+          "diathesis stress model"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000242651900007",
+      "title": "Growth following adversity: Theoretical perspectives and implications for clinical practice",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CLINICAL PSYCHOLOGY REVIEW",
+        "publishYear": 2006,
+        "publishMonth": "DEC",
+        "volume": "26",
+        "issue": "8",
+        "pages": {
+          "range": "1041-1053",
+          "begin": "1041",
+          "end": "1053",
+          "count": 13
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Joseph, Stephen",
+            "wosStandard": "Joseph, S",
+            "researcherId": "NLN-9601-2025"
+          },
+          {
+            "displayName": "Linley, P. Alex",
+            "wosStandard": "Linley, PA",
+            "researcherId": "FIQ-0878-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900007&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900007&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900007&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000242651900007&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 331
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.cpr.2005.12.006",
+        "issn": "0272-7358",
+        "eissn": "1873-7811",
+        "pmid": "16473442"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "adversarial growth",
+          "posttraumatic growth",
+          "stress-related growth",
+          "perceived benefits",
+          "thriving"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000248118000033",
+      "title": "Psychosocial interventions for erectile dysfunction",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "COCHRANE DATABASE OF SYSTEMATIC REVIEWS",
+        "publishYear": 2007,
+        "issue": "3",
+        "articleNumber": "CD004825",
+        "pages": {
+          "count": 34
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Melnik, T.",
+            "wosStandard": "Melnik, T",
+            "researcherId": "I-4512-2012"
+          },
+          {
+            "displayName": "Soares, B. G. O.",
+            "wosStandard": "Soares, BGO",
+            "researcherId": "FXY-0422-2022"
+          },
+          {
+            "displayName": "Nasselo, A. G.",
+            "wosStandard": "Nasselo, AG",
+            "researcherId": "DHJ-3080-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248118000033&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248118000033&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248118000033&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248118000033&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 28
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1002/14651858.CD004825.pub2",
+        "issn": "1469-493X",
+        "eissn": "1361-6137",
+        "pmid": "17636774"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000249490500021",
+      "title": "Quality of life in children with systemic lupus erythematosus: a review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "LUPUS",
+        "publishYear": 2007,
+        "volume": "16",
+        "issue": "8",
+        "pages": {
+          "range": "663-669",
+          "begin": "663",
+          "end": "669",
+          "count": 7
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Moorthy, L. N.",
+            "wosStandard": "Moorthy, LN",
+            "researcherId": "DJH-9717-2022"
+          },
+          {
+            "displayName": "Peterson, M. G. E.",
+            "wosStandard": "Peterson, MGE",
+            "researcherId": "DLI-5438-2022"
+          },
+          {
+            "displayName": "Harrison, M. J.",
+            "wosStandard": "Harrison, MJ",
+            "researcherId": "CUK-4085-2022"
+          },
+          {
+            "displayName": "Onel, K. B.",
+            "wosStandard": "Onel, KB",
+            "researcherId": "GDY-5555-2022"
+          },
+          {
+            "displayName": "Lehman, T. J. A.",
+            "wosStandard": "Lehman, TJA",
+            "researcherId": "DCF-4019-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249490500021&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249490500021&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249490500021&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249490500021&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 16
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1177/0961203307077539",
+        "issn": "0961-2033",
+        "eissn": "1477-0962",
+        "pmid": "17711905"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "pediatric",
+          "quality of life",
+          "systemic lupus erythematosus"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000247421300007",
+      "title": "Integrative nonpharmacologic behavioral interventions for the management of cancer-related fatigue",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "ONCOLOGIST",
+        "publishYear": 2007,
+        "volume": "12",
+        "supplement": "1",
+        "pages": {
+          "range": "52-67",
+          "begin": "52",
+          "end": "67",
+          "count": 16
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Mustian, Karen M.",
+            "wosStandard": "Mustian, KM",
+            "researcherId": "FNK-6965-2022"
+          },
+          {
+            "displayName": "Morrow, Gary R.",
+            "wosStandard": "Morrow, GR",
+            "researcherId": "FNY-1053-2022"
+          },
+          {
+            "displayName": "Carroll, Jennifer K.",
+            "wosStandard": "Carroll, JK",
+            "researcherId": "EUV-3446-2022"
+          },
+          {
+            "displayName": "Figueroa-Moseley, Colmar D.",
+            "wosStandard": "Figueroa-Moseley, CD",
+            "researcherId": "CWB-0073-2022"
+          },
+          {
+            "displayName": "Jean-Pierre, Pascal",
+            "wosStandard": "Jean-Pierre, P",
+            "researcherId": "DWP-1156-2022"
+          },
+          {
+            "displayName": "Williamse, Geoffrey C.",
+            "wosStandard": "Williamse, GC",
+            "researcherId": "CJO-4603-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247421300007&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247421300007&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247421300007&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247421300007&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 165
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1634/theoncologist.12-S1-52",
+        "issn": "1083-7159",
+        "eissn": "1549-490X",
+        "pmid": "17573456"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "cancer",
+          "fatigue",
+          "behavioral medicine",
+          "exercise",
+          "nutrition"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000246883300005",
+      "title": "Eating disorders: interactions between human nutrition research and food behaviours",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "TRENDS IN FOOD SCIENCE & TECHNOLOGY",
+        "publishYear": 2007,
+        "volume": "18",
+        "issue": "5",
+        "pages": {
+          "range": "281-284",
+          "begin": "281",
+          "end": "284",
+          "count": 4
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Falissard, Bruno",
+            "wosStandard": "Falissard, B",
+            "researcherId": "M-4517-2018"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246883300005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246883300005&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246883300005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246883300005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 3
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.tifs.2007.01.003",
+        "issn": "0924-2244",
+        "eissn": "1879-3053"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000245781600005",
+      "title": "Reviewing suicide in native American communities:: Situating risk and protective factors within a transactional-ecological framework",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "DEATH STUDIES",
+        "publishYear": 2007,
+        "volume": "31",
+        "issue": "5",
+        "pages": {
+          "range": "457-477",
+          "begin": "457",
+          "end": "477",
+          "count": 21
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Alcantara, Carmela",
+            "wosStandard": "Alcántara, C",
+            "researcherId": "JHA-9501-2023"
+          },
+          {
+            "displayName": "Gone, Joseph P.",
+            "wosStandard": "Gone, JP",
+            "researcherId": "AAD-7436-2020"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245781600005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245781600005&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245781600005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245781600005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 77
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1080/07481180701244587",
+        "issn": "0748-1187",
+        "eissn": "1091-7683",
+        "pmid": "17554839"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000213644500015",
+      "title": "Manual therapy for temporomandibular disorders: A review of the literature",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF BODYWORK AND MOVEMENT THERAPIES",
+        "publishYear": 2007,
+        "publishMonth": "JAN",
+        "volume": "11",
+        "issue": "1",
+        "pages": {
+          "range": "84-90",
+          "begin": "84",
+          "end": "90",
+          "count": 7
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Kalamir, Allan",
+            "wosStandard": "Kalamir, A",
+            "researcherId": "FHI-7345-2022"
+          },
+          {
+            "displayName": "Pollard, Henry",
+            "wosStandard": "Pollard, H",
+            "researcherId": "GCL-8483-2022"
+          },
+          {
+            "displayName": "Vitiello, Andrew L.",
+            "wosStandard": "Vitiello, AL",
+            "researcherId": "P-2069-2015"
+          },
+          {
+            "displayName": "Bonello, Rod",
+            "wosStandard": "Bonello, R",
+            "researcherId": "DXD-3145-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213644500015&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213644500015&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213644500015&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213644500015&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 25
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.jbmt.2006.07.003",
+        "issn": "1360-8592",
+        "eissn": "1532-9283"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "Manipulation",
+          "Temporomandibular",
+          "Exercise",
+          "Massage",
+          "Manual therapy",
+          "Chiropractic",
+          "Osteopathy"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000212765000003",
+      "title": "Spiritual and Religious Implications of Aging with HIV: A Conceptual and Methodological Review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF RELIGION SPIRITUALITY & AGING",
+        "publishYear": 2007,
+        "volume": "19",
+        "issue": "3",
+        "pages": {
+          "range": "21-42",
+          "begin": "21",
+          "end": "42",
+          "count": 22
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Vance, David E.",
+            "wosStandard": "Vance, DE",
+            "researcherId": "AAE-6047-2020"
+          },
+          {
+            "displayName": "Struzick, Thomas C.",
+            "wosStandard": "Struzick, TC",
+            "researcherId": "DZY-0917-2022"
+          },
+          {
+            "displayName": "Russell, Toya V.",
+            "wosStandard": "Russell, TV",
+            "researcherId": "FWU-7762-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000212765000003&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000212765000003&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000212765000003&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000212765000003&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 6
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1300/J496v19n03_03",
+        "issn": "1552-8030",
+        "eissn": "1552-8049"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "Successful aging",
+          "HIV/AIDS",
+          "hardiness",
+          "stigma",
+          "spiritual trajectory"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000207810600005",
+      "title": "Cognitive Behavioral Approaches to the Treatment of Pain",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "PSYCHOPHARMACOLOGY BULLETIN",
+        "publishYear": 2007,
+        "volume": "40",
+        "issue": "4",
+        "pages": {
+          "range": "74-88",
+          "begin": "74",
+          "end": "88",
+          "count": 15
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Waters, Sandra J.",
+            "wosStandard": "Waters, SJ",
+            "researcherId": "IVD-4681-2023"
+          },
+          {
+            "displayName": "Mckee, Daphne C.",
+            "wosStandard": "Mckee, DC",
+            "researcherId": "DFF-7702-2022"
+          },
+          {
+            "displayName": "Keefe, Francis J.",
+            "wosStandard": "Keefe, FJ",
+            "researcherId": "DUV-2636-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000207810600005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000207810600005&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000207810600005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000207810600005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 13
+        }
+      ],
+      "identifiers": {
+        "issn": "0048-5764",
+        "pmid": "18227779"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "pain",
+          "persistent pain",
+          "cognitive-behavioral treatment",
+          "biomedical",
+          "biopsychosocial",
+          "protocols",
+          "pain management",
+          "assessment",
+          "internet-based treatments"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000244521900021",
+      "title": "Toward a biopsychosocial understanding of the patient-physician relationship: An emerging dialogue",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF GENERAL INTERNAL MEDICINE",
+        "publishYear": 2007,
+        "publishMonth": "FEB",
+        "volume": "22",
+        "issue": "2",
+        "pages": {
+          "range": "280-285",
+          "begin": "280",
+          "end": "285",
+          "count": 6
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Adler, Herbert M.",
+            "wosStandard": "Adler, HM",
+            "researcherId": "EMQ-8526-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244521900021&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244521900021&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244521900021&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244521900021&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 28
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1007/s11606-006-0037-8",
+        "issn": "0884-8734",
+        "eissn": "1525-1497"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "patient-physician relationship",
+          "biopsychosocial",
+          "interpersonal neurobiology"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000245522000006",
+      "title": "Vienna classification of Crohn's disease:: Helpful or dispensable?: A critical view",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "ZEITSCHRIFT FUR GASTROENTEROLOGIE",
+        "publishYear": 2007,
+        "publishMonth": "MAR",
+        "volume": "45",
+        "issue": "3",
+        "pages": {
+          "range": "265-272",
+          "begin": "265",
+          "end": "272",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Leiss, O.",
+            "wosStandard": "Leiss, O",
+            "researcherId": "DCO-8161-2022"
+          },
+          {
+            "displayName": "Boerner, N.",
+            "wosStandard": "Börner, N",
+            "researcherId": "ELY-7816-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245522000006&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245522000006&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245522000006&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245522000006&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 2
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1055/s-2006-927283",
+        "issn": "0044-2771",
+        "eissn": "1439-7803",
+        "pmid": "17357958"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "Crohn's disease",
+          "Vienna classification",
+          "pathogenesis",
+          "disease progression"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000246871300010",
+      "title": "Psychiatric co-morbidity & diabetes",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "INDIAN JOURNAL OF MEDICAL RESEARCH",
+        "publishYear": 2007,
+        "publishMonth": "MAR",
+        "volume": "125",
+        "issue": "3",
+        "pages": {
+          "range": "311-320",
+          "begin": "311",
+          "end": "320",
+          "count": 10
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Sridhar, G. R.",
+            "wosStandard": "Sridhar, GR",
+            "researcherId": "DXT-1718-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246871300010&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246871300010&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246871300010&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246871300010&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 14
+        }
+      ],
+      "identifiers": {
+        "issn": "0971-5916",
+        "pmid": "17496358"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "antipsychotic drugs",
+          "depression",
+          "diabetes"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000244794600028",
+      "title": "The effects of HCV infection and management on health-related quality of life",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "HEPATOLOGY",
+        "publishYear": 2007,
+        "publishMonth": "MAR",
+        "volume": "45",
+        "issue": "3",
+        "pages": {
+          "range": "806-816",
+          "begin": "806",
+          "end": "816",
+          "count": 11
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Younossi, Zobair",
+            "wosStandard": "Younossi, Z",
+            "researcherId": "JRY-9916-2023"
+          },
+          {
+            "displayName": "Kallman, Jillian",
+            "wosStandard": "Kallman, J",
+            "researcherId": "FEL-7254-2022"
+          },
+          {
+            "displayName": "Kincaid, John",
+            "wosStandard": "Kincaid, J",
+            "researcherId": "GWU-9441-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244794600028&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244794600028&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244794600028&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244794600028&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 151
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1002/hep.21565",
+        "issn": "0270-9139",
+        "eissn": "1527-3350",
+        "pmid": "17326207"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000244885200008",
+      "title": "Psychological risk factors in headache",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "HEADACHE",
+        "publishYear": 2007,
+        "publishMonth": "MAR",
+        "volume": "47",
+        "issue": "3",
+        "pages": {
+          "range": "413-426",
+          "begin": "413",
+          "end": "426",
+          "count": 14
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Nicholson, Robert A.",
+            "wosStandard": "Nicholson, RA",
+            "researcherId": "DWX-8983-2022"
+          },
+          {
+            "displayName": "Houle, Timothy T.",
+            "wosStandard": "Houle, TT",
+            "researcherId": "I-7649-2019"
+          },
+          {
+            "displayName": "Rhudy, Jamie L.",
+            "wosStandard": "Rhudy, JL",
+            "researcherId": "DQA-6975-2022"
+          },
+          {
+            "displayName": "Norton, Peter J.",
+            "wosStandard": "Norton, PJ",
+            "researcherId": "KIG-9645-2024"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244885200008&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244885200008&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244885200008&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244885200008&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 138
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1526-4610.2006.00716.x",
+        "issn": "0017-8748",
+        "eissn": "1526-4610",
+        "pmid": "17371358"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "headache",
+          "self-efficacy",
+          "locus of control",
+          "biopsychosocial",
+          "psychological",
+          "negative affect"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000244677200001",
+      "title": "Central sensitization: a biopsychosocial explanation for chronic widespread pain in patients with fibromyalgia and chronic fatigue syndrome",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CLINICAL RHEUMATOLOGY",
+        "publishYear": 2007,
+        "publishMonth": "APR",
+        "volume": "26",
+        "issue": "4",
+        "pages": {
+          "range": "465-473",
+          "begin": "465",
+          "end": "473",
+          "count": 9
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Meeus, Mira",
+            "wosStandard": "Meeus, M",
+            "researcherId": "AEV-1107-2022"
+          },
+          {
+            "displayName": "Nijs, Jo",
+            "wosStandard": "Nijs, J",
+            "researcherId": "B-3336-2011"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244677200001&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244677200001&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244677200001&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000244677200001&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 415
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1007/s10067-006-0433-9",
+        "issn": "0770-3198",
+        "eissn": "1434-9949",
+        "pmid": "17115100"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "central sensitization",
+          "chronic fatigue syndrome",
+          "chronic pain",
+          "fibromyalgia"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000245570100004",
+      "title": "The impact of neuropathic pain on health-related quality of life - Review and implications",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "NEUROLOGY",
+        "publishYear": 2007,
+        "publishMonth": "APR 10",
+        "volume": "68",
+        "issue": "15",
+        "pages": {
+          "range": "1178-1182",
+          "begin": "1178",
+          "end": "1182",
+          "count": 5
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Jensen, Mark P.",
+            "wosStandard": "Jensen, MP",
+            "researcherId": "DVI-7325-2022"
+          },
+          {
+            "displayName": "Chodroff, Marci J.",
+            "wosStandard": "Chodroff, MJ",
+            "researcherId": "CKY-4050-2022"
+          },
+          {
+            "displayName": "Dworkin, Robert H.",
+            "wosStandard": "Dworkin, RH",
+            "researcherId": "CNH-6261-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245570100004&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245570100004&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245570100004&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245570100004&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 449
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1212/01.wnl.0000259085.61898.9e",
+        "issn": "0028-3878",
+        "eissn": "1526-632X",
+        "pmid": "17420400"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000245835300006",
+      "title": "Developing psychological perspectives of suicidal behaviour and risk in people with a diagnosis of schizophrenia: We know they kill themselves but do we understand why?",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CLINICAL PSYCHOLOGY REVIEW",
+        "publishYear": 2007,
+        "publishMonth": "MAY",
+        "volume": "27",
+        "issue": "4",
+        "pages": {
+          "range": "511-536",
+          "begin": "511",
+          "end": "536",
+          "count": 26
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Bolton, Catherine",
+            "wosStandard": "Bolton, C",
+            "researcherId": "EOB-1973-2022"
+          },
+          {
+            "displayName": "Gooding, Patricia",
+            "wosStandard": "Gooding, P",
+            "researcherId": "P-5599-2015"
+          },
+          {
+            "displayName": "Kapur, Nav",
+            "wosStandard": "Kapur, N",
+            "researcherId": "GAU-1872-2022"
+          },
+          {
+            "displayName": "Barrowclough, Christine",
+            "wosStandard": "Barrowclough, C",
+            "researcherId": "EKL-2009-2022"
+          },
+          {
+            "displayName": "Tarrier, Nicholas",
+            "wosStandard": "Tarrier, N",
+            "researcherId": "DZV-2523-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245835300006&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245835300006&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245835300006&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000245835300006&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 79
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.cpr.2006.12.001",
+        "issn": "0272-7358",
+        "eissn": "1873-7811",
+        "pmid": "17229508"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000208382900005",
+      "title": "Review of the new biologic therapy for the treatment of psoriasis",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "SALUD I CIENCIA",
+        "publishYear": 2007,
+        "publishMonth": "MAY",
+        "volume": "15",
+        "issue": "3",
+        "pages": {
+          "range": "627-634",
+          "begin": "627",
+          "end": "634",
+          "count": 7
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Tutrone, William",
+            "wosStandard": "Tutrone, W",
+            "researcherId": "GJU-8982-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000208382900005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000208382900005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000208382900005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 0
+        }
+      ],
+      "identifiers": {
+        "issn": "1667-8982"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "psoriasis",
+          "biologic",
+          "infliximab",
+          "adalimumab",
+          "etanercept",
+          "efalizumab",
+          "alefacept"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000247204600012",
+      "title": "Models of return to work for musculoskeletal disorders",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF OCCUPATIONAL REHABILITATION",
+        "publishYear": 2007,
+        "publishMonth": "JUN",
+        "volume": "17",
+        "issue": "2",
+        "pages": {
+          "range": "327-352",
+          "begin": "327",
+          "end": "352",
+          "count": 26
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Schultz, Izabela Z.",
+            "wosStandard": "Schultz, IZ",
+            "researcherId": "DQR-9368-2022"
+          },
+          {
+            "displayName": "Stowell, Anna W.",
+            "wosStandard": "Stowell, AW",
+            "researcherId": "CCO-0882-2022"
+          },
+          {
+            "displayName": "Feuerstein, Michael",
+            "wosStandard": "Feuerstein, M",
+            "researcherId": "CPA-4898-2022"
+          },
+          {
+            "displayName": "Gatchel, Robert J.",
+            "wosStandard": "Gatchel, RJ",
+            "researcherId": "GDI-7819-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247204600012&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247204600012&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247204600012&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247204600012&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 174
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1007/s10926-007-9071-6",
+        "issn": "1053-0487",
+        "eissn": "1573-3688",
+        "pmid": "17286211"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "occupational disability",
+          "biomedical",
+          "biopsychosocial",
+          "return-to-work",
+          "disability models"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000246898800008",
+      "title": "Health care for the whole person: Research update",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "PROFESSIONAL PSYCHOLOGY-RESEARCH AND PRACTICE",
+        "publishYear": 2007,
+        "publishMonth": "JUN",
+        "volume": "38",
+        "issue": "3",
+        "pages": {
+          "range": "278-289",
+          "begin": "278",
+          "end": "289",
+          "count": 12
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Kaslow, Nadine J.",
+            "wosStandard": "Kaslow, NJ",
+            "researcherId": "GFE-7657-2022"
+          },
+          {
+            "displayName": "Bollini, Annie M.",
+            "wosStandard": "Bollini, AM",
+            "researcherId": "EPI-1203-2022"
+          },
+          {
+            "displayName": "Druss, Benjamin",
+            "wosStandard": "Druss, B",
+            "researcherId": "ERX-4273-2022"
+          },
+          {
+            "displayName": "Goldfrank, Lewis R.",
+            "wosStandard": "Goldfrank, LR",
+            "researcherId": "FZC-5728-2022"
+          },
+          {
+            "displayName": "La Greca, Annette Marie",
+            "wosStandard": "La Greca, AM",
+            "researcherId": "DAF-1999-2022"
+          },
+          {
+            "displayName": "Wang, Samuel S. -H.",
+            "wosStandard": "Wang, SSH",
+            "researcherId": "EGW-4481-2022"
+          },
+          {
+            "displayName": "Glueckauf, Robert L.",
+            "wosStandard": "Glueckauf, RL",
+            "researcherId": "CRB-6265-2022"
+          },
+          {
+            "displayName": "Kelleher, Kelly J.",
+            "wosStandard": "Kelleher, KJ",
+            "researcherId": "E-3361-2011"
+          },
+          {
+            "displayName": "Varela, R. Enrique",
+            "wosStandard": "Varela, RE",
+            "researcherId": "CDP-6094-2022"
+          },
+          {
+            "displayName": "Weinreb, Linda",
+            "wosStandard": "Weinreb, L",
+            "researcherId": "GIA-6359-2022"
+          },
+          {
+            "displayName": "Zeltzer, Lonnie",
+            "wosStandard": "Zeltzer, L",
+            "researcherId": "GDJ-9676-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246898800008&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246898800008&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246898800008&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000246898800008&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 24
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1037/0735-7028.38.3.278",
+        "issn": "0735-7028",
+        "eissn": "1939-1323"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "biopsychosocial",
+          "culture",
+          "evidence-based practice",
+          "intervention"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000247227600027",
+      "title": "Schizophrenia and suicide: A 10-year review of Kentucky Medical Examiner cases",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF FORENSIC SCIENCES",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "52",
+        "issue": "4",
+        "pages": {
+          "range": "930-937",
+          "begin": "930",
+          "end": "937",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Shields, Lisa B. E.",
+            "wosStandard": "Shields, LBE",
+            "researcherId": "DRO-4329-2022"
+          },
+          {
+            "displayName": "Hunsaker, Donna M.",
+            "wosStandard": "Hunsaker, DM",
+            "researcherId": "CVZ-5199-2022"
+          },
+          {
+            "displayName": "Hunsaker, John C., III",
+            "wosStandard": "Hunsaker, JC",
+            "researcherId": "EZU-2928-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247227600027&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247227600027&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247227600027&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247227600027&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 16
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1556-4029.2007.00485.x",
+        "issn": "0022-1198",
+        "eissn": "1556-4029",
+        "pmid": "17553080"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "forensic science",
+          "forensic pathology",
+          "suicide",
+          "schizophrenia",
+          "firearms"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000248303300003",
+      "title": "Tobacco smoking within psychiatric inpatient settings: a biopsychosocial perspective",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "AUSTRALIAN AND NEW ZEALAND JOURNAL OF PSYCHIATRY",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "41",
+        "issue": "7",
+        "pages": {
+          "range": "572-580",
+          "begin": "572",
+          "end": "580",
+          "count": 9
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Olivier, David",
+            "wosStandard": "Olivier, D",
+            "researcherId": "GCE-2104-2022"
+          },
+          {
+            "displayName": "Lubman, Dan I.",
+            "wosStandard": "Lubman, DI",
+            "researcherId": "DZC-0278-2022"
+          },
+          {
+            "displayName": "Fraser, Richard",
+            "wosStandard": "Fraser, R",
+            "researcherId": "HUD-1300-2023"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248303300003&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248303300003&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248303300003&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248303300003&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 65
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1080/00048670701392809",
+        "issn": "0004-8674",
+        "eissn": "1440-1614",
+        "pmid": "17558619"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "inpatients",
+          "nicotine",
+          "psychiatry",
+          "smoking",
+          "tobacco use"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000248051000002",
+      "title": "Subclassification of low back pain: a cross-country comparison",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "EUROPEAN SPINE JOURNAL",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "16",
+        "issue": "7",
+        "pages": {
+          "range": "865-879",
+          "begin": "865",
+          "end": "879",
+          "count": 15
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Billis, Evdokia V.",
+            "wosStandard": "Billis, EV",
+            "researcherId": "FZJ-1519-2022"
+          },
+          {
+            "displayName": "McCarthy, Christopher J.",
+            "wosStandard": "McCarthy, CJ",
+            "researcherId": "ABG-1791-2021"
+          },
+          {
+            "displayName": "Oldham, Jacqueline A.",
+            "wosStandard": "Oldham, JA",
+            "researcherId": "G-7469-2012"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248051000002&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248051000002&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248051000002&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248051000002&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 55
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1007/s00586-007-0313-2",
+        "issn": "0940-6719",
+        "eissn": "1432-0932",
+        "pmid": "17576604"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "classification",
+          "low back pain",
+          "cross-country comparison",
+          "cross-cultural",
+          "culture"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000247752200002",
+      "title": "The biopsychosocial approach to chronic pain: Scientific advances and future directions",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "PSYCHOLOGICAL BULLETIN",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "133",
+        "issue": "4",
+        "pages": {
+          "range": "581-624",
+          "begin": "581",
+          "end": "624",
+          "count": 44
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Gatchel, Robert J.",
+            "wosStandard": "Gatchel, RJ",
+            "researcherId": "GDI-7819-2022"
+          },
+          {
+            "displayName": "Peng, Yuan Bo",
+            "wosStandard": "Peng, YB",
+            "researcherId": "KBV-5391-2024"
+          },
+          {
+            "displayName": "Peters, Madelon L.",
+            "wosStandard": "Peters, ML",
+            "researcherId": "GCH-6959-2022"
+          },
+          {
+            "displayName": "Fuchs, Perry N.",
+            "wosStandard": "Fuchs, PN",
+            "researcherId": "FYL-8927-2022"
+          },
+          {
+            "displayName": "Turk, Dennis C.",
+            "wosStandard": "Turk, DC",
+            "researcherId": "ECT-1869-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247752200002&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247752200002&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247752200002&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247752200002&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 2289
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1037/0033-2909.133.4.581",
+        "issn": "0033-2909",
+        "eissn": "1939-1455",
+        "pmid": "17592957"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "biopsychosocial",
+          "chronic pain",
+          "neuroscience of pain",
+          "pain and cognition",
+          "pain and emotion"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000247223800009",
+      "title": "The psychosocial aspects of a return to sport following serious injury: A review of the literature from a self-determination perspective",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "PSYCHOLOGY OF SPORT AND EXERCISE",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "8",
+        "issue": "4",
+        "pages": {
+          "range": "535-566",
+          "begin": "535",
+          "end": "566",
+          "count": 32
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Podlog, Leslie",
+            "wosStandard": "Podlog, L",
+            "researcherId": "GBX-0936-2022"
+          },
+          {
+            "displayName": "Eklund, Robert C.",
+            "wosStandard": "Eklund, RC",
+            "researcherId": "NKQ-5094-2025"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247223800009&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247223800009&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247223800009&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000247223800009&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 116
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.psychsport.2006.07.008",
+        "issn": "1469-0292",
+        "eissn": "1878-5476"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "injury",
+          "return-to-sport",
+          "elite athlete",
+          "self-determination theory"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000446633500005",
+      "title": "The Dialectic of Tradition and Progress in Osteoarthritis Management",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "AMERICAN JOURNAL OF LIFESTYLE MEDICINE",
+        "publishYear": 2007,
+        "publishMonth": "JUL-AUG",
+        "volume": "1",
+        "issue": "4",
+        "pages": {
+          "range": "267-270",
+          "begin": "267",
+          "end": "270",
+          "count": 4
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Terre, Lisa",
+            "wosStandard": "Terre, L",
+            "researcherId": "GHN-3377-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000446633500005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000446633500005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000446633500005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 0
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1177/1559827607301806",
+        "issn": "1559-8276",
+        "eissn": "1559-8284"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "lifestyle",
+          "osteoarthritis",
+          "nonpharmacologic management"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000213648100002",
+      "title": "TMD and the problem of bruxism. A review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF BODYWORK AND MOVEMENT THERAPIES",
+        "publishYear": 2007,
+        "publishMonth": "JUL",
+        "volume": "11",
+        "issue": "3",
+        "pages": {
+          "range": "183-193",
+          "begin": "183",
+          "end": "193",
+          "count": 11
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Kalamir, Allan",
+            "wosStandard": "Kalamir, A",
+            "researcherId": "FHI-7345-2022"
+          },
+          {
+            "displayName": "Pollard, Henry",
+            "wosStandard": "Pollard, H",
+            "researcherId": "GCL-8483-2022"
+          },
+          {
+            "displayName": "Vitiello, Andrew L.",
+            "wosStandard": "Vitiello, AL",
+            "researcherId": "P-2069-2015"
+          },
+          {
+            "displayName": "Bonello, Rod",
+            "wosStandard": "Bonello, R",
+            "researcherId": "DXD-3145-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213648100002&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213648100002&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213648100002&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000213648100002&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 17
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.jbmt.2006.11.006",
+        "issn": "1360-8592",
+        "eissn": "1532-9283"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "Temporomandibular",
+          "Bruxism",
+          "Biopsychosocial",
+          "Thegosis",
+          "Grinding",
+          "Clenching",
+          "Parafunction"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000249235000001",
+      "title": "Health promotion and counselling for peri and postmenopausal women",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "GEBURTSHILFE UND FRAUENHEILKUNDE",
+        "publishYear": 2007,
+        "publishMonth": "AUG",
+        "volume": "67",
+        "issue": "8",
+        "pages": {
+          "range": "817-822",
+          "begin": "817",
+          "end": "822",
+          "count": 6
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Bitzer, J.",
+            "wosStandard": "Bitzer, J",
+            "researcherId": "CGQ-2323-2022"
+          },
+          {
+            "displayName": "Alder, J.",
+            "wosStandard": "Alder, J",
+            "researcherId": "CCH-7061-2022"
+          },
+          {
+            "displayName": "Tschudin, S.",
+            "wosStandard": "Tschudin, S",
+            "researcherId": "EAZ-7400-2022"
+          },
+          {
+            "displayName": "Holzgreve, W.",
+            "wosStandard": "Holzgreve, W",
+            "researcherId": "EZY-0472-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249235000001&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249235000001&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249235000001&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 0
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1055/s-2007-965241",
+        "issn": "0016-5751",
+        "eissn": "1438-8804"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "menopausal transition",
+          "biopsychosocial model",
+          "patient centered communication",
+          "risk counselling",
+          "shared decision making"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000248751800001",
+      "title": "Psychological implications of Graves' orbitopathy",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "EUROPEAN JOURNAL OF ENDOCRINOLOGY",
+        "publishYear": 2007,
+        "publishMonth": "AUG",
+        "volume": "157",
+        "issue": "2",
+        "pages": {
+          "range": "127-131",
+          "begin": "127",
+          "end": "131",
+          "count": 5
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Coulter, I.",
+            "wosStandard": "Coulter, I",
+            "researcherId": "AAV-8522-2021"
+          },
+          {
+            "displayName": "Frewin, S.",
+            "wosStandard": "Frewin, S",
+            "researcherId": "CPR-7800-2022"
+          },
+          {
+            "displayName": "Krassas, G. E.",
+            "wosStandard": "Krassas, GE",
+            "researcherId": "AAJ-3263-2020"
+          },
+          {
+            "displayName": "Perros, P.",
+            "wosStandard": "Perros, P",
+            "researcherId": "AGH-1737-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248751800001&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248751800001&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248751800001&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000248751800001&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 84
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1530/EJE-07-0205",
+        "issn": "0804-4643",
+        "eissn": "1479-683X",
+        "pmid": "17656589"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000249881000007",
+      "title": "An interactive model of pain and myocardial ischemia",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "PSYCHOSOMATIC MEDICINE",
+        "publishYear": 2007,
+        "publishMonth": "SEP",
+        "volume": "69",
+        "issue": "7",
+        "pages": {
+          "range": "632-639",
+          "begin": "632",
+          "end": "639",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Hofkamp, Susan E.",
+            "wosStandard": "Hofkamp, SE",
+            "researcherId": "CTR-7926-2022"
+          },
+          {
+            "displayName": "Henrikson, Charles A.",
+            "wosStandard": "Henrikson, CA",
+            "researcherId": "CVQ-9574-2022"
+          },
+          {
+            "displayName": "Wegener, Stephen T.",
+            "wosStandard": "Wegener, ST",
+            "researcherId": "GKY-4273-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249881000007&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249881000007&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249881000007&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249881000007&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 6
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1097/PSY.0b013e318151a4bd",
+        "issn": "0033-3174",
+        "eissn": "1534-7796",
+        "pmid": "17766689"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "angina",
+          "pain",
+          "biopsychosocial",
+          "silent ischemia"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000249889500003",
+      "title": "Eating competence: Definition and evidence for the satter eating competence model",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF NUTRITION EDUCATION AND BEHAVIOR",
+        "publishYear": 2007,
+        "publishMonth": "SEP-OCT",
+        "volume": "39",
+        "issue": "5",
+        "supplement": "S",
+        "pages": {
+          "range": "S142-S153",
+          "begin": "S142",
+          "end": "S153",
+          "count": 12
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Satter, Ellyn",
+            "wosStandard": "Satter, E",
+            "researcherId": "DYY-5215-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249889500003&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249889500003&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249889500003&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249889500003&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 160
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.jneb.2007.01.006",
+        "issn": "1499-4046",
+        "eissn": "1878-2620",
+        "pmid": "17826695"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "eating competence",
+          "food",
+          "nutrition",
+          "attitudes",
+          "behavior",
+          "food acceptance",
+          "energy regulation",
+          "meat management",
+          "food management",
+          "adult",
+          "adolescent"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000249209100014",
+      "title": "Psychosomatic medicine: The scientific foundation of the biopsychosocial model",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "ACADEMIC PSYCHIATRY",
+        "publishYear": 2007,
+        "publishMonth": "SEP-OCT",
+        "volume": "31",
+        "issue": "5",
+        "pages": {
+          "range": "388-401",
+          "begin": "388",
+          "end": "401",
+          "count": 14
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Novack, Dennis H.",
+            "wosStandard": "Novack, DH",
+            "researcherId": "FSM-5278-2022"
+          },
+          {
+            "displayName": "Cameron, Oliver",
+            "wosStandard": "Cameron, O",
+            "researcherId": "EOR-5890-2022"
+          },
+          {
+            "displayName": "Epel, Elissa",
+            "wosStandard": "Epel, E",
+            "researcherId": "ABI-6703-2022"
+          },
+          {
+            "displayName": "Ader, Robert",
+            "wosStandard": "Ader, R",
+            "researcherId": "MPW-0792-2025"
+          },
+          {
+            "displayName": "Waldstein, Shari R.",
+            "wosStandard": "Waldstein, SR",
+            "researcherId": "EEV-3751-2022"
+          },
+          {
+            "displayName": "Levenstein, Susan",
+            "wosStandard": "Levenstein, S",
+            "researcherId": "HPG-4874-2023"
+          },
+          {
+            "displayName": "Antoni, Michael H.",
+            "wosStandard": "Antoni, MH",
+            "researcherId": "DVS-0033-2022"
+          },
+          {
+            "displayName": "Wainer, Alicia Rojas",
+            "wosStandard": "Wainer, AR",
+            "researcherId": "EED-6271-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249209100014&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249209100014&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249209100014&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249209100014&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 49
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1176/appi.ap.31.5.388",
+        "issn": "1042-9670",
+        "eissn": "1545-7230",
+        "pmid": "17875624"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000218340800003",
+      "title": "Sleep Behavior and Sleep Regulation from Infancy through Adolescence: Normative Aspects",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "SLEEP MEDICINE CLINICS",
+        "publishYear": 2007,
+        "publishMonth": "SEP",
+        "volume": "2",
+        "issue": "3",
+        "pages": {
+          "range": "321-+",
+          "begin": "321",
+          "end": "+",
+          "count": 10
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Jenni, Oskar G.",
+            "wosStandard": "Jenni, OG",
+            "researcherId": "AAG-4391-2019"
+          },
+          {
+            "displayName": "Carskadon, Mary A.",
+            "wosStandard": "Carskadon, MA",
+            "researcherId": "FZP-4862-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000218340800003&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000218340800003&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000218340800003&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000218340800003&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 73
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.jsmc.2007.05.001",
+        "issn": "1556-407X",
+        "eissn": "1556-4088"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000249938400010",
+      "title": "Recurrent abdominal pain and irritable bowel syndrome in children",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "CURRENT OPINION IN PEDIATRICS",
+        "publishYear": 2007,
+        "publishMonth": "OCT",
+        "volume": "19",
+        "issue": "5",
+        "pages": {
+          "range": "581-585",
+          "begin": "581",
+          "end": "585",
+          "count": 5
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "McOmber, Mark E.",
+            "wosStandard": "McOmber, ME",
+            "researcherId": "FLO-0685-2022"
+          },
+          {
+            "displayName": "Shulman, Robert J.",
+            "wosStandard": "Shulman, RJ",
+            "researcherId": "DQR-7453-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249938400010&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249938400010&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249938400010&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249938400010&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 14
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1097/MOP.0b013e3282bf6ddc",
+        "issn": "1040-8703",
+        "eissn": "1531-698X",
+        "pmid": "17885479"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "functional abdominal pain",
+          "irritable bowel syndrome",
+          "recurrent abdominal pain"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000250787600009",
+      "title": "Biopsychosocial effects of <i>Qigong</i> as a mindful exercise for people with anxiety disorders:: A speculative review",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "JOURNAL OF ALTERNATIVE AND COMPLEMENTARY MEDICINE",
+        "publishYear": 2007,
+        "publishMonth": "OCT",
+        "volume": "13",
+        "issue": "8",
+        "pages": {
+          "range": "831-839",
+          "begin": "831",
+          "end": "839",
+          "count": 9
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Chow, Yvonne W. Y.",
+            "wosStandard": "Chow, YWY",
+            "researcherId": "EOX-9283-2022"
+          },
+          {
+            "displayName": "Tsang, Hector W. H.",
+            "wosStandard": "Tsang, HWH",
+            "researcherId": "GDD-5255-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000250787600009&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000250787600009&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000250787600009&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000250787600009&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 49
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1089/acm.2007.7166",
+        "issn": "1075-5535",
+        "eissn": "1557-7708",
+        "pmid": "17983339"
+      },
+      "keywords": {
+        "authorKeywords": []
+      }
+    },
+    {
+      "uid": "WOS:000249986800005",
+      "title": "Marital quality and the marital bed: Examining the covariation between relationship quality and sleep",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "SLEEP MEDICINE REVIEWS",
+        "publishYear": 2007,
+        "publishMonth": "OCT",
+        "volume": "11",
+        "issue": "5",
+        "pages": {
+          "range": "389-404",
+          "begin": "389",
+          "end": "404",
+          "count": 16
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Troxel, Wendy M.",
+            "wosStandard": "Troxel, WM",
+            "researcherId": "GFM-9736-2022"
+          },
+          {
+            "displayName": "Robles, Theodore F.",
+            "wosStandard": "Robles, TF",
+            "researcherId": "MZS-2465-2025"
+          },
+          {
+            "displayName": "Hall, Martica",
+            "wosStandard": "Hall, M",
+            "researcherId": "D-2809-2012"
+          },
+          {
+            "displayName": "Buysse, Daniel J.",
+            "wosStandard": "Buysse, DJ",
+            "researcherId": "AAJ-1608-2021"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249986800005&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249986800005&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249986800005&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249986800005&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 259
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1016/j.smrv.2007.05.002",
+        "issn": "1087-0792",
+        "eissn": "1532-2955",
+        "pmid": "17854738"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "marital quality",
+          "close relationships",
+          "sleep",
+          "sleep disorders"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000249418600004",
+      "title": "A biopsychosocial approach to examining tobacco-related health disparities among racially classified social groups",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "ADDICTION",
+        "publishYear": 2007,
+        "publishMonth": "OCT",
+        "volume": "102",
+        "supplement": "2",
+        "pages": {
+          "range": "43-57",
+          "begin": "43",
+          "end": "57",
+          "count": 15
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Fernander, Anita F.",
+            "wosStandard": "Fernander, AF",
+            "researcherId": "CQF-5219-2022"
+          },
+          {
+            "displayName": "Shavers, Vickie L.",
+            "wosStandard": "Shavers, VL",
+            "researcherId": "FZK-3167-2022"
+          },
+          {
+            "displayName": "Hammons, George J.",
+            "wosStandard": "Hammons, GJ",
+            "researcherId": "FBB-1591-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249418600004&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249418600004&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249418600004&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000249418600004&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 22
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1111/j.1360-0443.2007.01954.x",
+        "issn": "0965-2140",
+        "eissn": "1360-0443",
+        "pmid": "17850613"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "biopsychosocial",
+          "health disparities",
+          "racially classified social groups",
+          "tobacco"
+        ]
+      }
+    },
+    {
+      "uid": "WOS:000252118100002",
+      "title": "E uno plurus: Psychoanalytic psychotherapy in the age of pluralism",
+      "types": [
+        "Review"
+      ],
+      "sourceTypes": [
+        "Review"
+      ],
+      "source": {
+        "sourceTitle": "HARVARD REVIEW OF PSYCHIATRY",
+        "publishYear": 2007,
+        "publishMonth": "NOV-DEC",
+        "volume": "15",
+        "issue": "6",
+        "pages": {
+          "range": "270-277",
+          "begin": "270",
+          "end": "277",
+          "count": 8
+        }
+      },
+      "names": {
+        "authors": [
+          {
+            "displayName": "Frosch, James Peter",
+            "wosStandard": "Frosch, JP",
+            "researcherId": "EXU-9510-2022"
+          }
+        ]
+      },
+      "links": {
+        "record": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000252118100002&DestLinkType=FullRecord&DestApp=WOS_CPL",
+        "citingArticles": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000252118100002&DestLinkType=CitingArticles&DestApp=WOS_CPL",
+        "references": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000252118100002&DestLinkType=CitedReferences&DestApp=WOS",
+        "related": "https://www.webofscience.com/api/gateway?GWVersion=2&SrcApp=systematic-review-bps-cpr-ugent&SrcAuth=WosAPI&KeyUT=WOS:000252118100002&DestLinkType=RelatedRecords&DestApp=WOS_CPL"
+      },
+      "citations": [
+        {
+          "db": "WOS",
+          "count": 3
+        }
+      ],
+      "identifiers": {
+        "doi": "10.1080/10673220701803859",
+        "issn": "1067-3229",
+        "eissn": "1465-7309",
+        "pmid": "18097837"
+      },
+      "keywords": {
+        "authorKeywords": [
+          "pluralism",
+          "psychoanalysis",
+          "psychotherapy"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+stage1_decision,stage1_reason,n
+exclude,animal/non-human focus,1791
+exclude,no biopsychosocial term in title/abstract,849
+exclude,chronic pain focus unclear,557
+exclude,commentary/editorial/letter,552
+exclude,protocol,123
+exclude,pediatric-only focus,90
+exclude,non-English record,20
+exclude,acute pain focus,4
+include,,111
+unclear,review status unclear,8

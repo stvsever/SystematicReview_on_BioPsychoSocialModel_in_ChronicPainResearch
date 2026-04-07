@@ -1,0 +1,25 @@
+paths:
+  raw_pubmed: "data/raw/pubmed"
+  raw_psycinfo: "data/raw/psycinfo"
+  raw_wos: "data/raw/wos"
+  raw_supplementary: "data/raw/supplementary"
+  interim_search: "data/interim/search"
+  interim_screening: "data/interim/screening"
+  interim_extraction: "data/interim/extraction"
+  processed_tables: "data/processed/tables"
+  processed_figures: "data/processed/figures"
+  processed_manuscript: "data/processed/manuscript"
+  audit_trail: "artifacts/audit_trail"
+llm:
+  provider: "openrouter"
+  default_model: "google/gemini-2.0-flash-001"
+  use_for_stage1: false
+  use_for_stage2: true
+  use_for_stage3: true
+  strategy: "structured-llm-first with deterministic metadata fields and archived batch outputs"
+semantic:
+  strategy: "llm-informed ontology-aligned transformer embeddings with benchmark-relative reporting"
+  axes:
+    - "biological"
+    - "psychological"
+    - "social"

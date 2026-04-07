@@ -1,0 +1,25 @@
+{
+  "summary": {
+    "combined_records": 6268,
+    "deduplicated_records": 4105,
+    "duplicates_removed": 2163,
+    "included_records": 111,
+    "excluded_records": 3986,
+    "unclear_records": 8,
+    "stage2_records": 111,
+    "stage3_candidates": 92,
+    "stage3_pmc_open_fulltexts": 29,
+    "stage3_manual_retrieval_required": 63,
+    "semantic_records": 111
+  },
+  "database_counts": [
+    {
+      "database": "PubMed",
+      "n": 3874
+    },
+    {
+      "database": "Web of Science",
+      "n": 2394
+    }
+  ]
+}

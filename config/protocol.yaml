@@ -1,0 +1,78 @@
+project:
+  title: "How the Biopsychosocial Model Frames Chronic Pain Research"
+  short_name: "HTBMFCPR"
+  doi: "10.17605/OSF.IO/T4FAM"
+  osf_registration_url: "https://osf.io/t4fam"
+  osf_project_url: "https://osf.io/dwvru"
+  start_date: "2025-11-11"
+  end_date: "2026-07-01"
+  funding: "Research Foundation Flanders (FWO), Project G075525N"
+
+review:
+  title: "How the Biopsychosocial Model Frames Chronic Pain Research"
+  registration_doi: "10.17605/OSF.IO/T4FAM"
+  type: "Systematic review with mixed-method synthesis (quantitative descriptive + qualitative framework synthesis), incorporating concept mapping."
+  current_stage_registered: "Formal screening started; data extraction and synthesis not yet begun."
+  primary_research_questions:
+    - "How is the BPS model operationalized in reviews of chronic pain?"
+    - "What is the scope, balance, and integration of biological, psychological, and social factors in musculoskeletal pain reviews?"
+    - "Which psychological concepts and theoretical frameworks are used in chronic pain literature?"
+  secondary_research_questions:
+    - "What conceptual problems (e.g., vague definitions) are identified in reviews using the BPS model?"
+  hypotheses:
+    - "Many reviews will use the BPS model as a rhetorical or organizing device rather than as an integrative explanatory framework."
+    - "True mechanistic integration of biological, psychological, and social factors will be rare."
+    - "Psychological factors will dominate coverage, while biological and social domains will often be minimal or absent."
+    - "Integration statements will typically lack mechanistic detail."
+    - "Conceptual clarity issues will be common, especially for psychological concepts."
+
+eligibility:
+  inclusion:
+    - "Adult population (>= 18 years)"
+    - "Chronic pain (> 3 months)"
+    - "Review article"
+    - "Mentions biopsychosocial or spelling variants in title or abstract"
+    - "English language"
+    - "Publication date between 1977-01-01 and 2026-03-31"
+  exclusion:
+    - "Primary study"
+    - "Protocol"
+    - "Commentary, editorial, letter, or conference abstract"
+    - "Book or book chapter"
+    - "Pediatric-only population"
+    - "Acute pain only"
+    - "Animal study"
+    - "Grey literature"
+
+search:
+  databases:
+    - "Web of Science Core Collection"
+    - "PsycINFO (via EBSCOhost)"
+    - "MEDLINE (via PubMed)"
+  direct_scriptable_sources:
+    - "MEDLINE (via PubMed)"
+  manual_import_sources:
+    - "Web of Science Core Collection"
+    - "PsycINFO (via EBSCOhost)"
+  registered_date_window:
+    start: "1977-01-01"
+    end: "2025-11-30"
+  operational_date_window:
+    start: "1977-01-01"
+    end: "2026-03-31"
+  deviation_rationale: "User-directed update to include records indexed through March 31, 2026 while retaining the OSF-registered 1977 to November 2025 window as the registered baseline."
+
+software:
+  primary_pipeline: "Python 3"
+  optional_analysis: "R 4.3+"
+  manuscript: "Tectonic"
+  screening_platform_registered: "Rayyan"
+  qualitative_tools_registered:
+    - "MAXQDA"
+    - "MIRO"
+
+ai_use:
+  allowed_registered:
+    - "Stage 2 objective classification support"
+    - "Stage 3 concept classification or ontology mapping support"
+  rule: "LLM assistance must be logged and remain distinguishable from final adjudicated decisions."

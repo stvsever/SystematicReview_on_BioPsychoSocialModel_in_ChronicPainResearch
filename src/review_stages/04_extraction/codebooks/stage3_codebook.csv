@@ -1,0 +1,18 @@
+field,stage,description,allowed_values
+record_id,stage3,Internal unique record identifier,free_text
+full_text_available,stage3,Whether full text was available for coding,"yes; no"
+musculoskeletal_focus_confirmed,stage3,Whether musculoskeletal chronic pain focus is confirmed in full text,"yes; no; partial"
+bio_coverage,stage3,Depth of biological coverage,"elaborated; mentioned; minimal; absent"
+psych_coverage,stage3,Depth of psychological coverage,"elaborated; mentioned; minimal; absent"
+social_coverage,stage3,Depth of social coverage,"elaborated; mentioned; minimal; absent"
+bio_psych_integration,stage3,Bio-psych integration quality,"mechanistic; directional; descriptive; none"
+psych_social_integration,stage3,Psych-social integration quality,"mechanistic; directional; descriptive; none"
+bio_social_integration,stage3,Bio-social integration quality,"mechanistic; directional; descriptive; none"
+triadic_integration,stage3,Three-domain integration quality,"mechanistic; descriptive; partial; none"
+psychological_concepts,stage3,List of psychological constructs extracted,pipe_delimited_text
+definitions_provided,stage3,Whether concept definitions are provided,"yes; no; partial"
+theoretical_frameworks,stage3,Theoretical frameworks named,pipe_delimited_text
+balance_assessment,stage3,Relative domain emphasis,"balanced; psych-dominant; bio-dominant; social-dominant; dyadic; unclear"
+bps_typology,stage3,Overall BPS operationalization type,"true integrative BPS; multifactorial; pseudo-BPS; narrow despite BPS label; unclear"
+conceptual_problems,stage3,Conceptual problems identified,pipe_delimited_text
+coder_notes,stage3,Free-text interpretive notes,free_text
