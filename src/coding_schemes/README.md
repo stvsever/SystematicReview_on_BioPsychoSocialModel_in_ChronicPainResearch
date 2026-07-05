@@ -1,63 +1,75 @@
 # Coding Scheme Dossiers
 
-This directory contains a communication-ready dossier for each distinct coding scheme identified in the systematic review workflow, plus a compiled PDF for direct sharing.
+> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.
+
+This directory contains one communication-ready dossier for each distinct coding scheme in the systematic review workflow. Every scheme is provided in three synchronized surfaces:
+
+- an **interactive HTML** evaluation surface with per-section feedback boxes and JSON export or import,
+- a compiled **PDF** for sharing and printing,
+- an explanatory **README**.
+
+Open [`index.html`](index.html) for the aggregated dashboard: a pipeline map, links to every scheme, and a console that merges exported feedback files into one consolidated view.
+
+## Why these schemes are circulated now
+
+The current manuscript is a **test run** built with an earlier, coarser generation of these schemes. This release raises their semantic quality and resolution (operational anchors for every value, positive and negative indicators, explicit boundary rules, worked examples from the real corpus, and clearly labelled proposed refinements). Nothing here has been applied to a final corpus yet. The schemes are being circulated for expert evaluation first; the pipeline will be re-run only after sign-off.
 
 ## Inventory
 
-1. `scheme_1`
-   - Topic: Stage 1 screening and eligibility decision scheme
-   - Files: `scheme_1/scheme_1.tex`, `scheme_1/scheme_1.pdf`
-   - Main source paths:
-     - `src/protocol/decision_rules/screening_rules.md`
-     - `src/bps_review/screening/rules.py`
-     - `src/review_stages/03_screening/README.md`
+### Scheme 1: Stage 1 Screening and Eligibility Decision Scheme
 
-2. `scheme_2`
-   - Topic: Stage 2 abstract-level structured coding scheme
-   - Files: `scheme_2/scheme_2.tex`, `scheme_2/scheme_2.pdf`
-   - Main source paths:
-     - `src/protocol/codebooks/stage2_codebook.md`
-     - `src/review_stages/04_extraction/codebooks/stage2_codebook.csv`
-     - `src/bps_review/extraction/stage2.py`
-     - `src/bps_review/extraction/llm_stage2.py`
-     - `src/review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
+- **Stage:** Stage 1
+- **Purpose:** This scheme operationalizes title and abstract screening after search and deduplication. Its function is to decide whether a record enters the review corpus for downstream coding, using a human-validatable rule set centred on biopsychosocial language, chronic pain relevance, review design, and population eligibility.
+- **Files:** [`scheme_1/scheme_1.html`](scheme_1/scheme_1.html), [`scheme_1/scheme_1.pdf`](scheme_1/scheme_1.pdf), [`scheme_1/README.md`](scheme_1/README.md)
 
-3. `scheme_3`
-   - Topic: Stage 3 full-text deep coding scheme
-   - Files: `scheme_3/scheme_3.tex`, `scheme_3/scheme_3.pdf`
-   - Main source paths:
-     - `src/protocol/codebooks/stage3_codebook.md`
-     - `src/review_stages/04_extraction/codebooks/stage3_codebook.csv`
-     - `src/bps_review/extraction/stage3_prep.py`
-     - `src/review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
+### Scheme 2: Stage 2 Abstract-Level Structured Coding Scheme
 
-4. `scheme_4`
-   - Topic: Stage 3 retrieval and manual relevance triage scheme
-   - Files: `scheme_4/scheme_4.tex`, `scheme_4/scheme_4.pdf`
-   - Main source paths:
-     - `src/bps_review/extraction/stage3_prep.py`
-     - `src/review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv`
-     - `src/review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
+- **Stage:** Stage 2
+- **Purpose:** This scheme standardizes abstract-level extraction for all eligible chronic pain reviews. It is the main corpus-wide coding layer used to describe review characteristics, classify the function of biopsychosocial language, detect biological, psychological, and social content, flag conceptual problems, and generate a provisional biopsychosocial typology for downstream synthesis.
+- **Files:** [`scheme_2/scheme_2.html`](scheme_2/scheme_2.html), [`scheme_2/scheme_2.pdf`](scheme_2/scheme_2.pdf), [`scheme_2/README.md`](scheme_2/README.md)
 
-5. `scheme_5`
-   - Topic: Psychological concept clustering and framework mapping scheme
-   - Files: `scheme_5/scheme_5.tex`, `scheme_5/scheme_5.pdf`
-   - Main source paths:
-     - `src/bps_review/extraction/coding.py`
-     - `src/protocol/codebooks/stage2_codebook.md`
-     - `src/protocol/codebooks/stage3_codebook.md`
-     - `src/data/interim/extraction/llm_concept_clusters.json`
+### Scheme 3: Stage 3 Full-Text Deep Coding Scheme
 
-6. `scheme_6`
-   - Topic: BPS ontology and semantic loading benchmark scheme
-   - Files: `scheme_6/scheme_6.tex`, `scheme_6/scheme_6.pdf`
-   - Main source paths:
-     - `src/bps_review/reporting/semantic_loading.py`
-     - `src/vector_db/semantic_loading/ontology/ontology_terms.json`
-     - `src/vector_db/semantic_loading/analysis/domain_loading_summary.csv`
+- **Stage:** Stage 3
+- **Purpose:** This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+- **Files:** [`scheme_3/scheme_3.html`](scheme_3/scheme_3.html), [`scheme_3/scheme_3.pdf`](scheme_3/scheme_3.pdf), [`scheme_3/README.md`](scheme_3/README.md)
+
+### Scheme 4: Stage 3 Retrieval and Manual Relevance Triage Scheme
+
+- **Stage:** Stage 3
+- **Purpose:** This scheme governs the transition from Stage 2 abstract coding to Stage 3 full-text work. It standardizes which candidate reviews need manual retrieval, which records require manual relevance adjudication, and how retrieval status, risk signals, and reviewer decisions are recorded before deep coding begins.
+- **Files:** [`scheme_4/scheme_4.html`](scheme_4/scheme_4.html), [`scheme_4/scheme_4.pdf`](scheme_4/scheme_4.pdf), [`scheme_4/README.md`](scheme_4/README.md)
+
+### Scheme 5: Psychological Concept Clustering and Framework Mapping Scheme
+
+- **Stage:** Cross-stage
+- **Purpose:** This scheme standardizes higher-order concept mapping after concept detection. It groups extracted psychological concepts from chronic pain review records into interpretable families and links them to likely theoretical frameworks. The goal is cross-record comparability when the raw concepts are heterogeneous, overlapping, or variably named.
+- **Files:** [`scheme_5/scheme_5.html`](scheme_5/scheme_5.html), [`scheme_5/scheme_5.pdf`](scheme_5/scheme_5.pdf), [`scheme_5/README.md`](scheme_5/README.md)
+
+### Scheme 6: BPS Ontology and Semantic Loading Benchmark Scheme
+
+- **Stage:** Synthesis
+- **Purpose:** This scheme supplies the ontology scaffold used to quantify semantic emphasis across biological, psychological, and social axes. It is not a manual adjudication form, but it is an operational text-classification framework: it standardizes the domain and subdomain prompts against which review records are embedded and compared.
+- **Files:** [`scheme_6/scheme_6.html`](scheme_6/scheme_6.html), [`scheme_6/scheme_6.pdf`](scheme_6/scheme_6.pdf), [`scheme_6/README.md`](scheme_6/README.md)
+
+## Evaluation workflow
+
+1. Open [`index.html`](index.html) and read the status note.
+2. Open each scheme, read the anchored definitions and the sections marked **Proposed**, and record a verdict and comments per section.
+3. Export one JSON file per scheme (the button is in the top bar).
+4. Load every exported file into the console on `index.html` to see a consolidated view and export a single bundle for the team.
+
+## Regeneration
+
+All surfaces are generated from `_build/content.py` by `_build/build.py`. Do not hand-edit the generated `.tex`, `.html`, or `README.md` files; edit the content model and rebuild:
+
+```bash
+cd src/coding_schemes/_build
+python3 build.py
+```
 
 ## Notes
 
-- The dossiers prioritize the operational implementation used by the pipeline.
-- Where protocol prose, codebooks, and generated outputs diverge, the dossiers state that explicitly.
-- The underlying outputs and source files referenced above remain in their original project paths so reviewers can inspect the raw materials directly.
+- The dossiers prioritize the operational implementation used by the pipeline. Where protocol prose, codebooks, and generated outputs diverge, the dossiers state that explicitly.
+- The underlying source files and outputs remain in their original project paths so reviewers can inspect the raw materials directly.
+- No em dashes are used in any generated file.

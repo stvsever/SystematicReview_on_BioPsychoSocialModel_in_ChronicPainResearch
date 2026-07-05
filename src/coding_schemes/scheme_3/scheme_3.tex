@@ -7,15 +7,17 @@
   {Stage 3 Full-Text Deep Coding Scheme}
   {Musculoskeletal-focused full-text adjudication and interpretive coding}
 
-\section*{Purpose}
-This scheme is the full-text deep coding framework used for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
 
-\section*{Operational Status}
-\begin{itemize}
-\item Workflow position: Stage 3 full-text coding after candidate identification and retrieval triage.
-\item Operational mode: human-coded template with pilot and reliability subsamples; protocol allows AI assistance for concept mapping, but final adjudication remains human.
-\item Canonical implementation basis: current full-text template and prose codebook.
-\end{itemize}
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Full-text coding after Stage 3 candidate identification and retrieval triage.
+\item[Operational mode] Human-coded template with pilot and reliability subsamples. AI may assist concept mapping; final adjudication is human.
+\item[Unit of analysis] One retrieved full-text review, coded against the complete text.
+\item[Provenance basis] The generated full-text template and the prose Stage 3 codebook.
+\item[Research questions] RQ2 (scope, balance, integration); RQ3 (concepts, frameworks, definitions); SQ1 (conceptual problems)
+\item[Tagline] Human-coded template with pilot and reliability subsamples
+\end{description}
 
 \section*{Canonical Source Paths}
 \begin{itemize}
@@ -27,60 +29,147 @@ This scheme is the full-text deep coding framework used for Stage 3 candidate re
 \item \filepath{src/review_stages/04_extraction/forms/stage3_reliability_sample.csv}
 \end{itemize}
 
-\section*{Core Fields and Controlled Values}
+\section*{Purpose}
+This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+
+Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.
+
+
+\section*{Domain Coverage Fields}
+{\small\itshape Coverage is coded at the level of substantive treatment, not keyword presence. The same four-level ladder applies to each domain.}\par\smallskip
 \begin{description}
-\item[\field{record_id}] Internal record identifier.
-\item[\field{full_text_available}] \texttt{yes}; \texttt{no}; \texttt{partial}.
-\item[\field{pain_condition_detail}] Free-text specification of the pain condition studied in the review.
-\item[\field{domain_coverage_bio}] \texttt{elaborated}; \texttt{mentioned}; \texttt{minimal}; \texttt{absent}.
-\item[\field{domain_coverage_psych}] \texttt{elaborated}; \texttt{mentioned}; \texttt{minimal}; \texttt{absent}.
-\item[\field{domain_coverage_social}] \texttt{elaborated}; \texttt{mentioned}; \texttt{minimal}; \texttt{absent}.
-\item[\field{integration_bio_psych}] \texttt{mechanistic}; \texttt{directional}; \texttt{descriptive}; \texttt{mentioned}; \texttt{none}.
-\item[\field{integration_psych_social}] \texttt{mechanistic}; \texttt{directional}; \texttt{descriptive}; \texttt{mentioned}; \texttt{none}.
-\item[\field{integration_bio_social}] \texttt{mechanistic}; \texttt{directional}; \texttt{descriptive}; \texttt{mentioned}; \texttt{none}.
-\item[\field{integration_triadic}] \texttt{mechanistic}; \texttt{descriptive}; \texttt{partial}; \texttt{none}.
-\item[\field{integration_mechanism_summary}] Concise free-text summary of proposed cross-domain pathways.
-\item[\field{overall_balance}] \texttt{balanced}; \texttt{psych-dominant}; \texttt{bio-dominant}; \texttt{social-dominant}; \texttt{dyadic}; \texttt{unclear}.
-\item[\field{bps_typology}] \field{true_integrative}; \field{multifactorial}; \field{pseudo_bps}; \field{rhetorical_bps}; \field{narrow_despite_label}; \field{unclear}.
-\item[\field{concept_definitions_present}] \texttt{yes}; \texttt{partial}; \texttt{no}.
-\item[\field{psychological_concepts_fulltext}] Full-text concept list, normally normalized and semicolon-delimited.
-\item[\field{theoretical_frameworks_fulltext}] Full-text framework list, normally normalized and semicolon-delimited.
-\item[\field{conceptual_problems_fulltext}] Conceptual issues such as vague definitions, construct overlap, tokenistic BPS use, missing social analysis, missing biology, mechanistic absence, unclear boundaries, or other.
-\item[\field{integration_quotes_or_evidence}] Supporting quotations, section references, or evidential anchors from the full text.
-\item[\field{coder_id} / \field{coder_notes} / \field{adjudication_status}] Provenance and adjudication tracking fields.
+\item[\texttt{domain\_coverage\_bio}] Depth of biological content.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{elaborated}} The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named. {\small \textit{Choose when:} A dedicated section or sustained multi-paragraph treatment; Two or more distinct constructs named and related to one another; Evidence is appraised, not only cited in passing. \textit{Not this if:} A single passing sentence; Only the domain umbrella word. \textit{Boundary:} Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.}
+  \item \textbf{\texttt{mentioned}} The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread. {\small \textit{Choose when:} One or two named constructs; A short paragraph or scattered sentences. \textit{Not this if:} Only the umbrella word such as the bare token psychosocial. \textit{Boundary:} Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.}
+  \item \textbf{\texttt{minimal}} The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached. {\small \textit{Choose when:} Bare token such as social factors with no elaboration; One incidental clause. \textit{Not this if:} Any named construct, which would qualify as mentioned. \textit{Boundary:} Prefer minimal over absent when the domain word appears at all.}
+  \item \textbf{\texttt{absent}} The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere. {\small \textit{Choose when:} No domain-specific language beyond a global BPS label. \textit{Not this if:} Any named construct or umbrella mention. \textit{Boundary:} A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.}
+  \end{itemize}
+\item[\texttt{domain\_coverage\_psych}] Depth of psychological content.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{elaborated}} The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named. {\small \textit{Choose when:} A dedicated section or sustained multi-paragraph treatment; Two or more distinct constructs named and related to one another; Evidence is appraised, not only cited in passing. \textit{Not this if:} A single passing sentence; Only the domain umbrella word. \textit{Boundary:} Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.}
+  \item \textbf{\texttt{mentioned}} The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread. {\small \textit{Choose when:} One or two named constructs; A short paragraph or scattered sentences. \textit{Not this if:} Only the umbrella word such as the bare token psychosocial. \textit{Boundary:} Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.}
+  \item \textbf{\texttt{minimal}} The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached. {\small \textit{Choose when:} Bare token such as social factors with no elaboration; One incidental clause. \textit{Not this if:} Any named construct, which would qualify as mentioned. \textit{Boundary:} Prefer minimal over absent when the domain word appears at all.}
+  \item \textbf{\texttt{absent}} The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere. {\small \textit{Choose when:} No domain-specific language beyond a global BPS label. \textit{Not this if:} Any named construct or umbrella mention. \textit{Boundary:} A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.}
+  \end{itemize}
+\item[\texttt{domain\_coverage\_social}] Depth of social content.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{elaborated}} The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named. {\small \textit{Choose when:} A dedicated section or sustained multi-paragraph treatment; Two or more distinct constructs named and related to one another; Evidence is appraised, not only cited in passing. \textit{Not this if:} A single passing sentence; Only the domain umbrella word. \textit{Boundary:} Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.}
+  \item \textbf{\texttt{mentioned}} The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread. {\small \textit{Choose when:} One or two named constructs; A short paragraph or scattered sentences. \textit{Not this if:} Only the umbrella word such as the bare token psychosocial. \textit{Boundary:} Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.}
+  \item \textbf{\texttt{minimal}} The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached. {\small \textit{Choose when:} Bare token such as social factors with no elaboration; One incidental clause. \textit{Not this if:} Any named construct, which would qualify as mentioned. \textit{Boundary:} Prefer minimal over absent when the domain word appears at all.}
+  \item \textbf{\texttt{absent}} The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere. {\small \textit{Choose when:} No domain-specific language beyond a global BPS label. \textit{Not this if:} Any named construct or umbrella mention. \textit{Boundary:} A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.}
+  \end{itemize}
 \end{description}
 
-\section*{Typology Interpretation Rules}
+\section*{Integration Fields (the core RQ2 contribution)}
+{\small\itshape Integration is the scheme's highest-resolution construct. The pairwise ladder distinguishes a stated mechanism from a mere direction, an association, or a bare co-mention.}\par\smallskip
 \begin{description}
-\item[\field{true_integrative}] Explicit cross-domain causal or mechanistic interaction is central to the review's logic.
-\item[\field{multifactorial}] Multiple domains are covered meaningfully but mostly in parallel rather than as an integrated explanatory model.
-\item[\field{pseudo_bps}] BPS language is used, but one or more core domains are thin, absent, or tokenistic.
-\item[\field{rhetorical_bps}] BPS is used mainly as framing, justification, or rhetorical positioning without substantive analytic integration.
-\item[\field{narrow_despite_label}] The review claims a BPS framing, but substantive scope is essentially single-domain or severely restricted.
+\item[\texttt{integration\_bio\_psych}] Biological to psychological integration.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{mechanistic}} The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that). {\small \textit{Choose when:} Named mediator, moderator, or physiological or behavioural pathway; Language such as via, through, drives, sensitizes, amplifies. \textit{Not this if:} Two domains listed as co-occurring with no linking process. \textit{Boundary:} Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.}
+  \item \textbf{\texttt{directional}} A directional or causal influence between the two domains is asserted, but no mechanism is given. {\small \textit{Choose when:} X predicts, increases, or worsens Y; A stated arrow of influence. \textit{Not this if:} A pathway is described, which would be mechanistic; Mere co-mention with no direction. \textit{Boundary:} Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.}
+  \item \textbf{\texttt{descriptive}} The two domains are linked as associated or correlated, without direction or mechanism. {\small \textit{Choose when:} Associated with, related to, correlated with, linked to. \textit{Not this if:} A stated direction of effect, which would be directional. \textit{Boundary:} Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.}
+  \item \textbf{\texttt{mentioned}} Both domains appear near one another but the relationship is not characterized at all. {\small \textit{Choose when:} Two domains named in the same passage with no relational verb. \textit{Not this if:} Any associational, directional, or mechanistic claim. \textit{Boundary:} Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.}
+  \item \textbf{\texttt{none}} No relationship between the two domains is articulated anywhere in the review. {\small \textit{Choose when:} Domains handled in separate silos, or one domain absent. \textit{Not this if:} Any co-located relational statement. \textit{Boundary:} If either domain is absent, the pairwise code defaults to none.}
+  \end{itemize}
+\item[\texttt{integration\_psych\_social}] Psychological to social integration.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{mechanistic}} The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that). {\small \textit{Choose when:} Named mediator, moderator, or physiological or behavioural pathway; Language such as via, through, drives, sensitizes, amplifies. \textit{Not this if:} Two domains listed as co-occurring with no linking process. \textit{Boundary:} Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.}
+  \item \textbf{\texttt{directional}} A directional or causal influence between the two domains is asserted, but no mechanism is given. {\small \textit{Choose when:} X predicts, increases, or worsens Y; A stated arrow of influence. \textit{Not this if:} A pathway is described, which would be mechanistic; Mere co-mention with no direction. \textit{Boundary:} Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.}
+  \item \textbf{\texttt{descriptive}} The two domains are linked as associated or correlated, without direction or mechanism. {\small \textit{Choose when:} Associated with, related to, correlated with, linked to. \textit{Not this if:} A stated direction of effect, which would be directional. \textit{Boundary:} Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.}
+  \item \textbf{\texttt{mentioned}} Both domains appear near one another but the relationship is not characterized at all. {\small \textit{Choose when:} Two domains named in the same passage with no relational verb. \textit{Not this if:} Any associational, directional, or mechanistic claim. \textit{Boundary:} Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.}
+  \item \textbf{\texttt{none}} No relationship between the two domains is articulated anywhere in the review. {\small \textit{Choose when:} Domains handled in separate silos, or one domain absent. \textit{Not this if:} Any co-located relational statement. \textit{Boundary:} If either domain is absent, the pairwise code defaults to none.}
+  \end{itemize}
+\item[\texttt{integration\_bio\_social}] Biological to social integration.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{mechanistic}} The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that). {\small \textit{Choose when:} Named mediator, moderator, or physiological or behavioural pathway; Language such as via, through, drives, sensitizes, amplifies. \textit{Not this if:} Two domains listed as co-occurring with no linking process. \textit{Boundary:} Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.}
+  \item \textbf{\texttt{directional}} A directional or causal influence between the two domains is asserted, but no mechanism is given. {\small \textit{Choose when:} X predicts, increases, or worsens Y; A stated arrow of influence. \textit{Not this if:} A pathway is described, which would be mechanistic; Mere co-mention with no direction. \textit{Boundary:} Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.}
+  \item \textbf{\texttt{descriptive}} The two domains are linked as associated or correlated, without direction or mechanism. {\small \textit{Choose when:} Associated with, related to, correlated with, linked to. \textit{Not this if:} A stated direction of effect, which would be directional. \textit{Boundary:} Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.}
+  \item \textbf{\texttt{mentioned}} Both domains appear near one another but the relationship is not characterized at all. {\small \textit{Choose when:} Two domains named in the same passage with no relational verb. \textit{Not this if:} Any associational, directional, or mechanistic claim. \textit{Boundary:} Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.}
+  \item \textbf{\texttt{none}} No relationship between the two domains is articulated anywhere in the review. {\small \textit{Choose when:} Domains handled in separate silos, or one domain absent. \textit{Not this if:} Any co-located relational statement. \textit{Boundary:} If either domain is absent, the pairwise code defaults to none.}
+  \end{itemize}
+\item[\texttt{integration\_triadic}] Three-domain integration.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{mechanistic}} A genuinely three-domain mechanism is proposed in which biological, psychological, and social factors act on one another as a system. {\small \textit{Choose when:} A cross-domain loop or cascade involving all three domains; All three domains appear as active parts of one explanation. \textit{Not this if:} Two domains interact while the third is only listed. \textit{Boundary:} Reserve for reasoning where removing any one domain breaks the proposed explanation.}
+  \item \textbf{\texttt{descriptive}} All three domains are related to the outcome in an integrated narrative, but as a joint description rather than a specified mechanism. {\small \textit{Choose when:} A coherent three-domain account without a stated pathway. \textit{Not this if:} A concrete cross-domain pathway, which would be mechanistic. \textit{Boundary:} Descriptive triadic still requires all three domains to be in genuine relation, not merely co-present.}
+  \item \textbf{\texttt{partial}} Two domains are integrated with each other while the third is present but only loosely attached. {\small \textit{Choose when:} A strong bio-psych link with social mentioned but not integrated. \textit{Not this if:} All three integrated (descriptive or mechanistic); Only one domain present. \textit{Boundary:} Partial marks a dyadic integration inside a nominally triadic frame.}
+  \item \textbf{\texttt{none}} No three-domain integration is present; domains stand in parallel or one or more is absent. {\small \textit{Choose when:} Serial mention of separate domains; Single-domain reasoning. \textit{Not this if:} Any genuine multi-domain relational claim. \textit{Boundary:} Serial listing of B, P, and S in turn is none, not descriptive.}
+  \end{itemize}
+\item[\texttt{integration\_mechanism\_summary}] Concise free-text summary of the proposed cross-domain pathways. \textit{(free text)}
 \end{description}
 
-\section*{Coding Expectations}
-\begin{itemize}
-\item Domain coverage is coded at the level of substantive treatment, not keyword presence alone.
-\item Pairwise integration codes should reflect whether the review articulates mechanisms, directional influences, descriptive links, or only passing mention.
-\item Triadic integration should be reserved for genuinely three-domain reasoning rather than serial mention of separate domains.
-\item The scheme is designed to combine quantitative tallying with qualitative excerpting so that research questions on both distribution and interpretation can be answered from the same coding file.
-\end{itemize}
+\section*{Typology and Balance}
+{\small\itshape The summary judgments that answer RQ1 at full-text depth.}\par\smallskip
+\begin{description}
+\item[\texttt{overall\_balance}] Relative emphasis across domains.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{balanced}} No domain dominates; the three are weighted comparably.
+  \item \textbf{\texttt{psych-dominant}} Psychological content dominates.
+  \item \textbf{\texttt{bio-dominant}} Biological content dominates.
+  \item \textbf{\texttt{social-dominant}} Social content dominates.
+  \item \textbf{\texttt{dyadic}} Two domains dominate and one is marginal.
+  \item \textbf{\texttt{unclear}} Balance cannot be determined.
+  \end{itemize}
+\item[\texttt{bps\_typology}] Full-text BPS operationalization type.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{true\_integrative}} Explicit cross-domain causal or mechanistic interaction is central to the review's logic. {\small \textit{Boundary:} Requires at least descriptive triadic integration plus two elaborated domains.}
+  \item \textbf{\texttt{multifactorial}} Multiple domains covered meaningfully but mostly in parallel. {\small \textit{Boundary:} Distinguished from true\_integrative by the absence of a genuine cross-domain link.}
+  \item \textbf{\texttt{pseudo\_bps}} BPS language used but one or more core domains are thin, absent, or tokenistic.
+  \item \textbf{\texttt{rhetorical\_bps}} BPS used mainly as framing or justification without analytic substance.
+  \item \textbf{\texttt{narrow\_despite\_label}} BPS claimed but substantive scope is essentially single-domain.
+  \item \textbf{\texttt{unclear}} Type cannot be determined.
+  \end{itemize}
+\end{description}
+
+\section*{Psychological Concepts and Evidence}
+{\small\itshape Concept-level fields that feed RQ3 and the concept map.}\par\smallskip
+\begin{description}
+\item[\texttt{concept\_definitions\_present}] Whether the review defines the psychological constructs it uses.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} Constructs are explicitly defined or operationalized.
+  \item \textbf{\texttt{partial}} Some constructs defined, others named only.
+  \item \textbf{\texttt{no}} Constructs named without definition.
+  \end{itemize}
+\item[\texttt{psychological\_concepts\_fulltext}] Normalized, semicolon-delimited full-text concept list. \textit{(free text)}
+\item[\texttt{theoretical\_frameworks\_fulltext}] Normalized, semicolon-delimited framework list. \textit{(free text)}
+\item[\texttt{conceptual\_problems\_fulltext}] Conceptual issues such as vague definitions, construct overlap, tokenistic BPS use, missing social analysis, missing biology, mechanistic absence, or unclear boundaries. \textit{(free text)}
+\item[\texttt{integration\_quotes\_or\_evidence}] Supporting quotations, section references, or evidential anchors from the full text. \textit{(free text)}
+\item[\texttt{coder\_id / coder\_notes / adjudication\_status}] Provenance and adjudication tracking fields.
+\end{description}
+
+\section*{Proposed Refinement: Concept-Level Grid and Evidence Rule}
+\refbadge
+Refinement proposed for expert evaluation. The current scheme stores concepts as a flat delimited string, which loses the structure that RQ3 needs. We propose a per-concept grid with one row per concept carrying: canonical concept name, verbatim label used in the review, definitional status (formally defined, operationalized only, named only), parent psychological subdomain (aligned to Scheme 6), associated framework, and a relation type to other concepts (is-a, part-of, or associative).
+
+We also propose an evidence rule: any pairwise or triadic integration coded above mentioned must carry at least one verbatim quote with a section locator in integration\_quotes\_or\_evidence. This makes the integration ladder auditable and prevents inflation of mechanistic codes.
+
+Together these raise both the resolution of the concept map and the evidential quality of the integration judgments.
+
+
+\section*{Worked Examples (real corpus records)}
+{\small\itshape Candidate records from the manifest with the target full-text reading.}\par\smallskip
+\begin{description}
+\item[Biopsychosocial approach to tendinopathy] {\small \textit{Narrative review, 2022, PMC cached}}\\
+{\small Coding: \texttt{bps\_typology} = true\_integrative (target); \texttt{integration\_triadic} = descriptive; \texttt{concept\_definitions\_present} = partial.\\ \textit{Why:} An integrative-signal abstract; at full text the coder tests whether the three domains are related or merely co-present. Fear-avoidance and self-efficacy are named, so concepts are at least partial.}
+\item[Effects of Multidisciplinary Biopsychosocial Rehabilitation on Short-Term Pain and Disability in Chronic Low Back Pain] {\small \textit{Network meta-analysis, PMC cached}}\\
+{\small Coding: \texttt{bps\_typology} = multifactorial (target); \texttt{integration\_triadic} = none or partial; \texttt{domain\_coverage\_bio} = minimal to mentioned.\\ \textit{Why:} The abstract flags missing\_biology and parallel-listing. Full text usually confirms a treatment-bundle framing rather than an integrated mechanism.}
+\end{description}
 
 \section*{Reliability Architecture}
+{\small\itshape How Stage 3 agreement is estimated (OSF: 20 percent, capped at 20 full texts; test run reliability subset was 18).}\par\smallskip
 \begin{itemize}
-\item Pilot sample: up to 5 records generated through \filepath{src/bps_review/extraction/stage3_prep.py}.
-\item Reliability sample: roughly 20\% of candidates, capped operationally in the form-generation logic.
-\item Reliability fields include independent reviewer ratings for domain coverage, triadic integration, BPS typology, and free-text notes, followed by adjudicated values.
+\item Pilot sample: up to 5 records generated by stage3\_prep.py.
+\item Reliability sample: about 20 percent of candidates, capped in the form-generation logic.
+\item Reliability fields carry independent reviewer ratings for domain coverage, triadic integration, and BPS typology, followed by adjudicated values.
 \end{itemize}
 
-\section*{Implementation Notes and Documented Divergences}
+\section*{Documented Divergences}
 \begin{itemize}
-\item The prose Stage 3 codebook includes \texttt{partial} and \texttt{mentioned} intermediary integration values more explicitly than the CSV codebook; this dossier follows the prose codebook plus the actual form field names because that is the richer operational specification.
-\item The CSV codebook uses shorter names such as \field{bio_coverage}; the current generated template uses \field{domain_coverage_bio}. The template naming is treated here as canonical because it is the actual working form.
+\item The prose Stage 3 codebook exposes the intermediary integration values partial and mentioned more explicitly than the CSV codebook. This dossier follows the prose codebook plus the actual form field names because that is the richer operational specification.
+\item The CSV codebook uses shorter names such as bio\_coverage; the generated template uses domain\_coverage\_bio. The template naming is canonical here because it is the working form.
 \end{itemize}
 
-\section*{Primary Outputs and Forms Using This Scheme}
+\section*{Primary Outputs Using This Scheme}
 \begin{itemize}
 \item \filepath{src/review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv}
 \item \filepath{src/review_stages/04_extraction/forms/stage3_pilot_sample.csv}

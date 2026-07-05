@@ -17,8 +17,20 @@
 
 </div>
 
+## 🚧 Project status: test run, coding schemes under expert review
+
+**The current manuscript is a test run, not a final result.** It was produced with an earlier, coarser generation of the coding schemes. Everything in [paper/report/main.pdf](paper/report/main.pdf) (the 111 record counts, the typology distribution, the semantic-loading figures) should be read as a pipeline demonstration on provisional schemes, not as confirmed findings.
+
+The coding schemes that define how biopsychosocial (BPS) reviews are classified and categorized have since been revised for higher semantic quality and resolution: operational anchors for every code value, positive and negative indicators, explicit boundary rules between adjacent categories, worked examples drawn from the real corpus, and clearly labelled proposed refinements. These revised schemes are now circulated for **expert evaluation** and are **awaiting sign-off before the pipeline is re-run**.
+
+- Interactive evaluation package (open in a browser): [src/coding_schemes/index.html](src/coding_schemes/index.html)
+- Per-scheme dossiers (HTML, PDF, README): [src/coding_schemes/](src/coding_schemes/)
+
+Each scheme has its own HTML surface where reviewers record a verdict and comments per section and export their feedback as JSON. A re-run with the finalized schemes, and an updated manuscript, will follow once evaluation is complete. Please do not cite the test-run numbers as conclusions in the meantime.
+
 ## 📋 Table of Contents
 
+- [🚧 Project Status](#-project-status-test-run-coding-schemes-under-expert-review)
 - [📝 Abstract](#-abstract)
 - [📌 Key Findings](#-key-findings)
 - [📄 Full Paper](#-full-paper)

@@ -5,17 +5,19 @@
 \schemeheader
   {Scheme 2}
   {Stage 2 Abstract-Level Structured Coding Scheme}
-  {Prompt-guided abstract coding with deterministic repair and rule-based fallback}
+  {Corpus-wide abstract coding of BPS usage, domains, and typology}
 
-\section*{Purpose}
-This scheme standardizes abstract-level extraction for all eligible chronic pain reviews. It is the main corpus-wide coding layer used to describe review characteristics, classify the function of biopsychosocial language, identify the presence of biological, psychological, and social content, flag conceptual problems, and generate a provisional biopsychosocial typology for downstream synthesis.
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
 
-\section*{Operational Status}
-\begin{itemize}
-\item Workflow position: Stage 2 abstract coding after Stage 1 eligibility screening.
-\item Operational mode: structured LLM-first coding with archived JSON batch outputs, deterministic vocabulary normalization, and rule-based fallback when model output is incomplete or unavailable.
-\item Canonical implementation basis: actual Stage 2 output schema in \filepath{src/review_stages/04_extraction/outputs/stage2_abstract_coding.csv}.
-\end{itemize}
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Abstract coding for every Stage 1 included record, before Stage 3 candidate selection.
+\item[Operational mode] Structured LLM coding with archived JSON batches, deterministic vocabulary normalization, and a rule-based fallback when model output is incomplete or unavailable.
+\item[Unit of analysis] One included review record, coded from title, abstract, publication types, and journal metadata only.
+\item[Provenance basis] The actual Stage 2 output schema in stage2\_abstract\_coding.csv.
+\item[Research questions] RQ1 (BPS operationalization); RQ3 (concepts and frameworks); SQ1 (conceptual problems); Feeds the Stage 3 candidate gate
+\item[Tagline] Structured LLM-first coding with deterministic repair and rule-based fallback
+\end{description}
 
 \section*{Canonical Source Paths}
 \begin{itemize}
@@ -28,71 +30,183 @@ This scheme standardizes abstract-level extraction for all eligible chronic pain
 \item \filepath{src/review_stages/04_extraction/outputs/llm_stage2_structured_batches.jsonl}
 \end{itemize}
 
+\section*{Purpose}
+This scheme standardizes abstract-level extraction for all eligible chronic pain reviews. It is the main corpus-wide coding layer used to describe review characteristics, classify the function of biopsychosocial language, detect biological, psychological, and social content, flag conceptual problems, and generate a provisional biopsychosocial typology for downstream synthesis.
+
+It also sets the Stage 3 candidate gate: a record coded as musculoskeletal or as unspecified-but-not-excludable is carried forward for full-text work.
+
+
 \section*{Carried-Through Metadata Fields}
-\begin{description}
-\item[\field{record_id}] Internal record identifier.
-\item[\field{database}] Source database.
-\item[\field{pmid} / \field{pmcid} / \field{doi}] External identifiers when available.
-\item[\field{title} / \field{abstract}] Primary text used for coding.
-\item[\field{year} / \field{journal} / \field{authors} / \field{country_contact_author}] Descriptive metadata retained for synthesis.
-\item[\field{publication_types}] PubMed or source publication-type metadata.
-\item[\field{objective_text}] Objective sentence or excerpt extracted from the abstract.
-\item[\field{screening_status} / \field{screening_reason}] Stage 1 status inherited into the Stage 2 dataset.
-\end{description}
+{\small\itshape Descriptive fields retained from earlier stages for synthesis.}\par\smallskip
+\begin{itemize}
+\item record\_id, database, pmid, pmcid, doi
+\item title, abstract (primary coding text)
+\item year, journal, authors, country\_contact\_author
+\item publication\_types (source publication-type metadata)
+\item objective\_text (objective sentence extracted from the abstract)
+\item screening\_status, screening\_reason (inherited from Stage 1)
+\end{itemize}
 
 \section*{Coded Fields and Controlled Values}
+{\small\itshape The operational Stage 2 vocabulary. Anchors and boundaries below are the proposed reliability layer over the existing value lists.}\par\smallskip
 \begin{description}
-\item[\field{review_type}] \texttt{systematic review}; \texttt{meta-analysis}; \texttt{network meta-analysis}; \texttt{umbrella review}; \texttt{scoping or mapping review}; \texttt{rapid review}; \texttt{realist review}; \texttt{integrative review}; \texttt{narrative or expert review}; \texttt{other evidence synthesis}; \texttt{unclear}.
-\item[\field{objective_category}] \texttt{conceptual}; \texttt{clinical}; \texttt{methodological}; \texttt{epidemiological}; \texttt{mixed}; \texttt{unclear}.
-\item[\field{objective_category_source}] Indicates whether the objective classification came from the structured LLM, a repaired LLM batch, or the deterministic fallback.
-\item[\field{icd11_pain_category}] \texttt{chronic secondary musculoskeletal pain}; \texttt{chronic neuropathic pain}; \texttt{chronic cancer-related pain}; \texttt{chronic postsurgical or posttraumatic pain}; \texttt{chronic secondary headache or orofacial pain}; \texttt{chronic secondary visceral pain}; \texttt{chronic primary pain}; \texttt{mixed or unspecified chronic pain}; \texttt{unclear}.
-\item[\field{musculoskeletal_flag}] \texttt{yes}; \texttt{no}; \texttt{unclear}.
-\item[\field{bps_mention_location}] \texttt{title only}; \texttt{abstract only}; \texttt{title and abstract}; \texttt{unclear}.
-\item[\field{bps_function}] \texttt{explanatory framework}; \texttt{intervention rationale}; \texttt{organizing principle}; \texttt{justification}; \texttt{background framing}; \texttt{conclusion}; \texttt{policy/practice implication}; \texttt{rhetorical label}; \texttt{unclear}.
-\item[\field{bio_mentioned} / \field{psych_mentioned} / \field{social_mentioned}] \texttt{yes} or \texttt{no}.
-\item[\field{quality_assessment_reported}] \texttt{yes}; \texttt{no}; \texttt{unclear}.
-\item[\field{psychological_concepts_detected}] Normalized list of psychological concepts extracted from title and abstract.
-\item[\field{theoretical_frameworks_detected}] Normalized list of named frameworks or model labels.
-\item[\field{conceptual_problem_flags}] \field{vague_definition}; \field{tokenistic_bps}; \field{missing_social}; \field{missing_biology}; \field{mechanistic_absence}; \field{construct_overlap}; \field{parallel_listing_without_integration}; \field{none}.
-\item[\field{provisional_typology}] \texttt{potential integrative signal}; \texttt{multifactorial signal}; \texttt{pseudo-bps or partial signal}; \texttt{rhetorical label signal}.
-\item[\field{stage3_candidate}] \texttt{yes} or \texttt{no}.
-\item[\field{stage3_priority}] \texttt{high}; \texttt{medium}; \texttt{low}.
-\item[\field{coding_rationale}] One-sentence rationale supporting the coding bundle.
-\item[\field{coding_method}] Operational provenance of the row, for example \field{llm_structured}, \field{llm_batch_fallback}, or \field{rule_based_fallback}.
-\item[\field{llm_model}] Model identifier when LLM coding was used.
+\item[\texttt{review\_type}] Evidence-synthesis design as stated in the abstract or publication metadata.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{systematic review}} Explicit systematic methods (protocol, search, screening).
+  \item \textbf{\texttt{meta-analysis}} Quantitative pooling of effect sizes.
+  \item \textbf{\texttt{network meta-analysis}} Multiple-treatment comparison with indirect evidence.
+  \item \textbf{\texttt{umbrella review}} Review of reviews.
+  \item \textbf{\texttt{scoping or mapping review}} Breadth-oriented mapping of a field without pooled effects.
+  \item \textbf{\texttt{rapid review}} Streamlined systematic methods.
+  \item \textbf{\texttt{realist review}} Theory-driven mechanism review.
+  \item \textbf{\texttt{integrative review}} Mixed evidence integration.
+  \item \textbf{\texttt{narrative or expert review}} Non-systematic expert synthesis.
+  \item \textbf{\texttt{other evidence synthesis}} A synthesis type not captured above.
+  \item \textbf{\texttt{unclear}} Design cannot be determined from the abstract.
+  \end{itemize}
+{\small Boundary: prefer the most specific applicable label; meta-analysis outranks systematic review when pooling is explicit.}
+\item[\texttt{objective\_category}] Primary stated purpose of the review.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{conceptual}} Purpose is definitional, theoretical, or about operationalizing a model. {\small \textit{Choose when:} framework, concept, operationalize, model. \textit{Not this if:} A treatment-effect question, which is clinical.}
+  \item \textbf{\texttt{clinical}} Purpose concerns treatment, management, rehabilitation, or care. {\small \textit{Choose when:} treatment, intervention, management, rehabilitation.}
+  \item \textbf{\texttt{methodological}} Purpose concerns measurement, psychometrics, or assessment tools. {\small \textit{Choose when:} measurement, psychometric, instrument, assessment.}
+  \item \textbf{\texttt{epidemiological}} Purpose concerns prevalence, incidence, risk factors, or associations. {\small \textit{Choose when:} prevalence, incidence, risk factor, association.}
+  \item \textbf{\texttt{mixed}} Two or more purposes carry comparable weight.
+  \item \textbf{\texttt{unclear}} Purpose cannot be determined.
+  \end{itemize}
+{\small Boundary: choose the dominant purpose; use mixed only when two purposes are genuinely co-primary.}
+\item[\texttt{objective\_category\_source}] Whether the objective classification came from the structured LLM, a repaired LLM batch, or the deterministic fallback.
+\item[\texttt{icd11\_pain\_category}] ICD-11 aligned pain category inferred from the abstract.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{chronic secondary musculoskeletal pain}} Low back, neck, osteoarthritis, whiplash, and similar.
+  \item \textbf{\texttt{chronic neuropathic pain}} Neuropathic, CRPS, radiculopathy.
+  \item \textbf{\texttt{chronic cancer-related pain}} Cancer or oncology pain.
+  \item \textbf{\texttt{chronic postsurgical or posttraumatic pain}} Post-surgical or post-traumatic persistent pain.
+  \item \textbf{\texttt{chronic secondary headache or orofacial pain}} Headache, migraine, orofacial, TMD.
+  \item \textbf{\texttt{chronic secondary visceral pain}} Visceral, abdominal, pelvic pain.
+  \item \textbf{\texttt{chronic primary pain}} Fibromyalgia and other primary pain syndromes.
+  \item \textbf{\texttt{mixed or unspecified chronic pain}} Chronic pain with no single dominant site.
+  \item \textbf{\texttt{unclear}} Category cannot be inferred.
+  \end{itemize}
+{\small Abstract-based and allowed to remain unclear. Musculoskeletal and mixed-or-unspecified both feed the Stage 3 candidate gate.}
+\item[\texttt{musculoskeletal\_flag}] Whether the review concerns musculoskeletal pain.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} Musculoskeletal focus is explicit.
+  \item \textbf{\texttt{no}} Clearly non-musculoskeletal.
+  \item \textbf{\texttt{unclear}} Cannot be determined; carried forward.
+  \end{itemize}
+\item[\texttt{bps\_mention\_location}] Where the BPS term appears.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{title only}} Only in the title.
+  \item \textbf{\texttt{abstract only}} Only in the abstract.
+  \item \textbf{\texttt{title and abstract}} In both.
+  \item \textbf{\texttt{unclear}} Location cannot be resolved.
+  \end{itemize}
+\item[\texttt{bps\_function}] The rhetorical and analytic work the BPS label performs. This is the central RQ1 field and the finest-grained one.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{explanatory framework}} BPS is used as a model that explains pain or pain-related disability. {\small \textit{Choose when:} explains, accounts for, mechanism of. \textit{Not this if:} Only justifies multimodal treatment, which is intervention rationale. \textit{Boundary:} Requires explanatory intent, not only endorsement of a model's existence.}
+  \item \textbf{\texttt{intervention rationale}} BPS mainly justifies multimodal or interdisciplinary treatment. {\small \textit{Choose when:} supports multidisciplinary care. \textit{Not this if:} Explains pain aetiology, which is explanatory framework.}
+  \item \textbf{\texttt{organizing principle}} BPS structures the scope or categories of the review without specifying integration mechanisms. {\small \textit{Choose when:} We organize factors into bio, psycho, social. \textit{Not this if:} A stated cross-domain mechanism.}
+  \item \textbf{\texttt{justification}} BPS justifies the relevance or importance of the review topic.
+  \item \textbf{\texttt{background framing}} BPS sets context in the background without analytic use.
+  \item \textbf{\texttt{conclusion}} BPS appears mainly in the concluding claims.
+  \item \textbf{\texttt{policy/practice implication}} BPS frames a policy or practice recommendation.
+  \item \textbf{\texttt{rhetorical label}} BPS is invoked ceremonially, aspirationally, or symbolically with no substantive analytic work. {\small \textit{Choose when:} a biopsychosocial approach is needed, with no follow-through. \textit{Not this if:} Any substantive explanatory or organizing use.}
+  \item \textbf{\texttt{unclear}} Function cannot be determined.
+  \end{itemize}
+\item[\texttt{bio\_mentioned / psych\_mentioned / social\_mentioned}] Binary presence of each domain in the abstract.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} The domain is present beyond the mere BPS token.
+  \item \textbf{\texttt{no}} The domain is not present.
+  \end{itemize}
+{\small See the proposed graded-mention refinement below; the current field is binary.}
+\item[\texttt{quality\_assessment\_reported}] Whether the abstract reports a risk-of-bias or quality assessment.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} AMSTAR, risk of bias, or quality assessment named.
+  \item \textbf{\texttt{no}} Not reported.
+  \item \textbf{\texttt{unclear}} Cannot be determined.
+  \end{itemize}
+\item[\texttt{psychological\_concepts\_detected}] Normalized list of psychological concepts from title and abstract. Feeds Scheme 5. \textit{(free text)}
+\item[\texttt{theoretical\_frameworks\_detected}] Normalized list of named frameworks or model labels. \textit{(free text)}
+\item[\texttt{conceptual\_problem\_flags}] Provisional abstract-level conceptual problems.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{vague\_definition}} BPS or a key construct is used without a definition.
+  \item \textbf{\texttt{tokenistic\_bps}} BPS appears as a label with no analytic follow-through.
+  \item \textbf{\texttt{missing\_social}} Social domain absent despite a BPS claim.
+  \item \textbf{\texttt{missing\_biology}} Biological domain absent despite a BPS claim.
+  \item \textbf{\texttt{mechanistic\_absence}} No cross-domain mechanism is offered.
+  \item \textbf{\texttt{construct\_overlap}} Constructs are used interchangeably or with blurred boundaries.
+  \item \textbf{\texttt{parallel\_listing\_without\_integration}} Domains are listed side by side with no integration.
+  \item \textbf{\texttt{none}} No inferable conceptual problem.
+  \end{itemize}
+\item[\texttt{provisional\_typology}] Abstract-level BPS signal, refined later at Stage 3.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{potential integrative signal}} All three domains substantively present with a cross-domain signal.
+  \item \textbf{\texttt{multifactorial signal}} All three domains present but mainly parallel.
+  \item \textbf{\texttt{pseudo-bps or partial signal}} One or more core domains thin or absent despite BPS language.
+  \item \textbf{\texttt{rhetorical label signal}} BPS mainly symbolic or confined to framing or conclusion.
+  \end{itemize}
+\item[\texttt{stage3\_candidate / stage3\_priority}] Whether and how urgently the record proceeds to Stage 3.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes / no}} Candidate flag.
+  \item \textbf{\texttt{high / medium / low}} Retrieval and coding priority.
+  \end{itemize}
+\item[\texttt{coding\_rationale}] One-sentence rationale supporting the coding bundle. \textit{(free text)}
+\item[\texttt{coding\_method / llm\_model}] Operational provenance of the row (llm\_structured, llm\_batch\_fallback, rule\_based\_fallback) and the model identifier when the LLM stage was used.
 \end{description}
 
 \section*{Prompt Rules Used in the Structured LLM Stage}
+{\small\itshape These constraints are embedded in the structured prompt and are the operational meaning of the codes above.}\par\smallskip
 \begin{itemize}
-\item Code only from title, abstract, publication types, and journal metadata.
-\item Do not infer content that is absent from the record.
-\item Do not treat the single lexical token \texttt{biopsychosocial} as proof that biological, psychological, and social domains are all substantively present.
-\item Use \texttt{explanatory framework} only when the review explicitly treats BPS as a model or framework explaining pain or pain-related disability.
-\item Use \texttt{intervention rationale} when BPS language mainly justifies multimodal or interdisciplinary treatment.
-\item Use \texttt{organizing principle} when BPS language structures the scope or categories without specifying integration mechanisms.
-\item Use \texttt{rhetorical label} when BPS is invoked ceremonially, aspirationally, or symbolically without substantive analytic work.
-\item Set \field{stage3_candidate} to \texttt{yes} for musculoskeletal reviews and mixed or unspecified chronic pain reviews where musculoskeletal relevance cannot be ruled out.
-\item Use \texttt{potential integrative signal} only when all three core domains are substantively present and the abstract signals cross-domain explanation or organization beyond simple listing.
-\item Use \texttt{multifactorial signal} when all three domains are substantively present but mainly parallel.
-\item Use \texttt{pseudo-bps or partial signal} when one or more core domains are thin or absent despite BPS language.
-\item Use \texttt{rhetorical label signal} when the BPS label is mainly symbolic or confined to framing or conclusion.
-\item Return \field{conceptual_problem_flags} as \texttt{none} only when no inferable conceptual problem is present.
+\item Code only from title, abstract, publication types, and journal metadata. Do not infer content that is absent from the record.
+\item Do not treat the single lexical token biopsychosocial as proof that all three domains are substantively present.
+\item Use explanatory framework only when BPS explicitly explains pain or pain-related disability.
+\item Use intervention rationale when BPS mainly justifies multimodal or interdisciplinary treatment.
+\item Use organizing principle when BPS structures scope or categories without integration mechanisms.
+\item Use rhetorical label when BPS is ceremonial, aspirational, or symbolic with no substantive analytic work.
+\item Set stage3\_candidate to yes for musculoskeletal reviews and for mixed or unspecified chronic pain reviews where musculoskeletal relevance cannot be ruled out.
+\item Use potential integrative signal only when all three core domains are substantively present and the abstract signals cross-domain explanation or organization beyond simple listing.
+\item Return conceptual\_problem\_flags as none only when no inferable conceptual problem is present.
 \end{itemize}
 
 \section*{Deterministic Repair and Fallback Logic}
+{\small\itshape How the pipeline guarantees a complete, in-vocabulary row.}\par\smallskip
 \begin{itemize}
-\item Missing or malformed model responses are repaired against the fixed vocabularies listed above.
-\item Aliases such as \texttt{scoping review} or \texttt{narrative review} are normalized to the implemented labels.
-\item \field{stage3_candidate} is forced to \texttt{yes} whenever \field{musculoskeletal_flag} is \texttt{yes} or \texttt{unclear}.
-\item Conceptual problem flags are post-derived from typology, BPS function, and missing domains. Rhetorical usage triggers \field{tokenistic_bps} and \field{vague_definition}; parallel non-mechanistic usage triggers \field{parallel_listing_without_integration} and \field{mechanistic_absence}; absent biological or social content triggers \field{missing_biology} or \field{missing_social}.
+\item Missing or malformed model responses are repaired against the fixed vocabularies above.
+\item Aliases such as scoping review or narrative review are normalized to the implemented labels.
+\item stage3\_candidate is forced to yes whenever musculoskeletal\_flag is yes or unclear.
+\item Conceptual problem flags are post-derived from typology, BPS function, and missing domains: rhetorical usage triggers tokenistic\_bps and vague\_definition; parallel non-mechanistic usage triggers parallel\_listing\_without\_integration and mechanistic\_absence; absent biological or social content triggers missing\_biology or missing\_social.
 \item When the LLM stage fails, the rule-based fallback still generates review type, objective category, ICD-11 category, BPS function, domain mention flags, concept detections, and provisional Stage 3 priority.
 \end{itemize}
 
-\section*{Implementation Notes and Documented Divergences}
+\section*{Proposed Refinement: Graded Domain Mention and Dual Function}
+\refbadge
+Refinement proposed for expert evaluation. Two changes would raise the resolution of Stage 2 without changing its scope.
+
+First, replace the binary bio\_mentioned, psych\_mentioned, and social\_mentioned with a three-level scale: substantive (a named construct is discussed), lexical (only the domain umbrella word appears), and absent. This mirrors the S\_lex versus S\_subst distinction already used in the manuscript audit and lets the social-shortfall finding be measured at the abstract level rather than only after recoding.
+
+Second, allow bps\_function to carry a dominant function plus an optional secondary function. Many abstracts both organize scope and justify treatment; forcing a single label discards that signal and depresses agreement on mixed abstracts.
+
+Third, reinstate optional spiritual\_existential and lifestyle mention flags. The corpus contains explicit biopsychosocial-spiritual reviews and religious-belief reviews, so the extra flags capture real variance that the current binary domains drop.
+
+
+\section*{Worked Examples (real corpus records)}
+{\small\itshape Actual Stage 2 codings from the test-run manifest, shown as reliability anchors.}\par\smallskip
+\begin{description}
+\item[Where has the 'bio' in bio-psycho-social gone?] {\small \textit{Narrative or expert review, 2019}}\\
+{\small Coding: \texttt{provisional\_typology} = pseudo-bps or partial signal; \texttt{conceptual\_problem\_flags} = parallel\_listing\_without\_integration; \texttt{bps\_function} = organizing principle.\\ \textit{Why:} The title itself signals a missing biological pole, so the typology is a partial signal and the flags record the imbalance.}
+\item[The biopsychosocial model is lost in translation: from misrepresentation to an enactive modernization] {\small \textit{Narrative or expert review, 2023}}\\
+{\small Coding: \texttt{provisional\_typology} = potential integrative signal; \texttt{conceptual\_problem\_flags} = vague\_definition | tokenistic\_bps; \texttt{bps\_function} = explanatory framework.\\ \textit{Why:} A conceptual, theory-facing review can be an integrative signal and still be flagged for definitional vagueness. The two axes are independent.}
+\item[Exercise for chronic musculoskeletal pain: a biopsychosocial approach] {\small \textit{Narrative or expert review, 2017}}\\
+{\small Coding: \texttt{icd11\_pain\_category} = chronic secondary musculoskeletal pain; \texttt{stage3\_candidate} = yes; \texttt{provisional\_typology} = potential integrative signal.\\ \textit{Why:} Musculoskeletal focus forces the Stage 3 candidate flag; the integrative signal sets a high retrieval priority.}
+\end{description}
+
+\section*{Documented Divergences}
+{\small\itshape Where prose, CSV codebook, and outputs disagree, the output schema is treated as canonical.}\par\smallskip
 \begin{itemize}
-\item The prose codebook lists \texttt{treatment-oriented} as an objective class, but the implemented structured prompt and output schema do not currently use that label.
-\item The CSV codebook historically contains \field{spiritual_existential_mentioned} and \field{lifestyle_mentioned}; those fields are not present in the current Stage 2 output file and therefore are not treated as canonical in this dossier.
-\item The prose codebook and the executable code both emphasize that BPS language alone is insufficient evidence of true triadic coverage.
+\item The prose codebook lists treatment-oriented as an objective class, but the implemented prompt and output schema do not use that label.
+\item The CSV codebook historically contains spiritual\_existential\_mentioned and lifestyle\_mentioned; those fields are absent from the current output file and are therefore not canonical here. The refinement above proposes reinstating them explicitly.
+\item Prose and code both emphasize that BPS language alone is insufficient evidence of true triadic coverage.
 \end{itemize}
 
 \section*{Primary Outputs Using This Scheme}

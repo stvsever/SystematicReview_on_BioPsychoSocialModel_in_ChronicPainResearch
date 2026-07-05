@@ -5,17 +5,19 @@
 \schemeheader
   {Scheme 5}
   {Psychological Concept Clustering and Framework Mapping Scheme}
-  {Prompt-based normalization of detected psychological concepts}
+  {Second-order normalization of detected psychological concepts}
 
-\section*{Purpose}
-This scheme standardizes higher-order concept mapping after concept detection. It groups extracted psychological concepts from chronic pain review records into interpretable families and links them to likely theoretical frameworks. The goal is to support cross-record comparability when the raw concepts are heterogeneous, overlapping, or variably named.
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
 
-\section*{Operational Status}
-\begin{itemize}
-\item Workflow position: post-detection concept normalization.
-\item Operational mode: fixed pattern-based concept detection upstream, followed by LLM clustering for higher-order normalization.
-\item Canonical implementation basis: \filepath{src/bps_review/extraction/coding.py}.
-\end{itemize}
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Post-detection concept normalization over Stage 2 and Stage 3 concept strings.
+\item[Operational mode] Fixed pattern-based concept detection upstream, followed by LLM clustering for higher-order normalization.
+\item[Unit of analysis] The set of unique concept strings across the corpus, not whole records.
+\item[Provenance basis] coding.py concept and framework patterns plus the clustering prompt.
+\item[Research questions] RQ3 (which psychological concepts and frameworks dominate)
+\item[Tagline] Fixed pattern detection upstream, LLM clustering for higher-order normalization
+\end{description}
 
 \section*{Canonical Source Paths}
 \begin{itemize}
@@ -25,64 +27,54 @@ This scheme standardizes higher-order concept mapping after concept detection. I
 \item \filepath{src/data/interim/extraction/llm_concept_clusters.json}
 \end{itemize}
 
-\section*{Upstream Detection Seeds}
-\subsection*{Psychological Concept Patterns}
+\section*{Purpose}
+This scheme standardizes higher-order concept mapping after concept detection. It groups extracted psychological concepts from chronic pain review records into interpretable families and links them to likely theoretical frameworks. The goal is cross-record comparability when the raw concepts are heterogeneous, overlapping, or variably named.
+
+It is a second-order coding scheme: it does not classify whole records, it normalizes the concept vocabulary itself.
+
+
+\section*{Upstream Concept Detection Seeds (current)}
+{\small\itshape The 16 fixed patterns currently used to detect concepts.}\par\smallskip
 \begin{itemize}
-\item \texttt{fear-avoidance}
-\item \texttt{catastrophizing}
-\item \texttt{kinesiophobia}
-\item \texttt{depression}
-\item \texttt{anxiety}
-\item \texttt{coping}
-\item \texttt{self-efficacy}
-\item \texttt{acceptance}
-\item \texttt{illness perceptions}
-\item \texttt{pain beliefs}
-\item \texttt{distress}
-\item \texttt{expectations}
-\item \texttt{emotion regulation}
-\item \texttt{mindfulness}
-\item \texttt{trauma}
-\item \texttt{sleep}
+\item fear-avoidance, catastrophizing, kinesiophobia, depression, anxiety, coping, self-efficacy, acceptance
+\item illness perceptions, pain beliefs, distress, expectations, emotion regulation, mindfulness, trauma, sleep
 \end{itemize}
 
-\subsection*{Framework Seeds}
+\section*{Upstream Framework Seeds (current)}
+{\small\itshape The 7 fixed framework patterns.}\par\smallskip
 \begin{itemize}
-\item \texttt{fear-avoidance model}
-\item \texttt{cognitive behavioral therapy}
-\item \texttt{acceptance and commitment therapy}
-\item \texttt{illness perception framework}
-\item \texttt{operant learning}
-\item \texttt{social cognitive theory}
-\item \texttt{self-regulation}
+\item fear-avoidance model, cognitive behavioral therapy, acceptance and commitment therapy
+\item illness perception framework, operant learning, social cognitive theory, self-regulation
 \end{itemize}
 
-\section*{Prompt Specification}
-The implemented system prompt is a strict JSON instruction with the following functional specification:
-\begin{itemize}
-\item Cluster psychological chronic pain review concepts into higher-order families.
-\item Note likely theoretical frameworks.
-\item Return strict JSON with a top-level \field{clusters} list.
-\item Each cluster must contain \field{family}, \field{members}, and \field{possible_frameworks}.
-\end{itemize}
-
-\section*{Expected Output Structure}
+\section*{Cluster Output Schema (current)}
+{\small\itshape The clustering LLM returns strict JSON with a top-level clusters list.}\par\smallskip
 \begin{description}
-\item[\field{clusters}] Top-level list of normalized concept clusters.
-\item[\field{family}] Higher-order concept family label assigned to the cluster.
-\item[\field{members}] The original concept strings grouped into that family.
-\item[\field{possible_frameworks}] Likely theoretical or therapeutic frameworks associated with the family.
+\item[\texttt{clusters}] Top-level list of normalized concept clusters.
+\item[\texttt{family}] Higher-order concept family label for the cluster.
+\item[\texttt{members}] The original concept strings grouped into that family. \textit{(free text)}
+\item[\texttt{possible\_frameworks}] Likely theoretical or therapeutic frameworks associated with the family. \textit{(free text)}
 \end{description}
+
+\section*{Proposed Refinement: Ontology-Aligned Lexicon and Typed Relations}
+\refbadge
+Refinement proposed for expert evaluation. The upstream detector recognizes only 16 concepts, which caps the resolution of RQ3 and misses constructs that appear in the corpus (for example resilience, suffering, functioning, maladaptive beliefs, pain-related thoughts). We propose expanding the detection lexicon and aligning every concept family to one of the 20 psychological subdomains defined in Scheme 6, so the concept map and the semantic ontology share one vocabulary.
+
+We propose enriching the cluster schema so each cluster also carries parent\_subdomain (a Scheme 6 label), definitional\_status aggregated from Stage 3, and typed relations between families (is-a, part-of, associative). Members would each carry the verbatim source label alongside the canonical name.
+
+Finally we propose two validation rules: every detected concept must map to exactly one family (no orphans), and every family must name at least one candidate framework or be explicitly marked framework-free. These rules make the clustering auditable and reproducible rather than free-form.
+
 
 \section*{Analytic Role}
 \begin{itemize}
 \item Preserves the original detected concepts while improving comparability across records.
-\item Supports synthesis questions about which psychological concepts and frameworks dominate the review corpus.
-\item Allows concept families to be interpreted at a higher level than raw string matching alone.
+\item Supports synthesis questions about which psychological concepts and frameworks dominate the corpus.
+\item Allows concept families to be interpreted above raw string matching.
 \end{itemize}
 
-\section*{Interpretive Note}
-This scheme is distinct from the Stage 2 and Stage 3 codebooks because it does not classify whole records. Instead, it normalizes the concept vocabulary itself and therefore functions as a second-order coding scheme over concept strings extracted from the review texts.
+\section*{Primary Outputs Using This Scheme}
+\begin{itemize}
+\item \filepath{src/data/interim/extraction/llm_concept_clusters.json}
+\end{itemize}
 
 \end{document}
-

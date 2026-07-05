@@ -6,24 +6,43 @@
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{enumitem}
-\usepackage{hyperref}
+\usepackage{titlesec}
 \usepackage{xcolor}
+\usepackage{hyperref}
+\definecolor{bpsink}{HTML}{1C2530}
+\definecolor{bpsaccent}{HTML}{2534B8}
+\definecolor{bpsmuted}{HTML}{5B6675}
+\definecolor{bpsenh}{HTML}{7A4BD0}
+\definecolor{bpsline}{HTML}{CDD3DB}
+\definecolor{bpssoft}{HTML}{F0F2F5}
+\definecolor{bpswarnbg}{HTML}{FDF6E6}
+\definecolor{bpswarnink}{HTML}{7A5A00}
 \hypersetup{
   colorlinks=true,
-  linkcolor=black,
-  urlcolor=blue!50!black,
-  pdftitle={Coding Scheme Dossier}
+  linkcolor=bpsaccent,
+  urlcolor=bpsaccent,
+  pdftitle={BPS Coding Scheme Dossier}
 }
-\setlist[itemize]{leftmargin=1.6em}
-\setlist[description]{style=nextline,leftmargin=3.5cm,labelsep=0.6em}
+\setlist[itemize]{leftmargin=1.5em,itemsep=2pt,topsep=3pt}
+\setlist[description]{style=nextline,leftmargin=0em,labelsep=0.6em,itemsep=4pt}
+\titleformat{\section}{\color{bpsink}\large\bfseries}{}{0em}{}[{\color{bpsline}\titlerule}]
+\titlespacing*{\section}{0pt}{1.1em}{0.5em}
 \newcommand{\field}[1]{\nolinkurl{#1}}
-\newcommand{\filepath}[1]{\nolinkurl{#1}}
-\newcommand{\schemeheader}[3]{
+\newcommand{\filepath}[1]{{\small\ttfamily\color{bpsmuted}\nolinkurl{#1}}}
+\newcommand{\refbadge}{{\small\colorbox{bpsenh}{\textcolor{white}{\bfseries\ PROPOSED REFINEMENT \ }}\quad\itshape\color{bpsenh}Awaiting expert evaluation. Not yet applied to the pipeline.\par\smallskip}}
+\newcommand{\schemeheader}[3]{%
   \begin{center}
-    {\LARGE \textbf{#1}}\\[0.5em]
-    {\large #2}\\[0.4em]
-    {\normalsize \textit{#3}}
+    {\LARGE \bfseries\color{bpsink} #1}\\[0.45em]
+    {\large #2}\\[0.35em]
+    {\normalsize \itshape\color{bpsmuted} #3}
   \end{center}
-  \vspace{0.8em}
+  \vspace{0.4em}\hrule\vspace{0.9em}
 }
-
+\newcommand{\statusnote}[2]{%
+  \begin{center}
+  \fcolorbox{bpsline}{bpswarnbg}{%
+    \parbox{0.94\linewidth}{\small\color{bpswarnink}\textbf{#1.}\ #2}%
+  }
+  \end{center}
+  \vspace{0.6em}
+}

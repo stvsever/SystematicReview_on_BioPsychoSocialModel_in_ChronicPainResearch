@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scheme 3 | Stage 3 Full-Text Deep Coding Scheme</title>
+<meta name="description" content="Musculoskeletal-focused full-text adjudication and interpretive coding">
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2530; --muted:#5b6675;
+  --line:#e4e7ec; --line-strong:#cdd3db; --soft:#f0f2f5;
+  --accent:#3b4ce0; --accent-ink:#2534b8;
+  --bio:#0E8F80; --psy:#6D5AE0; --soc:#D98016;
+  --ok:#12855a; --ok-bg:#e6f5ee; --revise:#9a6a00; --revise-bg:#fbf1dc;
+  --discuss:#1f5fae; --discuss-bg:#e6f0fb; --reject:#b23b41; --reject-bg:#fbe9ea;
+  --enh:#7a4bd0; --enh-bg:#f2ecfc; --enh-line:#d9c8f5;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+  --radius:14px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-ink);text-decoration:none}
+a:hover{text-decoration:underline}
+code,.mono{font-family:var(--mono);font-size:.9em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* ---- top action bar ---- */
+.appbar{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.93);
+  backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;
+  gap:12px;padding:9px 22px;flex-wrap:wrap}
+.appbar .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.appbar .brand .dot{width:26px;height:26px;border-radius:8px;display:grid;
+  place-items:center;color:#fff;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,var(--bio),var(--psy) 55%,var(--soc))}
+.appbar .spacer{flex:1}
+.sep{width:1px;height:22px;background:var(--line);margin:0 2px}
+.btn{border:1px solid var(--line-strong);background:#fff;color:var(--ink);
+  border-radius:10px;padding:7px 12px;font-size:13.5px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent-ink);background:#fbfbff}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-ink);color:#fff}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.sm{padding:5px 9px;font-size:12.5px}
+.btn .ic{font-size:14px;line-height:1}
+.savechip{font-size:12px;font-weight:700;color:var(--muted);padding:3px 9px;border-radius:99px;
+  background:var(--soft);border:1px solid var(--line);transition:.2s;white-space:nowrap}
+.savechip.flash{background:var(--ok-bg);color:var(--ok);border-color:#bfe6d2}
+.progress-mini{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.progress-mini .bar{width:120px;height:7px;border-radius:99px;background:var(--soft);overflow:hidden}
+.progress-mini .fill{height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--bio),var(--psy),var(--soc));transition:width .3s}
+
+/* ---- layout ---- */
+.wrap{max-width:1240px;margin:0 auto;padding:24px 22px 100px;
+  display:grid;grid-template-columns:266px 1fr;gap:36px}
+.toc{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 92px);
+  overflow:auto;font-size:13.5px;padding-right:6px}
+.toc h4{margin:0 0 10px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.toc a{display:flex;align-items:center;gap:8px;color:var(--muted);padding:5px 10px;border-radius:8px;
+  border-left:2px solid transparent;margin:1px 0}
+.toc a:hover{background:var(--soft);text-decoration:none;color:var(--ink)}
+.toc a.active{color:var(--accent-ink);background:#eef0fe;border-left-color:var(--accent);font-weight:600}
+.toc a .tlabel{flex:1}
+.toc a .tdot{width:9px;height:9px;border-radius:99px;border:1.5px solid var(--line-strong);flex:none}
+.toc a .tdot[data-v]{border:none}
+.toc a .tdot[data-v="approve"]{background:var(--ok)}
+.toc a .tdot[data-v="revise"]{background:var(--revise)}
+.toc a .tdot[data-v="discuss"]{background:var(--discuss)}
+.toc a .tdot[data-v="reject"]{background:var(--reject)}
+.main{min-width:0}
+
+/* ---- hero ---- */
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 30px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;
+  background:linear-gradient(90deg,var(--bio),var(--psy) 55%,var(--soc))}
+.hero .kicker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:4px 10px;border-radius:99px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.badge.num{background:var(--ink);color:#fff;border-color:var(--ink)}
+.badge.stage{background:#eef0fe;color:var(--accent-ink);border-color:#d7dcff}
+.hero h1{margin:.1em 0 .15em;font-size:27px;line-height:1.2;letter-spacing:-.01em}
+.hero .subtitle{color:var(--ink);font-size:16.5px;margin:0 0 4px}
+.hero .tagline{font-size:14px;color:var(--muted);font-style:italic}
+
+/* ---- status banner ---- */
+.status{margin-top:16px;border:1px solid #f0d9a6;background:#fdf6e6;border-radius:12px;
+  padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-size:14px}
+.status .ic{flex:none;width:26px;height:26px;border-radius:8px;background:#f2b705;color:#3a2b00;
+  display:grid;place-items:center;font-weight:800}
+.status b{color:#7a5a00}
+
+/* ---- meta grid ---- */
+.metagrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.metagrid .cell{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.metagrid .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
+.metagrid .val{font-size:14px}
+.eyebrow{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:99px;background:var(--soft);
+  border:1px solid var(--line);color:var(--ink)}
+.chip.rq{background:#eef0fe;border-color:#d7dcff;color:var(--accent-ink)}
+
+/* ---- how-to / legend / toolbar ---- */
+.howto{background:linear-gradient(180deg,#f7f8ff,#fff 90px);border:1px solid #dfe3fb;
+  border-radius:var(--radius);padding:18px 22px;margin-top:20px;box-shadow:var(--shadow)}
+.howto h2{margin:0 0 4px;font-size:16px}
+.howto .intro{color:var(--muted);font-size:13.5px;margin:.2em 0 .9em}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.legend .lrow{display:flex;gap:10px;align-items:flex-start;font-size:13px;border:1px solid var(--line);
+  border-radius:10px;padding:8px 11px;background:#fff}
+.legend .pill{flex:none;font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;margin-top:1px}
+.legend .pill.approve{background:var(--ok-bg);color:var(--ok)}
+.legend .pill.revise{background:var(--revise-bg);color:var(--revise)}
+.legend .pill.discuss{background:var(--discuss-bg);color:var(--discuss)}
+.legend .pill.reject{background:var(--reject-bg);color:var(--reject)}
+.legend .ld b{display:block;font-size:12.5px}
+.legend .ld span{color:var(--muted);font-size:12.5px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;
+  border-top:1px dashed var(--line);padding-top:13px}
+.toolbar .tlbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.kbd{font-family:var(--mono);font-size:10.5px;background:var(--soft);border:1px solid var(--line-strong);
+  border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted);margin-left:5px}
+
+/* ---- section cards ---- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 28px;margin-top:20px;box-shadow:var(--shadow);scroll-margin-top:76px}
+section.card>h2{margin:0 0 6px;font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.card .intro{color:var(--muted);margin:.2em 0 1em;font-size:14.5px}
+.card p{margin:.55em 0}
+.card ul.plain{margin:.4em 0;padding-left:1.2em}
+.card ul.plain li{margin:.3em 0}
+
+/* enhancement / proposed refinement */
+section.card.enh{border-color:var(--enh-line);background:linear-gradient(180deg,var(--enh-bg),#fff 120px)}
+section.card.enh>h2 .tag{font-size:11px;font-weight:800;color:#fff;background:var(--enh);
+  padding:3px 9px;border-radius:99px;letter-spacing:.03em;text-transform:uppercase}
+body.only-proposed section.card:not(.enh){display:none}
+body.only-proposed #sources-card{display:none}
+
+/* fields */
+.field{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:#fdfdfe}
+.field>.fname{font-family:var(--mono);font-size:13.5px;font-weight:700;color:var(--ink);
+  background:var(--soft);border:1px solid var(--line);border-radius:7px;padding:2px 8px;display:inline-block}
+.field>.fconstruct{margin:9px 0 4px;font-size:14.5px}
+.field .fnotes{font-size:13px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.ladder{margin-top:10px;display:grid;gap:8px}
+.val{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.val>.vhead{display:flex;gap:9px;align-items:center;padding:8px 11px;background:var(--soft)}
+.val.has-body>.vhead{cursor:pointer}
+.val>.vhead .vv{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent-ink)}
+.val>.vhead .va{font-size:13.5px;color:var(--ink);flex:1}
+.val>.vhead .caret{color:var(--muted);transition:.2s;font-size:12px}
+.val.open>.vhead .caret{transform:rotate(90deg)}
+.val>.vbody{display:none;padding:0 12px 12px;font-size:13px}
+.val.open>.vbody{display:block}
+.indi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:9px}
+.indi .box{border-radius:8px;padding:8px 10px}
+.indi .pos{background:var(--ok-bg)}
+.indi .neg{background:var(--reject-bg)}
+.indi .box .lab{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;margin-bottom:4px}
+.indi .pos .lab{color:var(--ok)}
+.indi .neg .lab{color:var(--reject)}
+.indi ul{margin:0;padding-left:1.05em}
+.indi li{margin:2px 0}
+.boundary{margin-top:9px;font-size:12.5px;background:#eef0fe;border:1px solid #d7dcff;
+  border-radius:8px;padding:7px 10px}
+.boundary b{color:var(--accent-ink)}
+
+/* examples */
+.example{border:1px solid var(--line);border-left:3px solid var(--psy);border-radius:10px;
+  padding:13px 15px;margin:11px 0;background:#fdfdfe}
+.example .exrec{font-weight:600;font-size:14.5px}
+.example .exmeta{font-size:12.5px;color:var(--muted);margin:2px 0 8px}
+.example .excode{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.example .excode .kv{font-size:12px;font-family:var(--mono);background:var(--soft);
+  border:1px solid var(--line);border-radius:7px;padding:2px 8px}
+.example .excode .kv b{color:var(--accent-ink)}
+.example .exwhy{font-size:13.5px;color:var(--ink)}
+.example .exwhy .lab{font-weight:700;color:var(--muted);font-size:11px;letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
+
+/* key value list */
+.kvlist{display:grid;gap:8px}
+.kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fdfdfe}
+.kvrow .kk{font-weight:700;font-size:13.5px}
+.kvrow .vv{font-size:14px}
+
+/* subdomain lists (scheme 6) */
+.subgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
+.subgrid .item{font-size:13.5px;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:#fdfdfe;
+  border-left:3px solid var(--dm,#bbb)}
+.paths{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.paths li{font-family:var(--mono);font-size:12.5px;color:var(--muted);background:var(--soft);
+  border:1px solid var(--line);border-radius:8px;padding:6px 10px;word-break:break-all}
+
+/* ---- feedback widget ---- */
+.fb{margin-top:16px;border:1px solid var(--line-strong);border-left:3px solid var(--accent);
+  border-radius:12px;padding:13px 16px;background:#fbfbfe}
+.fb-head{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.fb-title{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink)}
+.fb-status{font-size:12px;font-weight:700;margin-left:auto;padding:2px 9px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.fb-status[data-v="approve"]{background:var(--ok-bg);color:var(--ok)}
+.fb-status[data-v="revise"]{background:var(--revise-bg);color:var(--revise)}
+.fb-status[data-v="discuss"]{background:var(--discuss-bg);color:var(--discuss)}
+.fb-status[data-v="reject"]{background:var(--reject-bg);color:var(--reject)}
+.fb-verdicts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.fb-chip{border:1px solid var(--line-strong);background:#fff;border-radius:99px;padding:5px 12px;
+  font-size:12.5px;font-weight:600;cursor:pointer;transition:.12s;color:var(--muted)}
+.fb-chip:hover{border-color:var(--accent)}
+.fb-chip[aria-pressed="true"][data-verdict="approve"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.fb-chip[aria-pressed="true"][data-verdict="revise"]{background:var(--revise);border-color:var(--revise);color:#fff}
+.fb-chip[aria-pressed="true"][data-verdict="discuss"]{background:var(--discuss);border-color:var(--discuss);color:#fff}
+.fb-chip[aria-pressed="true"][data-verdict="reject"]{background:var(--reject);border-color:var(--reject);color:#fff}
+.fb-clarity{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:9px}
+.stars{display:inline-flex;gap:3px}
+.star{cursor:pointer;font-size:18px;line-height:1;color:#d3d7de;user-select:none}
+.star.on{color:#f2b705}
+.fb-note{width:100%;min-height:64px;border:1px solid var(--line-strong);border-radius:10px;
+  padding:10px 12px;font-family:inherit;font-size:14px;resize:vertical;background:#fff;color:var(--ink)}
+.fb-note:focus{outline:2px solid #d7dcff;border-color:var(--accent)}
+
+/* overall panel */
+.overall{background:linear-gradient(180deg,#fff, #fbfbff);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 26px;margin-top:20px;box-shadow:var(--shadow)}
+.overall h2{margin:0 0 4px;font-size:18px}
+.reviewer{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.reviewer label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.reviewer input{width:100%;border:1px solid var(--line-strong);border-radius:9px;padding:8px 11px;font-size:14px;font-family:inherit}
+.overall .endbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+
+/* footer */
+.foot{max-width:1240px;margin:0 auto;padding:20px 22px;color:var(--muted);font-size:12.5px;text-align:center}
+.foot a{color:var(--muted);text-decoration:underline}
+
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:11px 18px;border-radius:11px;font-size:13.5px;font-weight:600;
+  box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:60}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* index specifics */
+.scheme-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-top:8px}
+.scard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.18s;position:relative;overflow:hidden}
+.scard:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+.scard .snum{position:absolute;top:-10px;right:-6px;font-size:76px;font-weight:800;color:var(--soft);z-index:0;line-height:1}
+.scard>*{position:relative;z-index:1}
+.scard h3{margin:.3em 0 .1em;font-size:16px}
+.scard .sp{font-size:13.5px;color:var(--muted);flex:1;margin:.3em 0 .8em}
+.scard .sactions{display:flex;gap:8px}
+.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:center}
+.stat .n{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+.pipe-wrap{overflow-x:auto;margin-top:8px;padding-bottom:6px}
+.console table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.console th,.console td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+.console th{background:var(--soft);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.console td .pill{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--muted)}
+.console td .pill[data-v="approve"]{background:var(--ok-bg);color:var(--ok)}
+.console td .pill[data-v="revise"]{background:var(--revise-bg);color:var(--revise)}
+.console td .pill[data-v="discuss"]{background:var(--discuss-bg);color:var(--discuss)}
+.console td .pill[data-v="reject"]{background:var(--reject-bg);color:var(--reject)}
+
+@media (max-width:980px){
+  .wrap{grid-template-columns:1fr;gap:18px}
+  .toc{display:none}
+  .metagrid,.reviewer,.indi,.subgrid,.legend{grid-template-columns:1fr}
+  .kvrow{grid-template-columns:1fr}
+}
+@media print{
+  .appbar,.toc,.fb,.howto,.overall .reviewer,.overall .endbar,.btn,.toast{display:none !important}
+  body{background:#fff}
+  .wrap{display:block;max-width:100%;padding:0}
+  section.card,.hero{box-shadow:none;break-inside:avoid}
+  .val>.vbody{display:block !important}
+  body.only-proposed section.card:not(.enh){display:block !important}
+}
+</style>
+</head><body>
+<div class="appbar"><div class="appbar-in">
+  <a class="brand" href="index.html"><span class="dot">BPS</span><span>Scheme 3</span></a>
+  <div class="progress-mini" title="Click to jump to the next unreviewed section"><span class="lab">0 reviewed</span><span class="bar"><span class="fill"></span></span></div>
+  <div class="spacer"></div>
+  <span class="savechip" id="savechip">All changes saved</span>
+  <div class="sep"></div>
+  <button class="btn sm" id="btn-import" title="Load a previously exported feedback file">Import</button>
+  <input type="file" id="file-import" accept="application/json" hidden>
+  <button class="btn sm" id="btn-copy" title="Copy feedback JSON to clipboard">Copy JSON</button>
+  <button class="btn primary sm" id="btn-export" title="Download feedback as JSON (shortcut: s)">Export feedback</button>
+  <button class="btn ghost sm" id="btn-print" title="Print or save as PDF">Print</button>
+</div></div>
+<div class="wrap">
+  <nav class="toc"><h4>On this page</h4><a href="#top"><span class="tlabel">Overview</span></a><a href="#overall"><span class="tlabel">Overall assessment</span><span class="tdot" data-fb-target="overall"></span></a><a href="#purpose"><span class="tlabel">Purpose</span><span class="tdot" data-fb-target="purpose"></span></a><a href="#coverage"><span class="tlabel">Domain Coverage Fields</span><span class="tdot" data-fb-target="coverage"></span></a><a href="#integration"><span class="tlabel">Integration Fields (the core RQ2 contribution)</span><span class="tdot" data-fb-target="integration"></span></a><a href="#typology-balance"><span class="tlabel">Typology and Balance</span><span class="tdot" data-fb-target="typology-balance"></span></a><a href="#concepts"><span class="tlabel">Psychological Concepts and Evidence</span><span class="tdot" data-fb-target="concepts"></span></a><a href="#refinement-concept-grid"><span class="tlabel">Proposed Refinement: Concept-Level Grid and Evidence Rule</span><span class="tdot" data-fb-target="refinement-concept-grid"></span></a><a href="#examples"><span class="tlabel">Worked Examples (real corpus records)</span></a><a href="#reliability"><span class="tlabel">Reliability Architecture</span></a><a href="#divergences"><span class="tlabel">Documented Divergences</span><span class="tdot" data-fb-target="divergences"></span></a></nav>
+  <main class="main">
+    <div id="top" class="hero">
+  <div class="kicker">
+    <span class="badge num">Scheme 3</span>
+    <span class="badge stage">Stage 3</span>
+    <span class="badge">DRAFT FOR EXPERT EVALUATION</span>
+  </div>
+  <h1>Stage 3 Full-Text Deep Coding Scheme</h1>
+  <p class="subtitle">Musculoskeletal-focused full-text adjudication and interpretive coding</p>
+  <p class="tagline">Human-coded template with pilot and reliability subsamples</p>
+  <div class="status"><span class="ic">!</span><div><b>Draft for expert evaluation.</b>
+    These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run. This surface lets you record a verdict and comments per section and export them as JSON.</div></div>
+  <div class="metagrid"><div class="cell"><div class="k">Workflow position</div><div class="val">Full-text coding after Stage 3 candidate identification and retrieval triage.</div></div><div class="cell"><div class="k">Operational mode</div><div class="val">Human-coded template with pilot and reliability subsamples. AI may assist concept mapping; final adjudication is human.</div></div><div class="cell"><div class="k">Unit of analysis</div><div class="val">One retrieved full-text review, coded against the complete text.</div></div><div class="cell"><div class="k">Provenance basis</div><div class="val">The generated full-text template and the prose Stage 3 codebook.</div></div></div>
+  <div style="margin-top:14px"><div class="k" style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px">Research-question linkage</div>
+    <div class="chips"><span class="chip rq">RQ2 (scope, balance, integration)</span><span class="chip rq">RQ3 (concepts, frameworks, definitions)</span><span class="chip rq">SQ1 (conceptual problems)</span></div></div>
+</div>
+    <div class="howto">
+  <h2>How to give feedback</h2>
+  <p class="intro">Every section below has an <b>Expert feedback</b> box. Pick one verdict, rate how clearly the specification is written, and add comments. Everything you enter autosaves in this browser; use <b>Export feedback</b> in the top bar to download a JSON file to share, or <b>Import</b> to restore one.</p>
+  <div class="legend">
+    <div class="lrow"><span class="pill approve">Approve</span><span class="ld"><b>Ready as written</b><span>Adopt this section without changes.</span></span></div>
+    <div class="lrow"><span class="pill revise">Approve with revisions</span><span class="ld"><b>Adopt after edits</b><span>Fine in principle; note the changes in the comment.</span></span></div>
+    <div class="lrow"><span class="pill discuss">Needs discussion</span><span class="ld"><b>Raise at consensus</b><span>Unresolved; flag for the team meeting.</span></span></div>
+    <div class="lrow"><span class="pill reject">Reject</span><span class="ld"><b>Do not adopt</b><span>Explain why in the comment.</span></span></div>
+  </div>
+  <div class="toolbar">
+    <span class="tlbl">Reading tools</span>
+    <button class="btn sm" id="btn-expand" title="Open every value definition">Expand all<span class="kbd">e</span></button>
+    <button class="btn sm" id="btn-collapse" title="Close every value definition">Collapse all<span class="kbd">c</span></button>
+    <button class="btn sm" id="btn-filter" aria-pressed="false" title="Show only the sections marked Proposed">Show only proposed<span class="kbd">p</span></button>
+    <button class="btn sm" id="btn-next" title="Scroll to the next section without a verdict">Next unreviewed<span class="kbd">n</span></button>
+  </div>
+</div>
+    <div id="overall" class="overall">
+  <h2>Overall assessment</h2>
+  <p class="intro">Identify yourself, then give an overall verdict on this scheme. Per-section feedback is collected in each card below and included in the export.</p>
+  <div class="reviewer">
+    <div><label for="rev-name">Reviewer name</label><input id="rev-name" type="text" placeholder="e.g. G. Crombez"></div>
+    <div><label for="rev-role">Role or expertise</label><input id="rev-role" type="text" placeholder="e.g. pain psychology, methodology"></div>
+  </div>
+  <div class="fb" data-fb-id="overall" data-fb-label="Overall assessment of Scheme 3"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div>
+  <div class="endbar">
+    <button class="btn primary" id="btn-export2" onclick="document.getElementById('btn-export').click()">Export feedback as JSON</button>
+    <span style="font-size:12.5px;color:var(--muted)">Your feedback stays in this browser until you export it.</span>
+    <span class="spacer" style="flex:1"></span>
+    <button class="btn ghost sm" id="btn-reset" title="Clear all saved feedback for this scheme">Clear all feedback</button>
+  </div>
+</div>
+    <section id="sources-card" class="card"><h2>Canonical Source Paths</h2>
+  <p class="intro">Where this scheme is implemented and specified in the repository. Paths reflect the original project layout.</p>
+  <ul class="paths"><li>src/protocol/codebooks/stage3_codebook.md</li><li>src/review_stages/04_extraction/codebooks/stage3_codebook.csv</li><li>src/bps_review/extraction/stage3_prep.py</li><li>src/review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv</li><li>src/review_stages/04_extraction/forms/stage3_pilot_sample.csv</li><li>src/review_stages/04_extraction/forms/stage3_reliability_sample.csv</li></ul>
+  <h2 style="margin-top:18px;font-size:16px">Primary Outputs</h2>
+  <ul class="paths"><li>src/review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv</li><li>src/review_stages/04_extraction/forms/stage3_pilot_sample.csv</li><li>src/review_stages/04_extraction/forms/stage3_reliability_sample.csv</li><li>src/review_stages/04_extraction/outputs/stage3_candidate_manifest.csv</li></ul>
+</section>
+    <section id="purpose" class="card"><h2>Purpose</h2><p>This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.</p><p>Stage 3 is where the review&#x27;s central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.</p><div class="fb" data-fb-id="purpose" data-fb-label="Purpose"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="coverage" class="card"><h2>Domain Coverage Fields</h2><p class="intro">Coverage is coded at the level of substantive treatment, not keyword presence. The same four-level ladder applies to each domain.</p><div class="field"><span class="fname">domain_coverage_bio</span><div class="fconstruct">Depth of biological content.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">elaborated</span><span class="va">The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A dedicated section or sustained multi-paragraph treatment</li><li>Two or more distinct constructs named and related to one another</li><li>Evidence is appraised, not only cited in passing</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A single passing sentence</li><li>Only the domain umbrella word</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>One or two named constructs</li><li>A short paragraph or scattered sentences</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Only the umbrella word such as the bare token psychosocial</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">minimal</span><span class="va">The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Bare token such as social factors with no elaboration</li><li>One incidental clause</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct, which would qualify as mentioned</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer minimal over absent when the domain word appears at all.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">absent</span><span class="va">The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>No domain-specific language beyond a global BPS label</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct or umbrella mention</li></ul></div></div><div class="boundary"><b>Boundary.</b> A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.</div></div></div></div></div><div class="field"><span class="fname">domain_coverage_psych</span><div class="fconstruct">Depth of psychological content.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">elaborated</span><span class="va">The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A dedicated section or sustained multi-paragraph treatment</li><li>Two or more distinct constructs named and related to one another</li><li>Evidence is appraised, not only cited in passing</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A single passing sentence</li><li>Only the domain umbrella word</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>One or two named constructs</li><li>A short paragraph or scattered sentences</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Only the umbrella word such as the bare token psychosocial</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">minimal</span><span class="va">The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Bare token such as social factors with no elaboration</li><li>One incidental clause</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct, which would qualify as mentioned</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer minimal over absent when the domain word appears at all.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">absent</span><span class="va">The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>No domain-specific language beyond a global BPS label</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct or umbrella mention</li></ul></div></div><div class="boundary"><b>Boundary.</b> A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.</div></div></div></div></div><div class="field"><span class="fname">domain_coverage_social</span><div class="fconstruct">Depth of social content.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">elaborated</span><span class="va">The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A dedicated section or sustained multi-paragraph treatment</li><li>Two or more distinct constructs named and related to one another</li><li>Evidence is appraised, not only cited in passing</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A single passing sentence</li><li>Only the domain umbrella word</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>One or two named constructs</li><li>A short paragraph or scattered sentences</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Only the umbrella word such as the bare token psychosocial</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">minimal</span><span class="va">The domain appears only as an umbrella label or a single incidental reference, with no concrete construct attached.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Bare token such as social factors with no elaboration</li><li>One incidental clause</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct, which would qualify as mentioned</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer minimal over absent when the domain word appears at all.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">absent</span><span class="va">The domain is not represented in the substantive content of the review, even if a global BPS label is used elsewhere.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>No domain-specific language beyond a global BPS label</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any named construct or umbrella mention</li></ul></div></div><div class="boundary"><b>Boundary.</b> A review can carry a BPS label and still score a domain as absent. The label alone is never counted as coverage.</div></div></div></div></div><div class="fb" data-fb-id="coverage" data-fb-label="Domain Coverage Fields"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="integration" class="card"><h2>Integration Fields (the core RQ2 contribution)</h2><p class="intro">Integration is the scheme&#x27;s highest-resolution construct. The pairwise ladder distinguishes a stated mechanism from a mere direction, an association, or a bare co-mention.</p><div class="field"><span class="fname">integration_bio_psych</span><div class="fconstruct">Biological to psychological integration.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mechanistic</span><span class="va">The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that).</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Named mediator, moderator, or physiological or behavioural pathway</li><li>Language such as via, through, drives, sensitizes, amplifies</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Two domains listed as co-occurring with no linking process</li></ul></div></div><div class="boundary"><b>Boundary.</b> Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">directional</span><span class="va">A directional or causal influence between the two domains is asserted, but no mechanism is given.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>X predicts, increases, or worsens Y</li><li>A stated arrow of influence</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A pathway is described, which would be mechanistic</li><li>Mere co-mention with no direction</li></ul></div></div><div class="boundary"><b>Boundary.</b> Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">descriptive</span><span class="va">The two domains are linked as associated or correlated, without direction or mechanism.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Associated with, related to, correlated with, linked to</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A stated direction of effect, which would be directional</li></ul></div></div><div class="boundary"><b>Boundary.</b> Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">Both domains appear near one another but the relationship is not characterized at all.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Two domains named in the same passage with no relational verb</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any associational, directional, or mechanistic claim</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">none</span><span class="va">No relationship between the two domains is articulated anywhere in the review.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Domains handled in separate silos, or one domain absent</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any co-located relational statement</li></ul></div></div><div class="boundary"><b>Boundary.</b> If either domain is absent, the pairwise code defaults to none.</div></div></div></div></div><div class="field"><span class="fname">integration_psych_social</span><div class="fconstruct">Psychological to social integration.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mechanistic</span><span class="va">The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that).</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Named mediator, moderator, or physiological or behavioural pathway</li><li>Language such as via, through, drives, sensitizes, amplifies</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Two domains listed as co-occurring with no linking process</li></ul></div></div><div class="boundary"><b>Boundary.</b> Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">directional</span><span class="va">A directional or causal influence between the two domains is asserted, but no mechanism is given.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>X predicts, increases, or worsens Y</li><li>A stated arrow of influence</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A pathway is described, which would be mechanistic</li><li>Mere co-mention with no direction</li></ul></div></div><div class="boundary"><b>Boundary.</b> Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">descriptive</span><span class="va">The two domains are linked as associated or correlated, without direction or mechanism.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Associated with, related to, correlated with, linked to</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A stated direction of effect, which would be directional</li></ul></div></div><div class="boundary"><b>Boundary.</b> Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">Both domains appear near one another but the relationship is not characterized at all.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Two domains named in the same passage with no relational verb</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any associational, directional, or mechanistic claim</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">none</span><span class="va">No relationship between the two domains is articulated anywhere in the review.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Domains handled in separate silos, or one domain absent</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any co-located relational statement</li></ul></div></div><div class="boundary"><b>Boundary.</b> If either domain is absent, the pairwise code defaults to none.</div></div></div></div></div><div class="field"><span class="fname">integration_bio_social</span><div class="fconstruct">Biological to social integration.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mechanistic</span><span class="va">The review specifies a pathway or mechanism by which one domain acts on the other (a how, not only a that).</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Named mediator, moderator, or physiological or behavioural pathway</li><li>Language such as via, through, drives, sensitizes, amplifies</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Two domains listed as co-occurring with no linking process</li></ul></div></div><div class="boundary"><b>Boundary.</b> Mechanistic requires a stated process; if only a direction of effect is claimed without a pathway, use directional.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">directional</span><span class="va">A directional or causal influence between the two domains is asserted, but no mechanism is given.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>X predicts, increases, or worsens Y</li><li>A stated arrow of influence</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A pathway is described, which would be mechanistic</li><li>Mere co-mention with no direction</li></ul></div></div><div class="boundary"><b>Boundary.</b> Directional requires an arrow of effect; if the link is only an association or correlation, use descriptive.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">descriptive</span><span class="va">The two domains are linked as associated or correlated, without direction or mechanism.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Associated with, related to, correlated with, linked to</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A stated direction of effect, which would be directional</li></ul></div></div><div class="boundary"><b>Boundary.</b> Descriptive requires an explicit relational claim; a bare co-occurrence in the same sentence is only mentioned.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mentioned</span><span class="va">Both domains appear near one another but the relationship is not characterized at all.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Two domains named in the same passage with no relational verb</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any associational, directional, or mechanistic claim</li></ul></div></div><div class="boundary"><b>Boundary.</b> Prefer mentioned over none only when both domains are present in a shared context rather than in separate isolated sections.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">none</span><span class="va">No relationship between the two domains is articulated anywhere in the review.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Domains handled in separate silos, or one domain absent</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any co-located relational statement</li></ul></div></div><div class="boundary"><b>Boundary.</b> If either domain is absent, the pairwise code defaults to none.</div></div></div></div></div><div class="field"><span class="fname">integration_triadic</span><div class="fconstruct">Three-domain integration.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">mechanistic</span><span class="va">A genuinely three-domain mechanism is proposed in which biological, psychological, and social factors act on one another as a system.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A cross-domain loop or cascade involving all three domains</li><li>All three domains appear as active parts of one explanation</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Two domains interact while the third is only listed</li></ul></div></div><div class="boundary"><b>Boundary.</b> Reserve for reasoning where removing any one domain breaks the proposed explanation.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">descriptive</span><span class="va">All three domains are related to the outcome in an integrated narrative, but as a joint description rather than a specified mechanism.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A coherent three-domain account without a stated pathway</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>A concrete cross-domain pathway, which would be mechanistic</li></ul></div></div><div class="boundary"><b>Boundary.</b> Descriptive triadic still requires all three domains to be in genuine relation, not merely co-present.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">partial</span><span class="va">Two domains are integrated with each other while the third is present but only loosely attached.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>A strong bio-psych link with social mentioned but not integrated</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>All three integrated (descriptive or mechanistic)</li><li>Only one domain present</li></ul></div></div><div class="boundary"><b>Boundary.</b> Partial marks a dyadic integration inside a nominally triadic frame.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">none</span><span class="va">No three-domain integration is present; domains stand in parallel or one or more is absent.</span></div><div class="vbody"><div class="indi"><div class="box pos"><div class="lab">Choose when</div><ul><li>Serial mention of separate domains</li><li>Single-domain reasoning</li></ul></div><div class="box neg"><div class="lab">Not this if</div><ul><li>Any genuine multi-domain relational claim</li></ul></div></div><div class="boundary"><b>Boundary.</b> Serial listing of B, P, and S in turn is none, not descriptive.</div></div></div></div></div><div class="field"><span class="fname">integration_mechanism_summary</span><div class="fconstruct">Concise free-text summary of the proposed cross-domain pathways. <span class="chip" style="font-size:11px">free text</span></div></div><div class="fb" data-fb-id="integration" data-fb-label="Integration Fields (the core RQ2 contribution)"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="typology-balance" class="card"><h2>Typology and Balance</h2><p class="intro">The summary judgments that answer RQ1 at full-text depth.</p><div class="field"><span class="fname">overall_balance</span><div class="fconstruct">Relative emphasis across domains.</div><div class="ladder"><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">balanced</span><span class="va">No domain dominates; the three are weighted comparably.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">psych-dominant</span><span class="va">Psychological content dominates.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">bio-dominant</span><span class="va">Biological content dominates.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">social-dominant</span><span class="va">Social content dominates.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">dyadic</span><span class="va">Two domains dominate and one is marginal.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">unclear</span><span class="va">Balance cannot be determined.</span></div></div></div></div><div class="field"><span class="fname">bps_typology</span><div class="fconstruct">Full-text BPS operationalization type.</div><div class="ladder"><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">true_integrative</span><span class="va">Explicit cross-domain causal or mechanistic interaction is central to the review&#x27;s logic.</span></div><div class="vbody"><div class="boundary"><b>Boundary.</b> Requires at least descriptive triadic integration plus two elaborated domains.</div></div></div><div class="val has-body"><div class="vhead" role="button" tabindex="0" aria-expanded="false"><span class="caret">&#9656;</span><span class="vv">multifactorial</span><span class="va">Multiple domains covered meaningfully but mostly in parallel.</span></div><div class="vbody"><div class="boundary"><b>Boundary.</b> Distinguished from true_integrative by the absence of a genuine cross-domain link.</div></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">pseudo_bps</span><span class="va">BPS language used but one or more core domains are thin, absent, or tokenistic.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">rhetorical_bps</span><span class="va">BPS used mainly as framing or justification without analytic substance.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">narrow_despite_label</span><span class="va">BPS claimed but substantive scope is essentially single-domain.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">unclear</span><span class="va">Type cannot be determined.</span></div></div></div></div><div class="fb" data-fb-id="typology-balance" data-fb-label="Typology and Balance"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="concepts" class="card"><h2>Psychological Concepts and Evidence</h2><p class="intro">Concept-level fields that feed RQ3 and the concept map.</p><div class="field"><span class="fname">concept_definitions_present</span><div class="fconstruct">Whether the review defines the psychological constructs it uses.</div><div class="ladder"><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">yes</span><span class="va">Constructs are explicitly defined or operationalized.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">partial</span><span class="va">Some constructs defined, others named only.</span></div></div><div class="val"><div class="vhead"><span class="caret" style="visibility:hidden">&#9656;</span><span class="vv">no</span><span class="va">Constructs named without definition.</span></div></div></div></div><div class="field"><span class="fname">psychological_concepts_fulltext</span><div class="fconstruct">Normalized, semicolon-delimited full-text concept list. <span class="chip" style="font-size:11px">free text</span></div></div><div class="field"><span class="fname">theoretical_frameworks_fulltext</span><div class="fconstruct">Normalized, semicolon-delimited framework list. <span class="chip" style="font-size:11px">free text</span></div></div><div class="field"><span class="fname">conceptual_problems_fulltext</span><div class="fconstruct">Conceptual issues such as vague definitions, construct overlap, tokenistic BPS use, missing social analysis, missing biology, mechanistic absence, or unclear boundaries. <span class="chip" style="font-size:11px">free text</span></div></div><div class="field"><span class="fname">integration_quotes_or_evidence</span><div class="fconstruct">Supporting quotations, section references, or evidential anchors from the full text. <span class="chip" style="font-size:11px">free text</span></div></div><div class="field"><span class="fname">coder_id / coder_notes / adjudication_status</span><div class="fconstruct">Provenance and adjudication tracking fields.</div></div><div class="fb" data-fb-id="concepts" data-fb-label="Psychological Concepts and Evidence"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="refinement-concept-grid" class="card enh"><h2><span class="tag">Proposed</span>Proposed Refinement: Concept-Level Grid and Evidence Rule</h2><p>Refinement proposed for expert evaluation. The current scheme stores concepts as a flat delimited string, which loses the structure that RQ3 needs. We propose a per-concept grid with one row per concept carrying: canonical concept name, verbatim label used in the review, definitional status (formally defined, operationalized only, named only), parent psychological subdomain (aligned to Scheme 6), associated framework, and a relation type to other concepts (is-a, part-of, or associative).</p><p>We also propose an evidence rule: any pairwise or triadic integration coded above mentioned must carry at least one verbatim quote with a section locator in integration_quotes_or_evidence. This makes the integration ladder auditable and prevents inflation of mechanistic codes.</p><p>Together these raise both the resolution of the concept map and the evidential quality of the integration judgments.</p><div class="fb" data-fb-id="refinement-concept-grid" data-fb-label="Proposed Refinement: Concept-Level Grid and Evidence Rule"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section><section id="examples" class="card"><h2>Worked Examples (real corpus records)</h2><p class="intro">Candidate records from the manifest with the target full-text reading.</p><div class="example"><div class="exrec">Biopsychosocial approach to tendinopathy</div><div class="exmeta">Narrative review, 2022, PMC cached</div><div class="excode"><span class="kv"><b>bps_typology</b> = true_integrative (target)</span><span class="kv"><b>integration_triadic</b> = descriptive</span><span class="kv"><b>concept_definitions_present</b> = partial</span></div><div class="exwhy"><span class="lab">Why</span>An integrative-signal abstract; at full text the coder tests whether the three domains are related or merely co-present. Fear-avoidance and self-efficacy are named, so concepts are at least partial.</div></div><div class="example"><div class="exrec">Effects of Multidisciplinary Biopsychosocial Rehabilitation on Short-Term Pain and Disability in Chronic Low Back Pain</div><div class="exmeta">Network meta-analysis, PMC cached</div><div class="excode"><span class="kv"><b>bps_typology</b> = multifactorial (target)</span><span class="kv"><b>integration_triadic</b> = none or partial</span><span class="kv"><b>domain_coverage_bio</b> = minimal to mentioned</span></div><div class="exwhy"><span class="lab">Why</span>The abstract flags missing_biology and parallel-listing. Full text usually confirms a treatment-bundle framing rather than an integrated mechanism.</div></div></section><section id="reliability" class="card"><h2>Reliability Architecture</h2><p class="intro">How Stage 3 agreement is estimated (OSF: 20 percent, capped at 20 full texts; test run reliability subset was 18).</p><ul class="plain"><li>Pilot sample: up to 5 records generated by stage3_prep.py.</li><li>Reliability sample: about 20 percent of candidates, capped in the form-generation logic.</li><li>Reliability fields carry independent reviewer ratings for domain coverage, triadic integration, and BPS typology, followed by adjudicated values.</li></ul></section><section id="divergences" class="card"><h2>Documented Divergences</h2><ul class="plain"><li>The prose Stage 3 codebook exposes the intermediary integration values partial and mentioned more explicitly than the CSV codebook. This dossier follows the prose codebook plus the actual form field names because that is the richer operational specification.</li><li>The CSV codebook uses shorter names such as bio_coverage; the generated template uses domain_coverage_bio. The template naming is canonical here because it is the working form.</li></ul><div class="fb" data-fb-id="divergences" data-fb-label="Documented Divergences"><div class="fb-head"><span class="fb-title">Expert feedback</span><span class="fb-status" data-role="status">Not reviewed</span></div><div class="fb-verdicts" role="group" aria-label="Verdict"><button class="fb-chip" data-verdict="approve" aria-pressed="false">Approve</button><button class="fb-chip" data-verdict="revise" aria-pressed="false">Approve with revisions</button><button class="fb-chip" data-verdict="discuss" aria-pressed="false">Needs discussion</button><button class="fb-chip" data-verdict="reject" aria-pressed="false">Reject</button></div><div class="fb-clarity">Clarity of specification:<span class="stars" role="group" aria-label="Clarity rating"><span class="star" data-n="1" title="1 of 5">&#9733;</span><span class="star" data-n="2" title="2 of 5">&#9733;</span><span class="star" data-n="3" title="3 of 5">&#9733;</span><span class="star" data-n="4" title="4 of 5">&#9733;</span><span class="star" data-n="5" title="5 of 5">&#9733;</span></span></div><textarea class="fb-note" placeholder="Comments, suggested wording, missing anchors, edge cases, or reasons for the verdict..."></textarea></div></section>
+  </main>
+</div>
+<div class="foot">
+  How the Biopsychosocial Model Frames Chronic Pain Research &middot; OSF 10.17605/OSF.IO/T4FAM &middot;
+  Coding scheme dossier v2.0-draft &middot; 2026-07-05<br>
+  Feedback is stored locally in your browser and only leaves your machine when you export it.
+</div>
+<script>window.__SCHEME__={"id":"scheme_3","title":"Stage 3 Full-Text Deep Coding Scheme"};</script>
+<script>
+(function(){
+  "use strict";
+  const $ = (s,r)=> (r||document).querySelector(s);
+  const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+  const META = window.__SCHEME__ || {id:"aggregate",title:"Aggregate"};
+  const KEY = "bpsfb::"+META.id;
+  const VERDICT_LABEL = {approve:"Approved",revise:"Revise",discuss:"Discuss",reject:"Reject"};
+
+  function toast(msg){
+    let t=$(".toast"); if(!t){t=document.createElement("div");t.className="toast";document.body.appendChild(t);}
+    t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1900);
+  }
+  function flashSaved(){
+    const c=$("#savechip"); if(!c) return; c.textContent="Saved"; c.classList.add("flash");
+    clearTimeout(c._h); c._h=setTimeout(()=>{c.classList.remove("flash");c.textContent="All changes saved";},1100);
+  }
+
+  // ---------- state ----------
+  function load(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};} }
+  function persist(){ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} flashSaved(); }
+  let state = load();
+
+  // ---------- TOC review dots ----------
+  function updateToc(){
+    $$(".toc a .tdot").forEach(d=>{ const id=d.dataset.fbTarget; const v=(state[id]||{}).verdict;
+      if(v) d.setAttribute("data-v",v); else d.removeAttribute("data-v"); });
+  }
+
+  function applyToWidget(fb){
+    const id = fb.dataset.fbId; const d = state[id]||{};
+    fb.dataset.verdict = d.verdict||"";
+    fb.dataset.clarity = d.clarity||"";
+    $$(".fb-chip",fb).forEach(c=> c.setAttribute("aria-pressed", String(c.dataset.verdict===d.verdict)));
+    const st = $(".fb-status",fb);
+    if(st){ if(d.verdict){st.textContent=VERDICT_LABEL[d.verdict];st.dataset.v=d.verdict;} else {st.textContent="Not reviewed";st.removeAttribute("data-v");} }
+    $$(".star",fb).forEach(s=> s.classList.toggle("on", Number(s.dataset.n)<=Number(d.clarity||0)));
+    const note=$(".fb-note",fb); if(note && document.activeElement!==note) note.value = d.comment||"";
+  }
+  function readReviewer(){
+    return {name:(($("#rev-name")||{}).value||"").trim(), role:(($("#rev-role")||{}).value||"").trim()};
+  }
+  function writeReviewer(r){
+    if($("#rev-name")) $("#rev-name").value=r.name||"";
+    if($("#rev-role")) $("#rev-role").value=r.role||"";
+  }
+
+  function updateProgress(){
+    const all=$$(".fb"); const done=all.filter(fb=>fb.dataset.verdict).length;
+    const pct = all.length? Math.round(100*done/all.length):0;
+    const fill=$(".progress-mini .fill"); if(fill) fill.style.width=pct+"%";
+    const lab=$(".progress-mini .lab"); if(lab) lab.textContent=done+" / "+all.length+" reviewed";
+    updateToc();
+  }
+
+  function setVerdict(fb,val){
+    const id=fb.dataset.fbId; state[id]=state[id]||{label:fb.dataset.fbLabel};
+    state[id].verdict = (state[id].verdict===val)? "" : val;
+    persist(); applyToWidget(fb); updateProgress();
+  }
+  function setClarity(fb,n){
+    const id=fb.dataset.fbId; state[id]=state[id]||{label:fb.dataset.fbLabel};
+    state[id].clarity = (Number(state[id].clarity)===n)? 0 : n;
+    persist(); applyToWidget(fb);
+  }
+  function setNote(fb,txt){
+    const id=fb.dataset.fbId; state[id]=state[id]||{label:fb.dataset.fbLabel};
+    state[id].comment=txt; persist();
+  }
+
+  // ---------- wire widgets ----------
+  $$(".fb").forEach(fb=>{
+    if(!state[fb.dataset.fbId]) state[fb.dataset.fbId]={label:fb.dataset.fbLabel};
+    $$(".fb-chip",fb).forEach(c=> c.addEventListener("click",()=>setVerdict(fb,c.dataset.verdict)));
+    $$(".star",fb).forEach(s=>{
+      s.addEventListener("click",()=>setClarity(fb,Number(s.dataset.n)));
+      s.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();setClarity(fb,Number(s.dataset.n));} });
+    });
+    const note=$(".fb-note",fb); if(note){ note.addEventListener("input",()=>setNote(fb,note.value)); }
+    applyToWidget(fb);
+  });
+  if(state.__reviewer) writeReviewer(state.__reviewer);
+  $$("#rev-name,#rev-role").forEach(inp=> inp && inp.addEventListener("input",()=>{
+    state.__reviewer=readReviewer(); persist();
+  }));
+  updateProgress();
+
+  // ---------- collapsible value ladders ----------
+  $$(".val.has-body>.vhead").forEach(h=> h.addEventListener("click",()=> h.parentElement.classList.toggle("open")));
+  function expandAll(open){ $$(".val.has-body").forEach(v=> v.classList.toggle("open",open)); }
+  const be=$("#btn-expand"); if(be) be.addEventListener("click",()=>expandAll(true));
+  const bc=$("#btn-collapse"); if(bc) bc.addEventListener("click",()=>expandAll(false));
+
+  // ---------- filter to proposed refinements ----------
+  const bf=$("#btn-filter");
+  if(bf) bf.addEventListener("click",()=>{
+    const on=document.body.classList.toggle("only-proposed");
+    bf.setAttribute("aria-pressed",String(on));
+    bf.textContent = on? "Show all sections" : "Show only proposed";
+    toast(on? "Showing proposed refinements only" : "Showing all sections");
+  });
+
+  // ---------- jump to next unreviewed ----------
+  function nextUnreviewed(){
+    const target=$$(".fb").find(fb=>!fb.dataset.verdict);
+    if(!target){ toast("Every section has a verdict"); return; }
+    const sec=target.closest("section, .overall"); (sec||target).scrollIntoView({behavior:"smooth",block:"start"});
+    const note=$(".fb-note",target); setTimeout(()=>note&&note.focus(),400);
+  }
+  const bn=$("#btn-next"); if(bn) bn.addEventListener("click",nextUnreviewed);
+  const pm=$(".progress-mini"); if(pm) pm.addEventListener("click",nextUnreviewed);
+
+  // ---------- scroll-spy TOC ----------
+  const links=$$(".toc a"); const map={};
+  links.forEach(a=>{ const id=a.getAttribute("href").slice(1); const el=document.getElementById(id); if(el) map[id]=a; });
+  if(Object.keys(map).length){
+    const ob=new IntersectionObserver((ents)=>{
+      ents.forEach(e=>{ if(e.isIntersecting){ links.forEach(l=>l.classList.remove("active"));
+        const a=map[e.target.id]; if(a) a.classList.add("active"); } });
+    },{rootMargin:"-70px 0px -70% 0px",threshold:0});
+    Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) ob.observe(el); });
+  }
+
+  // ---------- export / import / copy ----------
+  function collect(){
+    const items={};
+    $$(".fb").forEach(fb=>{ const d=state[fb.dataset.fbId]||{};
+      items[fb.dataset.fbId]={label:fb.dataset.fbLabel,verdict:d.verdict||"",clarity:d.clarity?Number(d.clarity):null,comment:d.comment||""};
+    });
+    return {schema:"bps-coding-scheme-feedback",version:"1.0",scheme_id:META.id,scheme_title:META.title,
+      reviewer:readReviewer(),generated_at:new Date().toISOString(),items};
+  }
+  function download(obj,fname){
+    const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+    const u=URL.createObjectURL(blob); const a=document.createElement("a");
+    a.href=u; a.download=fname; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),400);
+  }
+  function ingest(obj){
+    if(!obj||!obj.items){ toast("No feedback items found in file"); return; }
+    if(obj.scheme_id && obj.scheme_id!==META.id){ toast("Note: file is for "+obj.scheme_id); }
+    Object.keys(obj.items).forEach(id=>{ const it=obj.items[id];
+      state[id]=Object.assign(state[id]||{},{label:it.label||id,verdict:it.verdict||"",
+        clarity:it.clarity||0,comment:it.comment||""}); });
+    if(obj.reviewer){ state.__reviewer=obj.reviewer; writeReviewer(obj.reviewer); }
+    persist(); $$(".fb").forEach(applyToWidget); updateProgress(); toast("Feedback imported");
+  }
+
+  const exp=$("#btn-export"); if(exp) exp.addEventListener("click",()=>{
+    download(collect(), META.id+"_feedback.json"); toast("Exported "+META.id+"_feedback.json");
+  });
+  const cpy=$("#btn-copy"); if(cpy) cpy.addEventListener("click",async()=>{
+    const txt=JSON.stringify(collect(),null,2);
+    try{ await navigator.clipboard.writeText(txt); toast("Feedback JSON copied to clipboard"); }
+    catch(e){ download(collect(),META.id+"_feedback.json"); toast("Clipboard blocked; downloaded instead"); }
+  });
+  const imp=$("#btn-import"); const impf=$("#file-import");
+  if(imp&&impf){ imp.addEventListener("click",()=>impf.click());
+    impf.addEventListener("change",e=>{ const f=e.target.files[0]; if(!f)return;
+      const r=new FileReader(); r.onload=()=>{ try{ingest(JSON.parse(r.result));}catch(err){toast("Invalid JSON file");} };
+      r.readAsText(f); impf.value=""; });
+  }
+  const pr=$("#btn-print"); if(pr) pr.addEventListener("click",()=>window.print());
+  const rs=$("#btn-reset"); if(rs) rs.addEventListener("click",()=>{
+    if(confirm("Clear all feedback saved in this browser for this scheme? Export first if you want a copy.")){
+      state={}; persist(); $$(".fb").forEach(applyToWidget); writeReviewer({}); updateProgress(); toast("Feedback cleared");
+    }
+  });
+
+  // ---------- keyboard shortcuts ----------
+  document.addEventListener("keydown",e=>{
+    const t=e.target.tagName; if(t==="INPUT"||t==="TEXTAREA"||e.metaKey||e.ctrlKey||e.altKey) return;
+    if(e.key==="e"){expandAll(true);} else if(e.key==="c"){expandAll(false);}
+    else if(e.key==="n"){nextUnreviewed();} else if(e.key==="p"&&bf){bf.click();}
+    else if(e.key==="s"){e.preventDefault(); exp&&exp.click();}
+  });
+
+  window.__FB__ = {collect, ingest, state:()=>state};
+})();
+</script>
+</body></html>

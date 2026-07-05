@@ -7,15 +7,17 @@
   {BPS Ontology and Semantic Loading Benchmark Scheme}
   {Ontology prompts for benchmark-relative semantic quantification}
 
-\section*{Purpose}
-This scheme supplies the ontology scaffold used to quantify semantic emphasis across biological, psychological, and social axes. It is not a manual adjudication form, but it is an operational text-classification framework because it standardizes the domain and subdomain prompts against which review records are embedded and compared.
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
 
-\section*{Operational Status}
-\begin{itemize}
-\item Workflow position: semantic loading and synthesis stage after Stage 2 coding.
-\item Operational mode: ontology-prompted embedding benchmark, with OpenRouter embeddings when available and TF-IDF fallback otherwise.
-\item Canonical implementation basis: \filepath{src/bps_review/reporting/semantic_loading.py} and the archived ontology terms JSON.
-\end{itemize}
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Semantic loading and synthesis after Stage 2 coding.
+\item[Operational mode] Ontology-prompted embedding benchmark, with OpenRouter embeddings when available and TF-IDF fallback otherwise.
+\item[Unit of analysis] One composed record string (title, abstract, objective) scored against domain and subdomain prompts.
+\item[Provenance basis] semantic\_loading.py and the archived ontology terms JSON (openai/text-embedding-3-small).
+\item[Research questions] RQ2 (scope and balance via benchmark-relative domain loading)
+\item[Tagline] Ontology-prompted embedding benchmark with TF-IDF fallback
+\end{description}
 
 \section*{Canonical Source Paths}
 \begin{itemize}
@@ -25,20 +27,23 @@ This scheme supplies the ontology scaffold used to quantify semantic emphasis ac
 \item \filepath{src/vector_db/semantic_loading/analysis/subdomain_loading_summary.csv}
 \end{itemize}
 
-\section*{Record Text Used for Scoring}
-Each review record is composed into a semantic analysis string with the following sections: title, abstract, and extracted objective text. The ontology scheme then compares that composed record text against the benchmark prompts below.
+\section*{Purpose}
+This scheme supplies the ontology scaffold used to quantify semantic emphasis across biological, psychological, and social axes. It is not a manual adjudication form, but it is an operational text-classification framework: it standardizes the domain and subdomain prompts against which review records are embedded and compared.
 
-\section*{Prompt Templates}
+Because loadings are benchmark-relative, the ontology prompts are the measuring instrument. Their wording and coverage directly determine the domain-balance results, so they warrant expert scrutiny.
+
+
+\section*{Scoring Construction}
+{\small\itshape How a record is scored.}\par\smallskip
 \begin{description}
-\item[\field{domain prompt}] \texttt{\{domain\} chronic pain ontology. \{joined subdomains\}.}
-\item[\field{subdomain prompt}] \texttt{\{domain\} chronic pain subdomain. \{term\}.}
+\item[Record text] Title, abstract, and extracted objective text composed into one semantic analysis string.
+\item[Domain prompt] \{domain\} chronic pain ontology. \{joined subdomains\}.
+\item[Subdomain prompt] \{domain\} chronic pain subdomain. \{term\}.
+\item[Domain order] Always biological, psychological, social.
+\item[Embedding] OpenRouter openai/text-embedding-3-small when available; TF-IDF cosine fallback otherwise.
 \end{description}
 
-\section*{Domain Order}
-The benchmark axes are always ordered as \texttt{biological}, \texttt{psychological}, and \texttt{social}.
-
-\section*{Ontology Content}
-\subsection*{Biological Subdomains}
+\section*{Biological Subdomains (10)}
 \begin{itemize}
 \item Central Sensitization and Neuroplasticity
 \item Musculoskeletal and Structural Pathology
@@ -52,7 +57,7 @@ The benchmark axes are always ordered as \texttt{biological}, \texttt{psychologi
 \item Metabolic Nutritional and Hormonal Factors
 \end{itemize}
 
-\subsection*{Psychological Subdomains}
+\section*{Psychological Subdomains (20)}
 \begin{itemize}
 \item Catastrophizing and Negative Cognitive Appraisal
 \item Fear Avoidance and Pain Related Fear
@@ -76,7 +81,7 @@ The benchmark axes are always ordered as \texttt{biological}, \texttt{psychologi
 \item Mental Health Comorbidity and Psychological Wellbeing
 \end{itemize}
 
-\subsection*{Social Subdomains}
+\section*{Social Subdomains (12)}
 \begin{itemize}
 \item Social Support Network and Interpersonal Resources
 \item Work Disability Occupational Function and Productivity
@@ -92,16 +97,25 @@ The benchmark axes are always ordered as \texttt{biological}, \texttt{psychologi
 \item Social Determinants of Pain and Environment
 \end{itemize}
 
-\section*{Outputs Produced from This Scheme}
-\begin{itemize}
-\item Record-level domain loadings.
-\item Record-level subdomain loadings.
-\item Domain summary and subdomain summary tables.
-\item Pairwise loading analyses.
-\item Dominance-by-review-type summaries.
-\end{itemize}
+\section*{Proposed Refinement: Seed-Term Expansion and Coverage Audit}
+\refbadge
+Refinement proposed for expert evaluation. Each subdomain prompt is currently just the subdomain label, so the benchmark is only as rich as those short phrases. We propose attaching three to five expert-curated seed terms to every subdomain (for example Central Sensitization and Neuroplasticity would carry windup, temporal summation, descending modulation, cortical reorganization). Richer prompts sharpen the semantic contrast between neighbouring subdomains and reduce the chance that a record loads on a subdomain by generic vocabulary alone.
+
+We propose a short operational definition per subdomain so the boundaries are documented and reviewable, and a coverage audit that checks the three domain prompts for comparable length and specificity. An asymmetry in prompt richness across domains can by itself bias benchmark-relative loadings, so the audit protects the central social-shortfall finding from being an artefact of the instrument.
+
+Finally we propose publishing the scoring transparency: the cosine to each domain prompt, the normalization applied, and the benchmark-relative redistribution step, so the loadings are fully reproducible from the prompts.
+
 
 \section*{Interpretive Note}
-This dossier is included because the project uses ontology prompts as a standardized semantic coding scaffold. It should be understood as an analytic coding scheme rather than a human extraction codebook.
+This is an analytic coding scheme, not a human extraction codebook. It is included because the project uses ontology prompts as a standardized semantic coding scaffold, and because the instrument's design determines the domain-balance results that answer RQ2.
+
+
+\section*{Primary Outputs Using This Scheme}
+\begin{itemize}
+\item Record-level domain and subdomain loadings
+\item Domain summary and subdomain summary tables
+\item Pairwise loading analyses
+\item Dominance-by-review-type summaries
+\end{itemize}
 
 \end{document}

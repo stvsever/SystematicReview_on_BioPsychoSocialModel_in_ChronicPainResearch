@@ -5,17 +5,19 @@
 \schemeheader
   {Scheme 4}
   {Stage 3 Retrieval and Manual Relevance Triage Scheme}
-  {Full-text availability, manual retrieval need, and adjudication checklist}
+  {Full-text availability, retrieval need, and adjudication checklist}
 
-\section*{Purpose}
-This scheme governs the transition from Stage 2 abstract coding to Stage 3 full-text work. It standardizes which candidate reviews need manual retrieval, which records require manual relevance adjudication, and how retrieval status, risk signals, and reviewer decisions are recorded before deep coding begins.
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
 
-\section*{Operational Status}
-\begin{itemize}
-\item Workflow position: bridge between Stage 2 coding and Stage 3 full-text coding.
-\item Operational mode: automated candidate manifest plus human checklist completion.
-\item Canonical implementation basis: manifest-generation logic in \filepath{src/bps_review/extraction/stage3_prep.py} and the generated manual relevance checklist.
-\end{itemize}
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Bridge between Stage 2 coding and Stage 3 full-text coding.
+\item[Operational mode] Automated candidate manifest plus human checklist completion.
+\item[Unit of analysis] One Stage 3 candidate record and its retrieval state.
+\item[Provenance basis] Manifest-generation logic in stage3\_prep.py and the generated manual relevance checklist.
+\item[Research questions] Retrieval and adjudication gate that protects RQ2 and RQ3 corpus quality
+\item[Tagline] Automated candidate manifest plus human checklist completion
+\end{description}
 
 \section*{Canonical Source Paths}
 \begin{itemize}
@@ -26,49 +28,76 @@ This scheme governs the transition from Stage 2 abstract coding to Stage 3 full-
 \item \filepath{src/review_stages/04_extraction/outputs/stage3_retrieval_validation.csv}
 \end{itemize}
 
-\section*{Manifest Fields}
-\begin{description}
-\item[\field{fulltext_status}] Operational retrieval status of the candidate review.
-\item[\field{retrieval_source}] Source of the PMCID or full-text link, such as existing metadata, PubMed elink, or Europe PMC.
-\item[\field{fulltext_word_count}] Word count of cached text, used to detect low-content full texts.
-\item[\field{manual_retrieval_needed}] \texttt{yes} or \texttt{no}.
-\item[\field{manual_relevance_priority}] \texttt{high}; \texttt{medium}; \texttt{low}.
-\item[\field{manual_relevance_flags}] Pipe-delimited signal list describing why adjudication attention is needed.
-\item[\field{osf_manual_adjudication_required}] Currently set to \texttt{yes} for the checklist workflow.
-\item[\field{cached_xml_path} / \field{cached_text_path}] Relative cache paths for machine-fetched PMC files.
-\item[\field{pubmed_url}] Direct URL to the source record when a PMID is available.
-\end{description}
+\section*{Purpose}
+This scheme governs the transition from Stage 2 abstract coding to Stage 3 full-text work. It standardizes which candidate reviews need manual retrieval, which records require manual relevance adjudication, and how retrieval status, risk signals, and reviewer decisions are recorded before deep coding begins.
 
-\section*{Implemented Retrieval Status Categories}
+It is not a logistics file. It is a standardized adjudication framework that decides whether a review can enter Stage 3, whether the retrieved text is adequate, and how problematic or ambiguous records are escalated for human judgment.
+
+
+\section*{Manifest Fields}
+{\small\itshape Automated fields written per candidate.}\par\smallskip
 \begin{description}
-\item[\field{manual_retrieval_required}] No machine-available full text was secured; human retrieval is needed.
-\item[\field{pmc_open_available_not_cached}] A PMCID is available, but the file was not yet cached.
-\item[\field{pmc_fulltext_cached}] A PMC full text is already cached locally.
-\item[\field{pmc_fulltext_fetched}] A PMC full text was retrieved during the current run.
-\item[\field{pmc_linked_fetch_failed}] A PMCID link existed, but retrieval or XML parsing failed.
-\item[\field{pmc_fulltext_low_content_manual_check}] The PMC text was fetched, but the file appears too short and requires manual inspection.
+\item[\texttt{fulltext\_status}] Operational retrieval status of the candidate.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{manual\_retrieval\_required}} No machine-available full text was secured; human retrieval is needed.
+  \item \textbf{\texttt{pmc\_open\_available\_not\_cached}} A PMCID exists but the file was not yet cached.
+  \item \textbf{\texttt{pmc\_fulltext\_cached}} A PMC full text is already cached locally.
+  \item \textbf{\texttt{pmc\_fulltext\_fetched}} A PMC full text was retrieved during the current run.
+  \item \textbf{\texttt{pmc\_linked\_fetch\_failed}} A PMCID link existed but retrieval or XML parsing failed.
+  \item \textbf{\texttt{pmc\_fulltext\_low\_content\_manual\_check}} Text was fetched but appears too short and needs manual inspection.
+  \end{itemize}
+\item[\texttt{retrieval\_source}] Source of the PMCID or full-text link (existing metadata, PubMed elink, or Europe PMC).
+\item[\texttt{fulltext\_word\_count}] Word count of cached text, used to detect low-content full texts. \textit{(free text)}
+\item[\texttt{manual\_retrieval\_needed}] Whether a human must retrieve the text.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} Retrieval required.
+  \item \textbf{\texttt{no}} Machine text is available.
+  \end{itemize}
+\item[\texttt{manual\_relevance\_priority}] Adjudication urgency.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{high}} Withdrawal or missing pain focus.
+  \item \textbf{\texttt{medium}} Other concern flags, or retrieval required with otherwise low signal.
+  \item \textbf{\texttt{low}} No concern flags.
+  \end{itemize}
+\item[\texttt{manual\_relevance\_flags}] Pipe-delimited signal list describing why adjudication is needed. See the signal logic below. \textit{(free text)}
+\item[\texttt{osf\_manual\_adjudication\_required}] Currently set to yes for the checklist workflow.
+\item[\texttt{cached\_xml\_path / cached\_text\_path}] Relative cache paths for machine-fetched PMC files.
+\item[\texttt{pubmed\_url}] Direct URL to the source record when a PMID is available.
 \end{description}
 
 \section*{Manual Relevance Signal Logic}
-\begin{itemize}
-\item \field{withdrawn_or_retracted_signal}: assigned when the title or abstract indicates a withdrawn or retracted record.
-\item \field{pain_focus_not_explicit}: assigned when pain is not explicit in the title or abstract.
-\item \field{chronicity_not_explicit}: assigned when chronic, persistent, or long-term framing is absent.
-\item \field{review_design_unclear}: assigned when review design is missing or too vague.
-\item Priority is \texttt{high} when withdrawal or missing pain focus is detected, \texttt{medium} when other concern flags exist, and \texttt{low} otherwise.
-\item If manual retrieval is required and the signal priority is otherwise low, the implementation elevates the priority to \texttt{medium}.
-\end{itemize}
-
-\section*{Reviewer Checklist Fields}
+{\small\itshape Each signal is derived from title and abstract and drives priority.}\par\smallskip
 \begin{description}
-\item[\field{reviewer_decision}] Human reviewer decision after checking the candidate.
-\item[\field{reviewer_notes}] Notes supporting the reviewer decision.
-\item[\field{adjudication_decision}] Final adjudicated status after disagreement resolution.
-\item[\field{adjudication_notes}] Adjudication rationale.
+\item[\texttt{withdrawn\_or\_retracted\_signal}] Assigned when the title or abstract indicates a withdrawn or retracted record. Forces high priority.
+\item[\texttt{pain\_focus\_not\_explicit}] Assigned when pain is not explicit in title or abstract. Forces high priority.
+\item[\texttt{chronicity\_not\_explicit}] Assigned when chronic, persistent, or long-term framing is absent.
+\item[\texttt{review\_design\_unclear}] Assigned when review design is missing or too vague.
 \end{description}
 
-\section*{Why This Is a Distinct Coding Scheme}
-This is not merely a logistics file. It is a standardized adjudication framework for deciding whether the review can enter Stage 3 full-text coding, whether the text retrieved is adequate, and how potentially problematic or ambiguous candidate records are escalated for human judgment.
+\section*{Reviewer Checklist Fields}
+{\small\itshape Human adjudication fields completed against the manifest.}\par\smallskip
+\begin{description}
+\item[\texttt{reviewer\_decision}] Human reviewer decision after checking the candidate. \textit{(free text)}
+\item[\texttt{reviewer\_notes}] Notes supporting the reviewer decision. \textit{(free text)}
+\item[\texttt{adjudication\_decision}] Final adjudicated status after disagreement resolution. \textit{(free text)}
+\item[\texttt{adjudication\_notes}] Adjudication rationale. \textit{(free text)}
+\end{description}
+
+\section*{Proposed Refinement: Explicit Retrieval-Adequacy Gate}
+\refbadge
+Refinement proposed for expert evaluation. The low-content flag currently relies on an implicit word-count heuristic. We propose a documented adequacy gate with a stated threshold (for example a minimum body word count and the presence of a results or discussion section) and an explicit adequacy value: adequate, borderline, or inadequate. Borderline and inadequate texts route to manual retrieval even when a file exists.
+
+We also propose a reproducible priority matrix that maps the set of triggered signals to a priority level deterministically, so two coders reading the same manifest row derive the same priority. This removes the current tie-break ambiguity when several medium signals co-occur.
+
+
+\section*{Test-Run Corpus State}
+{\small\itshape Counts from the current test run, for context only.}\par\smallskip
+\begin{description}
+\item[Stage 2 included records] 111
+\item[Stage 3 candidate manifest] 92
+\item[Manual full-text queue] 63
+\item[Reliability subset (capped at 20)] 18
+\end{description}
 
 \section*{Primary Outputs Using This Scheme}
 \begin{itemize}
