@@ -16,7 +16,7 @@ The current manuscript is a **test run** (it exercised an earlier, coarser gener
 
 ## Scope: two reviews, one shared instrument
 
-The team plans two parallel reviews: one on musculoskeletal chronic pain and one on neuropathic chronic pain. These coding schemes are designed as a single uniform instrument for both. The pain-condition family (musculoskeletal or neuropathic) is the varying input that selects which records enter each review; the coding logic, value vocabularies, and anchors stay the same across both tracks. This keeps the two reviews directly comparable and avoids maintaining two divergent codebooks.
+The team plans two parallel reviews: one on musculoskeletal chronic pain and one on neuropathic chronic pain. These coding schemes are a single uniform instrument for both. The pain-condition family (musculoskeletal or neuropathic) is the varying input that selects which records enter each review; the coding logic, value vocabularies, and anchors are shared so the two reviews stay directly comparable. Uniformity is kept wherever it is defensible. It is relaxed in exactly two places, where forcing it would distort the science: the routing flags that assign a record to a review (a musculoskeletal flag and a parallel neuropathic flag), and the biological subdomain ontology, which carries a shared core plus a musculoskeletal extension and a neuropathic extension because the biological mechanisms of the two pain families genuinely differ. The psychological and social layers, the integration ladder, the typology, and the concept taxonomy stay identical across both tracks.
 
 ## Inventory
 

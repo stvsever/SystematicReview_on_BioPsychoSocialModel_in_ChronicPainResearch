@@ -37,10 +37,16 @@ It captures conceptual depth that cannot be resolved reliably at the abstract le
 Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.
 
 
-\section*{Domain Coverage Fields}
-{\small\itshape Coverage is coded at the level of substantive treatment, not keyword presence. The same four-level ladder applies to each domain.}\par\smallskip
+\section*{Record Routing and Domain Coverage Fields}
+{\small\itshape Coverage is coded at the level of substantive treatment, not keyword presence. The same four-level ladder applies to each domain and is identical across both reviews. Only the biological reading is track-aware: for a musculoskeletal record the biological content is judged against musculoskeletal mechanisms, and for a neuropathic record against neuropathic mechanisms (see Scheme 6).}\par\smallskip
 \begin{description}
-\item[\texttt{domain\_coverage\_bio}] Depth of biological content.
+\item[\texttt{review\_track}] Which review this coded record belongs to. The coding fields are uniform across both; the track only tunes which biological ontology extension the coder reads the biological domain against.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{musculoskeletal}} Coded for the musculoskeletal chronic pain review.
+  \item \textbf{\texttt{neuropathic}} Coded for the neuropathic chronic pain review.
+  \end{itemize}
+\item[\texttt{pain\_condition\_detail}] Free-text specification of the exact pain condition studied (for example knee osteoarthritis, painful diabetic neuropathy). \textit{(free text)}
+\item[\texttt{domain\_coverage\_bio}] Depth of biological content, read against the track-appropriate biological mechanisms.
   \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
   \item \textbf{\texttt{elaborated}} The domain is developed as a substantive analytic thread. Several distinct constructs or mechanisms are discussed, weighed, or synthesized rather than merely named. {\small \textit{Choose when:} A dedicated section or sustained multi-paragraph treatment; Two or more distinct constructs named and related to one another; Evidence is appraised, not only cited in passing. \textit{Not this if:} A single passing sentence; Only the domain umbrella word. \textit{Boundary:} Prefer elaborated over mentioned when the domain carries its own argument rather than appearing as one item in a list.}
   \item \textbf{\texttt{mentioned}} The domain is explicitly present with at least one named construct, but it is not developed into a sustained analytic thread. {\small \textit{Choose when:} One or two named constructs; A short paragraph or scattered sentences. \textit{Not this if:} Only the umbrella word such as the bare token psychosocial. \textit{Boundary:} Prefer mentioned over minimal when a concrete construct is named rather than only the domain umbrella term.}

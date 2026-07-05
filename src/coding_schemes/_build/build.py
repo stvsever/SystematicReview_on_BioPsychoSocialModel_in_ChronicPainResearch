@@ -430,8 +430,9 @@ def index_html():
 
     stat_strip = f'''<div class="stat-strip">
   <div class="stat"><div class="n">6</div><div class="l">coding schemes</div></div>
+  <div class="stat"><div class="n">2</div><div class="l">planned reviews</div></div>
   <div class="stat"><div class="n">3</div><div class="l">review stages</div></div>
-  <div class="stat"><div class="n">42</div><div class="l">ontology subdomains</div></div>
+  <div class="stat"><div class="n">49</div><div class="l">ontology subdomains</div></div>
   <div class="stat"><div class="n">111</div><div class="l">test-run records</div></div>
 </div>'''
 
@@ -441,8 +442,8 @@ def index_html():
   <div class="chips" style="margin-top:6px">
     <span class="chip" style="border-left:3px solid var(--bio)">Review A: musculoskeletal chronic pain</span>
     <span class="chip" style="border-left:3px solid var(--soc)">Review B: neuropathic chronic pain</span>
-    <span class="chip rq">Varying input: pain-condition family</span>
-    <span class="chip">Constant: fields, values, anchors</span>
+    <span class="chip rq">Uniform: fields, values, anchors, psychological and social ontology</span>
+    <span class="chip">Track-specific: routing flags and biological ontology</span>
   </div>
 </section>'''
 

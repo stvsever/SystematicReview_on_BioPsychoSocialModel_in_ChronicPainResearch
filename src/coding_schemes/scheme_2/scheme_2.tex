@@ -89,11 +89,24 @@ It also sets the Stage 3 candidate gate: a record coded as musculoskeletal or as
   \item \textbf{\texttt{unclear}} Category cannot be inferred.
   \end{itemize}
 {\small Abstract-based and allowed to remain unclear. Musculoskeletal and mixed-or-unspecified both feed the Stage 3 candidate gate.}
-\item[\texttt{musculoskeletal\_flag}] Whether the review concerns musculoskeletal pain.
+\item[\texttt{musculoskeletal\_flag}] Whether the review concerns musculoskeletal pain. Routes records into the musculoskeletal review.
   \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
   \item \textbf{\texttt{yes}} Musculoskeletal focus is explicit.
   \item \textbf{\texttt{no}} Clearly non-musculoskeletal.
   \item \textbf{\texttt{unclear}} Cannot be determined; carried forward.
+  \end{itemize}
+\item[\texttt{neuropathic\_flag}] Whether the review concerns neuropathic pain. Parallel to musculoskeletal\_flag; routes records into the neuropathic review. A record may set both flags (for example a mixed review) or neither.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{yes}} Neuropathic focus is explicit (for example neuropathy, radiculopathy, CRPS, postherpetic or diabetic neuropathic pain).
+  \item \textbf{\texttt{no}} Clearly non-neuropathic.
+  \item \textbf{\texttt{unclear}} Cannot be determined; carried forward.
+  \end{itemize}
+\item[\texttt{stage3\_track}] Which review or reviews the record is routed to. Derived from the two flags; a record can belong to both pools.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{musculoskeletal}} Musculoskeletal review only.
+  \item \textbf{\texttt{neuropathic}} Neuropathic review only.
+  \item \textbf{\texttt{both}} Enters both pools (mixed or unresolved pain family).
+  \item \textbf{\texttt{none}} Neither track; not a Stage 3 candidate.
   \end{itemize}
 \item[\texttt{bps\_mention\_location}] Where the BPS term appears.
   \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
@@ -174,7 +187,7 @@ It also sets the Stage 3 candidate gate: a record coded as musculoskeletal or as
 \begin{itemize}
 \item Missing or malformed model responses are repaired against the fixed vocabularies above.
 \item Aliases such as scoping review or narrative review are normalized to the implemented labels.
-\item stage3\_candidate is forced to yes whenever musculoskeletal\_flag is yes or unclear.
+\item stage3\_candidate is forced to yes whenever musculoskeletal\_flag or neuropathic\_flag is yes or unclear, and stage3\_track is set from whichever flags fire (musculoskeletal, neuropathic, or both).
 \item Conceptual problem flags are post-derived from typology, BPS function, and missing domains: rhetorical usage triggers tokenistic\_bps and vague\_definition; parallel non-mechanistic usage triggers parallel\_listing\_without\_integration and mechanistic\_absence; absent biological or social content triggers missing\_biology or missing\_social.
 \item When the LLM stage fails, the rule-based fallback still generates review type, objective category, ICD-11 category, BPS function, domain mention flags, concept detections, and provisional Stage 3 priority.
 \end{itemize}
@@ -207,7 +220,7 @@ Third, reinstate optional spiritual\_existential and lifestyle mention flags. Th
 \item The prose codebook lists treatment-oriented as an objective class, but the implemented prompt and output schema do not use that label.
 \item The CSV codebook historically contains spiritual\_existential\_mentioned and lifestyle\_mentioned; those fields are absent from the current output file and are therefore not canonical here. The refinement above proposes reinstating them explicitly.
 \item Prose and code both emphasize that BPS language alone is insufficient evidence of true triadic coverage.
-\item The test-run fallback forces stage3\_candidate to yes only from musculoskeletal\_flag. For the two-review design a parallel neuropathic flag should drive the neuropathic candidate pool; this is a proposed change awaiting expert sign-off.
+\item The test-run implementation only carried musculoskeletal\_flag. This revised scheme adds neuropathic\_flag and stage3\_track as first-class fields so the musculoskeletal and neuropathic reviews are seeded from the same Stage 2 pass with one shared vocabulary. These fields are specified here for expert review and will be wired into the code on the post-sign-off re-run.
 \end{itemize}
 
 \section*{Primary Outputs Using This Scheme}

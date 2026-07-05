@@ -38,9 +38,11 @@ These are the enhancements that raise semantic resolution. They are proposals on
 
 ## Coded fields
 
-### Domain Coverage Fields
+### Record Routing and Domain Coverage Fields
 
-- `domain_coverage_bio` (elaborated, mentioned, minimal, absent): Depth of biological content.
+- `review_track` (musculoskeletal, neuropathic): Which review this coded record belongs to. The coding fields are uniform across both; the track only tunes which biological ontology extension the coder reads the biological domain against.
+- `pain_condition_detail` (free text): Free-text specification of the exact pain condition studied (for example knee osteoarthritis, painful diabetic neuropathy).
+- `domain_coverage_bio` (elaborated, mentioned, minimal, absent): Depth of biological content, read against the track-appropriate biological mechanisms.
 - `domain_coverage_psych` (elaborated, mentioned, minimal, absent): Depth of psychological content.
 - `domain_coverage_social` (elaborated, mentioned, minimal, absent): Depth of social content.
 

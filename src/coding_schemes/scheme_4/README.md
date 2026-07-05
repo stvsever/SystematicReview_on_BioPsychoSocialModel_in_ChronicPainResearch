@@ -39,6 +39,7 @@ These are the enhancements that raise semantic resolution. They are proposals on
 ### Manifest Fields
 
 - `fulltext_status` (manual_retrieval_required, pmc_open_available_not_cached, pmc_fulltext_cached, pmc_fulltext_fetched, pmc_linked_fetch_failed, pmc_fulltext_low_content_manual_check): Operational retrieval status of the candidate.
+- `review_track` (musculoskeletal, neuropathic, both): Which review pool the candidate belongs to, carried from Scheme 2. Retrieval and triage logic itself is uniform across both tracks.
 - `retrieval_source`: Source of the PMCID or full-text link (existing metadata, PubMed elink, or Europe PMC).
 - `fulltext_word_count` (free text): Word count of cached text, used to detect low-content full texts.
 - `manual_retrieval_needed` (yes, no): Whether a human must retrieve the text.

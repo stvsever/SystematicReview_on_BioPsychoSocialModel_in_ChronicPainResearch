@@ -46,6 +46,12 @@ It is not a logistics file. It is a standardized adjudication framework that dec
   \item \textbf{\texttt{pmc\_linked\_fetch\_failed}} A PMCID link existed but retrieval or XML parsing failed.
   \item \textbf{\texttt{pmc\_fulltext\_low\_content\_manual\_check}} Text was fetched but appears too short and needs manual inspection.
   \end{itemize}
+\item[\texttt{review\_track}] Which review pool the candidate belongs to, carried from Scheme 2. Retrieval and triage logic itself is uniform across both tracks.
+  \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
+  \item \textbf{\texttt{musculoskeletal}} Musculoskeletal review pool.
+  \item \textbf{\texttt{neuropathic}} Neuropathic review pool.
+  \item \textbf{\texttt{both}} In both pools.
+  \end{itemize}
 \item[\texttt{retrieval\_source}] Source of the PMCID or full-text link (existing metadata, PubMed elink, or Europe PMC).
 \item[\texttt{fulltext\_word\_count}] Word count of cached text, used to detect low-content full texts. \textit{(free text)}
 \item[\texttt{manual\_retrieval\_needed}] Whether a human must retrieve the text.

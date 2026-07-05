@@ -42,7 +42,9 @@ These are the enhancements that raise semantic resolution. They are proposals on
 - `objective_category` (conceptual, clinical, methodological, epidemiological, mixed, unclear): Primary stated purpose of the review.
 - `objective_category_source`: Whether the objective classification came from the structured LLM, a repaired LLM batch, or the deterministic fallback.
 - `icd11_pain_category` (chronic secondary musculoskeletal pain, chronic neuropathic pain, chronic cancer-related pain, chronic postsurgical or posttraumatic pain, chronic secondary headache or orofacial pain, chronic secondary visceral pain, chronic primary pain, mixed or unspecified chronic pain, unclear): ICD-11 aligned pain category inferred from the abstract.
-- `musculoskeletal_flag` (yes, no, unclear): Whether the review concerns musculoskeletal pain.
+- `musculoskeletal_flag` (yes, no, unclear): Whether the review concerns musculoskeletal pain. Routes records into the musculoskeletal review.
+- `neuropathic_flag` (yes, no, unclear): Whether the review concerns neuropathic pain. Parallel to musculoskeletal_flag; routes records into the neuropathic review. A record may set both flags (for example a mixed review) or neither.
+- `stage3_track` (musculoskeletal, neuropathic, both, none): Which review or reviews the record is routed to. Derived from the two flags; a record can belong to both pools.
 - `bps_mention_location` (title only, abstract only, title and abstract, unclear): Where the BPS term appears.
 - `bps_function` (explanatory framework, intervention rationale, organizing principle, justification, background framing, conclusion, policy/practice implication, rhetorical label, unclear): The rhetorical and analytic work the BPS label performs. This is the central RQ1 field and the finest-grained one.
 - `bio_mentioned / psych_mentioned / social_mentioned` (yes, no): Binary presence of each domain in the abstract.

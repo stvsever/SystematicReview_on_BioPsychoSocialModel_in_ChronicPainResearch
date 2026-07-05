@@ -54,13 +54,20 @@ PROJECT = {
     "release_date": "2026-07-05",
     "review_scope": (
         "The team plans two parallel reviews: one on musculoskeletal chronic "
-        "pain and one on neuropathic chronic pain. These coding schemes are "
-        "designed as a single uniform instrument for both. The pain-condition "
-        "family (musculoskeletal or neuropathic) is the varying input that "
-        "selects which records enter each review; the coding logic, value "
-        "vocabularies, and anchors stay the same across both tracks. This keeps "
-        "the two reviews directly comparable and avoids maintaining two "
-        "divergent codebooks."
+        "pain and one on neuropathic chronic pain. These coding schemes are a "
+        "single uniform instrument for both. The pain-condition family "
+        "(musculoskeletal or neuropathic) is the varying input that selects "
+        "which records enter each review; the coding logic, value vocabularies, "
+        "and anchors are shared so the two reviews stay directly comparable. "
+        "Uniformity is kept wherever it is defensible. It is relaxed in exactly "
+        "two places, where forcing it would distort the science: the routing "
+        "flags that assign a record to a review (a musculoskeletal flag and a "
+        "parallel neuropathic flag), and the biological subdomain ontology, "
+        "which carries a shared core plus a musculoskeletal extension and a "
+        "neuropathic extension because the biological mechanisms of the two "
+        "pain families genuinely differ. The psychological and social layers, "
+        "the integration ladder, the typology, and the concept taxonomy stay "
+        "identical across both tracks."
     ),
     "test_run_model": "gemini-2.5-flash",
     "reviewers": [
@@ -494,9 +501,12 @@ SCHEME_1 = {
                 "ambiguous cases as unclear rather than maybe. The refinement "
                 "above proposes reinstating maybe as a first-class value so the "
                 "borderline register is explicit in the data.",
-                "The ICD-11 pre-tag is not assigned at Stage 1; musculoskeletal "
-                "relevance is resolved at Stage 2 and Stage 3. Stage 1 only "
-                "avoids excluding musculoskeletal-ambiguous records.",
+                "The ICD-11 pre-tag is not assigned at Stage 1; pain-family "
+                "relevance (musculoskeletal or neuropathic) is resolved at Stage 2 "
+                "and Stage 3. Stage 1 is uniform across both reviews and does not "
+                "filter by pain family, so the musculoskeletal and neuropathic "
+                "reviews are seeded from the same screened pool. It only avoids "
+                "excluding pain-family-ambiguous records.",
             ],
         },
     ],
@@ -659,10 +669,29 @@ SCHEME_2 = {
                             "Musculoskeletal and mixed-or-unspecified both feed the "
                             "Stage 3 candidate gate."),
                 field("musculoskeletal_flag",
-                      "Whether the review concerns musculoskeletal pain.",
+                      "Whether the review concerns musculoskeletal pain. Routes "
+                      "records into the musculoskeletal review.",
                       values=[v("yes", "Musculoskeletal focus is explicit."),
                               v("no", "Clearly non-musculoskeletal."),
                               v("unclear", "Cannot be determined; carried forward.")]),
+                field("neuropathic_flag",
+                      "Whether the review concerns neuropathic pain. Parallel to "
+                      "musculoskeletal_flag; routes records into the neuropathic "
+                      "review. A record may set both flags (for example a mixed "
+                      "review) or neither.",
+                      values=[v("yes", "Neuropathic focus is explicit (for "
+                                "example neuropathy, radiculopathy, CRPS, "
+                                "postherpetic or diabetic neuropathic pain)."),
+                              v("no", "Clearly non-neuropathic."),
+                              v("unclear", "Cannot be determined; carried forward.")]),
+                field("stage3_track",
+                      "Which review or reviews the record is routed to. Derived "
+                      "from the two flags; a record can belong to both pools.",
+                      values=[v("musculoskeletal", "Musculoskeletal review only."),
+                              v("neuropathic", "Neuropathic review only."),
+                              v("both", "Enters both pools (mixed or unresolved "
+                                "pain family)."),
+                              v("none", "Neither track; not a Stage 3 candidate.")]),
                 field("bps_mention_location",
                       "Where the BPS term appears.",
                       values=[v("title only", "Only in the title."),
@@ -813,7 +842,9 @@ SCHEME_2 = {
                 "Aliases such as scoping review or narrative review are normalized "
                 "to the implemented labels.",
                 "stage3_candidate is forced to yes whenever musculoskeletal_flag "
-                "is yes or unclear.",
+                "or neuropathic_flag is yes or unclear, and stage3_track is set "
+                "from whichever flags fire (musculoskeletal, neuropathic, or "
+                "both).",
                 "Conceptual problem flags are post-derived from typology, BPS "
                 "function, and missing domains: rhetorical usage triggers "
                 "tokenistic_bps and vague_definition; parallel non-mechanistic "
@@ -912,10 +943,12 @@ SCHEME_2 = {
                 "them explicitly.",
                 "Prose and code both emphasize that BPS language alone is "
                 "insufficient evidence of true triadic coverage.",
-                "The test-run fallback forces stage3_candidate to yes only from "
-                "musculoskeletal_flag. For the two-review design a parallel "
-                "neuropathic flag should drive the neuropathic candidate pool; "
-                "this is a proposed change awaiting expert sign-off.",
+                "The test-run implementation only carried musculoskeletal_flag. "
+                "This revised scheme adds neuropathic_flag and stage3_track as "
+                "first-class fields so the musculoskeletal and neuropathic "
+                "reviews are seeded from the same Stage 2 pass with one shared "
+                "vocabulary. These fields are specified here for expert review "
+                "and will be wired into the code on the post-sign-off re-run.",
             ],
         },
     ],
@@ -990,13 +1023,31 @@ SCHEME_3 = {
         {
             "kind": "fields",
             "id": "coverage",
-            "title": "Domain Coverage Fields",
+            "title": "Record Routing and Domain Coverage Fields",
             "feedback": True,
             "intro": "Coverage is coded at the level of substantive treatment, "
                      "not keyword presence. The same four-level ladder applies to "
-                     "each domain.",
+                     "each domain and is identical across both reviews. Only the "
+                     "biological reading is track-aware: for a musculoskeletal "
+                     "record the biological content is judged against "
+                     "musculoskeletal mechanisms, and for a neuropathic record "
+                     "against neuropathic mechanisms (see Scheme 6).",
             "fields": [
-                field("domain_coverage_bio", "Depth of biological content.",
+                field("review_track",
+                      "Which review this coded record belongs to. The coding "
+                      "fields are uniform across both; the track only tunes which "
+                      "biological ontology extension the coder reads the "
+                      "biological domain against.",
+                      values=[v("musculoskeletal", "Coded for the musculoskeletal "
+                                "chronic pain review."),
+                              v("neuropathic", "Coded for the neuropathic chronic "
+                                "pain review.")]),
+                field("pain_condition_detail",
+                      "Free-text specification of the exact pain condition studied "
+                      "(for example knee osteoarthritis, painful diabetic "
+                      "neuropathy).", free_text=True),
+                field("domain_coverage_bio", "Depth of biological content, read "
+                      "against the track-appropriate biological mechanisms.",
                       values=DOMAIN_COVERAGE_LADDER),
                 field("domain_coverage_psych", "Depth of psychological content.",
                       values=DOMAIN_COVERAGE_LADDER),
@@ -1277,6 +1328,13 @@ SCHEME_4 = {
                             "fetched but appears too short and needs manual "
                             "inspection."),
                       ]),
+                field("review_track",
+                      "Which review pool the candidate belongs to, carried from "
+                      "Scheme 2. Retrieval and triage logic itself is uniform "
+                      "across both tracks.",
+                      values=[v("musculoskeletal", "Musculoskeletal review pool."),
+                              v("neuropathic", "Neuropathic review pool."),
+                              v("both", "In both pools.")]),
                 field("retrieval_source",
                       "Source of the PMCID or full-text link (existing metadata, "
                       "PubMed elink, or Europe PMC)."),
@@ -1774,6 +1832,11 @@ SCHEME_6 = {
                  "composed into one semantic analysis string."),
                 ("Domain prompt", "{domain} chronic pain ontology. {joined "
                  "subdomains}."),
+                ("Biological prompt assembly", "Shared biological core plus the "
+                 "active track's extension: shared core plus musculoskeletal for "
+                 "the musculoskeletal review, shared core plus neuropathic for "
+                 "the neuropathic review. Psychological and social prompts are "
+                 "identical across both tracks."),
                 ("Subdomain prompt", "{domain} chronic pain subdomain. {term}."),
                 ("Domain order", "Always biological, psychological, social."),
                 ("Embedding", "OpenRouter openai/text-embedding-3-small when "
@@ -1781,30 +1844,80 @@ SCHEME_6 = {
             ],
         },
         {
+            "kind": "prose",
+            "id": "bio-structure",
+            "title": "Biological Ontology: Shared Core Plus Track Extensions",
+            "body": [
+                "The biological pole is the one place where a single uniform "
+                "subdomain list would distort the science, because the biological "
+                "mechanisms of musculoskeletal and neuropathic pain genuinely "
+                "differ. The biological ontology is therefore built as a shared "
+                "core that applies to both reviews, plus a musculoskeletal "
+                "extension used only for the musculoskeletal review and a "
+                "neuropathic extension used only for the neuropathic review.",
+                "When a record is scored, the biological domain prompt is "
+                "assembled from the shared core plus the active track's "
+                "extension. The psychological and social ontologies below are "
+                "identical for both reviews. This keeps the two reviews "
+                "comparable on the psychological and social axes while measuring "
+                "each one's biology against the mechanisms that actually matter "
+                "for it.",
+            ],
+        },
+        {
             "kind": "list",
             "id": "biological",
-            "title": "Biological Subdomains (10)",
+            "title": "Biological Subdomains: Shared Core (9)",
             "domain": "biological",
             "feedback": True,
+            "intro": "Applied to both the musculoskeletal and neuropathic reviews.",
             "items": [
                 "Central Sensitization and Neuroplasticity",
-                "Musculoskeletal and Structural Pathology",
-                "Pharmacological and Biomedical Treatment",
-                "Sleep Disruption and Circadian Dysregulation",
+                "Nociceptive and Pain Signalling Pathways",
                 "Immune Inflammatory and Neuroinflammatory Processes",
-                "Genetic Epigenetic and Biological Vulnerability",
                 "Neuroimaging Brain Structure and Function",
-                "Nociceptive Transmission and Pain Pathways",
-                "Physical Function Mobility and Deconditioning",
+                "Genetic Epigenetic and Biological Vulnerability",
+                "Sleep Disruption and Circadian Dysregulation",
+                "Pharmacological and Biomedical Treatment",
                 "Metabolic Nutritional and Hormonal Factors",
+                "Physical Function Mobility and Deconditioning",
+            ],
+        },
+        {
+            "kind": "list",
+            "id": "biological-msk",
+            "title": "Biological Extension: Musculoskeletal (3)",
+            "domain": "biological",
+            "feedback": True,
+            "intro": "Added only for the musculoskeletal review.",
+            "items": [
+                "Musculoskeletal and Structural Pathology",
+                "Joint Degeneration and Osteoarthritic Change",
+                "Muscle Tendon and Soft Tissue Pathology",
+            ],
+        },
+        {
+            "kind": "list",
+            "id": "biological-neuro",
+            "title": "Biological Extension: Neuropathic (5)",
+            "domain": "biological",
+            "feedback": True,
+            "intro": "Added only for the neuropathic review.",
+            "items": [
+                "Peripheral Nerve Injury and Neuropathy",
+                "Sensory Phenotype and Quantitative Sensory Testing",
+                "Ectopic Firing Ion Channels and Neuronal Excitability",
+                "Small Fiber and Nerve Conduction Pathology",
+                "Deafferentation and Central Neuropathic Mechanisms",
             ],
         },
         {
             "kind": "list",
             "id": "psychological",
-            "title": "Psychological Subdomains (20)",
+            "title": "Psychological Subdomains (20, uniform across both reviews)",
             "domain": "psychological",
             "feedback": True,
+            "intro": "Identical for the musculoskeletal and neuropathic reviews.",
             "items": [
                 "Catastrophizing and Negative Cognitive Appraisal",
                 "Fear Avoidance and Pain Related Fear",
@@ -1831,9 +1944,10 @@ SCHEME_6 = {
         {
             "kind": "list",
             "id": "social",
-            "title": "Social Subdomains (12)",
+            "title": "Social Subdomains (12, uniform across both reviews)",
             "domain": "social",
             "feedback": True,
+            "intro": "Identical for the musculoskeletal and neuropathic reviews.",
             "items": [
                 "Social Support Network and Interpersonal Resources",
                 "Work Disability Occupational Function and Productivity",
@@ -1871,7 +1985,10 @@ SCHEME_6 = {
                 "specificity. An asymmetry in prompt richness across domains can "
                 "by itself bias benchmark-relative loadings, so the audit protects "
                 "the central social-shortfall finding from being an artefact of "
-                "the instrument.",
+                "the instrument. The audit must also check that the "
+                "musculoskeletal and neuropathic biological prompts (shared core "
+                "plus each extension) are comparably rich, so neither review's "
+                "biology is under-measured relative to the other.",
                 "Finally we propose publishing the scoring transparency: the "
                 "cosine to each domain prompt, the normalization applied, and the "
                 "benchmark-relative redistribution step, so the loadings are fully "
