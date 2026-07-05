@@ -1,14 +1,16 @@
 # Scheme 3: Stage 3 Full-Text Deep Coding Scheme
 
-> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.
+> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.
 
-*Musculoskeletal-focused full-text adjudication and interpretive coding*
+*Full-text adjudication and interpretive coding for the musculoskeletal and neuropathic reviews*
 
-Human-coded template with pilot and reliability subsamples.
+One uniform instrument applied to both pain-condition tracks; human-coded with pilot and reliability subsamples.
 
 ## What this scheme does
 
-This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain review. The pain-condition family is the varying input that decides which records each review reads; the coding fields, value vocabularies, and anchors are identical across both tracks so the two reviews stay directly comparable.
+
+It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
 
 Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.
 

@@ -11,7 +11,10 @@
 
 **Stijn Van Severen<sup>1,\*</sup> · Christopher Eccleston<sup>1,2</sup> · Annick De Paepe<sup>1</sup> · Maya Braun<sup>1</sup> · Julie Dendauw<sup>1</sup> · Jose Luis Socorro Cumplido<sup>3</sup> · Geert Crombez<sup>1</sup>**
 
-<sup>1</sup> Ghent University, Ghent, Belgium · <sup>2</sup> University of Bath, Bath, United Kingdom · <sup>3</sup> Ramon Llull University, Barcelona, Spain · <sup>\*</sup> Corresponding author
+<sup>1</sup> Ghent University, Ghent, Belgium<br>
+<sup>2</sup> University of Bath, Bath, United Kingdom<br>
+<sup>3</sup> Ramon Llull University, Barcelona, Spain<br>
+<sup>\*</sup> Corresponding author
 
 ---
 

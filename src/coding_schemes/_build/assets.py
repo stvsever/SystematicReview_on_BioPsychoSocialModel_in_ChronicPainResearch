@@ -186,6 +186,17 @@ body.only-proposed #sources-card{display:none}
 .example .exwhy{font-size:13.5px;color:var(--ink)}
 .example .exwhy .lab{font-weight:700;color:var(--muted);font-size:11px;letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
 
+/* taxonomy (scheme 5) */
+.taxo{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+.tfam{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fdfdfe;border-top:3px solid var(--psy)}
+.tfam h4{margin:0 0 2px;font-size:14.5px;letter-spacing:-.01em}
+.tfam .tsub{font-size:11.5px;color:var(--psy);font-weight:600;margin-bottom:7px}
+.tfam .tdef{font-size:13px;margin-bottom:9px}
+.tfam .tgrouplabel{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:8px 0 4px}
+.tfam .tchips{display:flex;flex-wrap:wrap;gap:5px}
+.tfam .tchip{font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--soft);border:1px solid var(--line)}
+.tfam .tchip.fw{background:#f2ecfc;border-color:#e0d3f7;color:#5a3aa8;font-weight:600}
+
 /* key value list */
 .kvlist{display:grid;gap:8px}
 .kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fdfdfe}
@@ -272,7 +283,7 @@ body.only-proposed #sources-card{display:none}
 @media (max-width:980px){
   .wrap{grid-template-columns:1fr;gap:18px}
   .toc{display:none}
-  .metagrid,.reviewer,.indi,.subgrid,.legend{grid-template-columns:1fr}
+  .metagrid,.reviewer,.indi,.subgrid,.legend,.taxo{grid-template-columns:1fr}
   .kvrow{grid-template-columns:1fr}
 }
 @media print{

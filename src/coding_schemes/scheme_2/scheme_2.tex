@@ -7,7 +7,7 @@
   {Stage 2 Abstract-Level Structured Coding Scheme}
   {Corpus-wide abstract coding of BPS usage, domains, and typology}
 
-\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.}
 
 \section*{At a Glance}
 \begin{description}
@@ -164,7 +164,7 @@ It also sets the Stage 3 candidate gate: a record coded as musculoskeletal or as
 \item Use intervention rationale when BPS mainly justifies multimodal or interdisciplinary treatment.
 \item Use organizing principle when BPS structures scope or categories without integration mechanisms.
 \item Use rhetorical label when BPS is ceremonial, aspirational, or symbolic with no substantive analytic work.
-\item Set stage3\_candidate to yes for musculoskeletal reviews and for mixed or unspecified chronic pain reviews where musculoskeletal relevance cannot be ruled out.
+\item Set stage3\_candidate to yes for musculoskeletal or neuropathic reviews, and for mixed or unspecified chronic pain reviews where either relevance cannot be ruled out. The two planned reviews (musculoskeletal and neuropathic) draw from this same candidate pool, routed by pain-condition family.
 \item Use potential integrative signal only when all three core domains are substantively present and the abstract signals cross-domain explanation or organization beyond simple listing.
 \item Return conceptual\_problem\_flags as none only when no inferable conceptual problem is present.
 \end{itemize}
@@ -207,6 +207,7 @@ Third, reinstate optional spiritual\_existential and lifestyle mention flags. Th
 \item The prose codebook lists treatment-oriented as an objective class, but the implemented prompt and output schema do not use that label.
 \item The CSV codebook historically contains spiritual\_existential\_mentioned and lifestyle\_mentioned; those fields are absent from the current output file and are therefore not canonical here. The refinement above proposes reinstating them explicitly.
 \item Prose and code both emphasize that BPS language alone is insufficient evidence of true triadic coverage.
+\item The test-run fallback forces stage3\_candidate to yes only from musculoskeletal\_flag. For the two-review design a parallel neuropathic flag should drive the neuropathic candidate pool; this is a proposed change awaiting expert sign-off.
 \end{itemize}
 
 \section*{Primary Outputs Using This Scheme}

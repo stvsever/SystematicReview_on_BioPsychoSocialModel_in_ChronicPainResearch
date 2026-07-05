@@ -1,6 +1,6 @@
 # Coding Scheme Dossiers
 
-> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.
+> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.
 
 This directory contains one communication-ready dossier for each distinct coding scheme in the systematic review workflow. Every scheme is provided in three synchronized surfaces:
 
@@ -12,7 +12,11 @@ Open [`index.html`](index.html) for the aggregated dashboard: a pipeline map, li
 
 ## Why these schemes are circulated now
 
-The current manuscript is a **test run** built with an earlier, coarser generation of these schemes. This release raises their semantic quality and resolution (operational anchors for every value, positive and negative indicators, explicit boundary rules, worked examples from the real corpus, and clearly labelled proposed refinements). Nothing here has been applied to a final corpus yet. The schemes are being circulated for expert evaluation first; the pipeline will be re-run only after sign-off.
+The current manuscript is a **test run** (it exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM, gemini-2.5-flash). This release raises their semantic quality and resolution (operational anchors for every value, positive and negative indicators, explicit boundary rules, worked examples from the real corpus, a comprehensive psychological concept taxonomy, and clearly labelled proposed refinements). Nothing here has been applied to a final corpus yet. The schemes are being circulated for expert evaluation first; the pipeline will be re-run only after sign-off.
+
+## Scope: two reviews, one shared instrument
+
+The team plans two parallel reviews: one on musculoskeletal chronic pain and one on neuropathic chronic pain. These coding schemes are designed as a single uniform instrument for both. The pain-condition family (musculoskeletal or neuropathic) is the varying input that selects which records enter each review; the coding logic, value vocabularies, and anchors stay the same across both tracks. This keeps the two reviews directly comparable and avoids maintaining two divergent codebooks.
 
 ## Inventory
 
@@ -31,7 +35,7 @@ The current manuscript is a **test run** built with an earlier, coarser generati
 ### Scheme 3: Stage 3 Full-Text Deep Coding Scheme
 
 - **Stage:** Stage 3
-- **Purpose:** This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+- **Purpose:** This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain review. The pain-condition family is the varying input that decides which records each review reads; the coding fields, value vocabularies, and anchors are identical across both tracks so the two reviews stay directly comparable.
 - **Files:** [`scheme_3/scheme_3.html`](scheme_3/scheme_3.html), [`scheme_3/scheme_3.pdf`](scheme_3/scheme_3.pdf), [`scheme_3/README.md`](scheme_3/README.md)
 
 ### Scheme 4: Stage 3 Retrieval and Manual Relevance Triage Scheme

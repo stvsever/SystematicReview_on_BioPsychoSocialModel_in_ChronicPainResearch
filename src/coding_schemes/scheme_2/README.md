@@ -1,6 +1,6 @@
 # Scheme 2: Stage 2 Abstract-Level Structured Coding Scheme
 
-> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.
+> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.
 
 *Corpus-wide abstract coding of BPS usage, domains, and typology*
 

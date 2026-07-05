@@ -182,6 +182,17 @@ body.only-proposed #sources-card{display:none}
 .example .exwhy{font-size:13.5px;color:var(--ink)}
 .example .exwhy .lab{font-weight:700;color:var(--muted);font-size:11px;letter-spacing:.05em;text-transform:uppercase;margin-right:6px}
 
+/* taxonomy (scheme 5) */
+.taxo{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:8px}
+.tfam{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fdfdfe;border-top:3px solid var(--psy)}
+.tfam h4{margin:0 0 2px;font-size:14.5px;letter-spacing:-.01em}
+.tfam .tsub{font-size:11.5px;color:var(--psy);font-weight:600;margin-bottom:7px}
+.tfam .tdef{font-size:13px;margin-bottom:9px}
+.tfam .tgrouplabel{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:8px 0 4px}
+.tfam .tchips{display:flex;flex-wrap:wrap;gap:5px}
+.tfam .tchip{font-size:11.5px;padding:2px 8px;border-radius:99px;background:var(--soft);border:1px solid var(--line)}
+.tfam .tchip.fw{background:#f2ecfc;border-color:#e0d3f7;color:#5a3aa8;font-weight:600}
+
 /* key value list */
 .kvlist{display:grid;gap:8px}
 .kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fdfdfe}
@@ -268,7 +279,7 @@ body.only-proposed #sources-card{display:none}
 @media (max-width:980px){
   .wrap{grid-template-columns:1fr;gap:18px}
   .toc{display:none}
-  .metagrid,.reviewer,.indi,.subgrid,.legend{grid-template-columns:1fr}
+  .metagrid,.reviewer,.indi,.subgrid,.legend,.taxo{grid-template-columns:1fr}
   .kvrow{grid-template-columns:1fr}
 }
 @media print{
@@ -299,8 +310,18 @@ body.only-proposed #sources-card{display:none}
   <p class="subtitle">How the Biopsychosocial Model Frames Chronic Pain Research</p>
   <p class="tagline">OSF 10.17605/OSF.IO/T4FAM &middot; classification of BPS reviews and the categorization pipeline</p>
   <div class="status"><span class="ic">!</span><div><b>Please read before evaluating.</b>
-    These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.</div></div>
+    These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.</div></div>
 </div>
+    <section class="card"><h2>Scope: two reviews, one shared instrument</h2>
+  <p class="intro">Why the same schemes serve two reviews.</p>
+  <p>The team plans two parallel reviews: one on musculoskeletal chronic pain and one on neuropathic chronic pain. These coding schemes are designed as a single uniform instrument for both. The pain-condition family (musculoskeletal or neuropathic) is the varying input that selects which records enter each review; the coding logic, value vocabularies, and anchors stay the same across both tracks. This keeps the two reviews directly comparable and avoids maintaining two divergent codebooks.</p>
+  <div class="chips" style="margin-top:6px">
+    <span class="chip" style="border-left:3px solid var(--bio)">Review A: musculoskeletal chronic pain</span>
+    <span class="chip" style="border-left:3px solid var(--soc)">Review B: neuropathic chronic pain</span>
+    <span class="chip rq">Varying input: pain-condition family</span>
+    <span class="chip">Constant: fields, values, anchors</span>
+  </div>
+</section>
     <section class="card"><h2>Where each scheme sits in the pipeline</h2>
   <p class="intro">The six schemes form one classification and categorization pipeline. Click a blue, teal, violet, or amber node to open its evaluation surface.</p>
   <div class="pipe-wrap"><svg viewBox="0 0 1422 150" width="1422" height="150" xmlns="http://www.w3.org/2000/svg" font-family="var(--sans)"><rect x="20" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#8a94a6" stroke-width="1.6"/><text x="95.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Search and</text><text x="95.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">deduplication</text><line x1="170.0" y1="73.0" x2="196" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_1/scheme_1.html"><rect x="196" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#3b4ce0" stroke-width="1.6"/><text x="271.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 1</text><text x="271.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Stage 1 screening</text><title>Open scheme_1</title></a><line x1="346.0" y1="73.0" x2="372" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_2/scheme_2.html"><rect x="372" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#3b4ce0" stroke-width="1.6"/><text x="447.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 2</text><text x="447.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Stage 2 abstract coding</text><title>Open scheme_2</title></a><line x1="522.0" y1="73.0" x2="548" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_4/scheme_4.html"><rect x="548" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#0E8F80" stroke-width="1.6"/><text x="623.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 4</text><text x="623.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Stage 3 triage</text><title>Open scheme_4</title></a><line x1="698.0" y1="73.0" x2="724" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_3/scheme_3.html"><rect x="724" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#0E8F80" stroke-width="1.6"/><text x="799.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 3</text><text x="799.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Stage 3 full-text</text><title>Open scheme_3</title></a><line x1="874.0" y1="73.0" x2="900" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_5/scheme_5.html"><rect x="900" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#6D5AE0" stroke-width="1.6"/><text x="975.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 5</text><text x="975.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Concept mapping</text><title>Open scheme_5</title></a><line x1="1050.0" y1="73.0" x2="1076" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><a href="scheme_6/scheme_6.html"><rect x="1076" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#D98016" stroke-width="1.6"/><text x="1151.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Scheme 6</text><text x="1151.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">Semantic ontology</text><title>Open scheme_6</title></a><line x1="1226.0" y1="73.0" x2="1252" y2="73.0" stroke="#cdd3db" stroke-width="2" marker-end="url(#arr)"/><rect x="1252" y="40" width="150" height="66" rx="12" fill="#fff" stroke="#8a94a6" stroke-width="1.6"/><text x="1327.0" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1c2530">Synthesis and</text><text x="1327.0" y="84" text-anchor="middle" font-size="11" fill="#5b6675">reporting</text><defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#cdd3db"/></marker></defs></svg></div>
@@ -343,7 +364,7 @@ body.only-proposed #sources-card{display:none}
   <div class="snum">3</div>
   <span class="badge stage">Stage 3</span>
   <h3>Stage 3 Full-Text Deep Coding Scheme</h3>
-  <p class="sp">This scheme is the full-text deep coding framework for Stage 3 candidate reviews, especially musculoskeletal chronic pain reviews. It captures conceptual depth that cannot be resolved reliably at the abstract level: cove...</p>
+  <p class="sp">This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain ...</p>
   <div class="chips" style="margin-bottom:10px">
     <span class="chip">16 coded fields</span>
     <span class="chip">6 sources</span>
@@ -415,7 +436,7 @@ body.only-proposed #sources-card{display:none}
   </main>
 </div>
 <div class="foot">
-  How the Biopsychosocial Model Frames Chronic Pain Research &middot; OSF 10.17605/OSF.IO/T4FAM &middot; v2.0-draft &middot; 2026-07-05<br>
+  How the Biopsychosocial Model Frames Chronic Pain Research &middot; OSF 10.17605/OSF.IO/T4FAM &middot; v2.1-draft &middot; 2026-07-05<br>
   Lead: Stijn Van Severen &middot; Reviewers: Geert Crombez, Christopher Eccleston, Annick De Paepe, Maya Braun, Julie Dendauw, Jose Luis Socorro Cumplido
 </div>
 <script>

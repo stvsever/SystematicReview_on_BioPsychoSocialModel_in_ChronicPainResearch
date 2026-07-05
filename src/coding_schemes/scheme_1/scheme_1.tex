@@ -7,7 +7,7 @@
   {Stage 1 Screening and Eligibility Decision Scheme}
   {Title and abstract eligibility for the BPS chronic pain corpus}
 
-\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.}
 
 \section*{At a Glance}
 \begin{description}
@@ -79,7 +79,7 @@ Because everything downstream inherits this decision, the scheme is deliberately
 \item[\texttt{review status unclear}] The record cannot be confidently identified as a review or evidence synthesis from title, abstract, or publication metadata.
 \end{description}
 
-\section*{Proposed Refinement: Proposed Decision Order}
+\section*{Proposed Decision Order}
 \refbadge
 Refinement proposed for expert evaluation. Screeners currently apply the rules as an unordered checklist, which lets two screeners exclude the same record for different reasons and depresses reason-level agreement. We propose a fixed precedence so that the first triggered rule owns the recorded reason:
 

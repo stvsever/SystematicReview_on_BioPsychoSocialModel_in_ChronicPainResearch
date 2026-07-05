@@ -7,7 +7,7 @@
   {Psychological Concept Clustering and Framework Mapping Scheme}
   {Second-order normalization of detected psychological concepts}
 
-\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run built with an earlier, coarser generation of these schemes; the refinements proposed here are awaiting expert sign-off before any re-run.}
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM (gemini-2.5-flash); the full end-to-end run is deliberately held until after expert feedback, and the refinements proposed here are awaiting sign-off before any re-run.}
 
 \section*{At a Glance}
 \begin{description}
@@ -34,7 +34,7 @@ It is a second-order coding scheme: it does not classify whole records, it norma
 
 
 \section*{Upstream Concept Detection Seeds (current)}
-{\small\itshape The 16 fixed patterns currently used to detect concepts.}\par\smallskip
+{\small\itshape The 16 fixed patterns currently used to detect concepts. The proposed taxonomy below expands and structures these.}\par\smallskip
 \begin{itemize}
 \item fear-avoidance, catastrophizing, kinesiophobia, depression, anxiety, coping, self-efficacy, acceptance
 \item illness perceptions, pain beliefs, distress, expectations, emotion regulation, mindfulness, trauma, sleep
@@ -64,6 +64,52 @@ We propose enriching the cluster schema so each cluster also carries parent\_sub
 
 Finally we propose two validation rules: every detected concept must map to exactly one family (no orphans), and every family must name at least one candidate framework or be explicitly marked framework-free. These rules make the clustering auditable and reproducible rather than free-form.
 
+
+\section*{Comprehensive Psychological Concept Taxonomy}
+\refbadge
+{\small\itshape Refinement proposed for expert evaluation. This is the comprehensive concept space that the clustering step should normalize toward. Each family is aligned one to one with a psychological subdomain of the Scheme 6 ontology, so the concept map and the semantic ontology share a single vocabulary. Members are representative constructs (not exhaustive); frameworks are the theories most often invoked for that family in chronic pain research. Experts are asked to add, move, rename, or remove members and frameworks.}\par\smallskip
+\begin{description}
+\item[Catastrophizing and negative cognitive appraisal] Exaggerated negative interpretation and mental amplification of pain and its threat value.
+{\small \textit{Ontology subdomain:} Catastrophizing and Negative Cognitive Appraisal. \textit{Constructs:} pain catastrophizing, rumination, magnification, helplessness, negative appraisal, worry about pain. \textit{Frameworks:} fear-avoidance model, cognitive-behavioral model, communal coping model.}
+\item[Fear, avoidance and pain-related fear] Fear of pain, movement, or reinjury and the avoidance or escape behaviour it motivates.
+{\small \textit{Ontology subdomain:} Fear Avoidance and Pain Related Fear. \textit{Constructs:} kinesiophobia, fear of movement or reinjury, pain-related fear, avoidance behaviour, escape behaviour, threat hypervigilance. \textit{Frameworks:} fear-avoidance model, avoidance-endurance model, operant learning.}
+\item[Depression, low mood and negative affect] Depressive symptoms and sustained negative affect linked to living with pain.
+{\small \textit{Ontology subdomain:} Depression Emotional Distress and Affect. \textit{Constructs:} depression, depressive symptoms, anhedonia, hopelessness, demoralization, negative affect. \textit{Frameworks:} cognitive model of depression, diathesis-stress, mutual maintenance model.}
+\item[Anxiety and psychological reactivity] Anxious apprehension and heightened physiological or cognitive reactivity to pain.
+{\small \textit{Ontology subdomain:} Anxiety and Psychological Reactivity. \textit{Constructs:} anxiety, pain anxiety, health anxiety, anxiety sensitivity, physiological reactivity. \textit{Frameworks:} anxiety sensitivity model, fear-avoidance model.}
+\item[Self-efficacy, control and mastery] Beliefs about ability to manage pain and exert control over outcomes.
+{\small \textit{Ontology subdomain:} Self Efficacy Control Beliefs and Perceived Mastery. \textit{Constructs:} pain self-efficacy, perceived control, locus of control, mastery, agency, confidence. \textit{Frameworks:} social cognitive theory, self-efficacy theory.}
+\item[Acceptance, psychological flexibility and mindfulness] Willingness to experience pain without avoidance while pursuing valued activity.
+{\small \textit{Ontology subdomain:} Acceptance Psychological Flexibility and Mindfulness. \textit{Constructs:} pain acceptance, psychological flexibility, values-based action, committed action, present-moment awareness, cognitive defusion, willingness. \textit{Frameworks:} acceptance and commitment therapy, psychological flexibility model, mindfulness-based approaches.}
+\item[Coping strategies and adjustment] Cognitive and behavioural efforts to manage pain and the resulting adjustment.
+{\small \textit{Ontology subdomain:} Pain Coping Strategies and Adjustment. \textit{Constructs:} active coping, passive coping, problem-focused coping, emotion-focused coping, adaptive coping, maladaptive coping, adjustment. \textit{Frameworks:} transactional model of stress and coping, self-regulation.}
+\item[Attention, vigilance and pain processing] How attention is captured by or directed away from pain and bodily threat.
+{\small \textit{Ontology subdomain:} Attention Vigilance and Pain Processing. \textit{Constructs:} attentional bias, hypervigilance, distraction, pain interruption, attentional control, somatic focus. \textit{Frameworks:} threat interpretation model, cognitive-affective model of interruption.}
+\item[Illness beliefs, pain representations and meaning] Beliefs about the nature, cause, timeline, and consequences of pain and its meaning.
+{\small \textit{Ontology subdomain:} Illness Beliefs Pain Representations and Meaning. \textit{Constructs:} illness perceptions, pain beliefs, causal attributions, timeline beliefs, consequence beliefs, meaning of pain, illness identity. \textit{Frameworks:} common-sense model of self-regulation, illness perception framework.}
+\item[Cognitive-behavioural and psychotherapeutic approaches] Structured psychological techniques targeting pain cognition and behaviour.
+{\small \textit{Ontology subdomain:} Cognitive Behavioral and Psychotherapeutic Approaches. \textit{Constructs:} cognitive restructuring, behavioural activation, graded activity, graded exposure, relaxation, psychoeducation. \textit{Frameworks:} cognitive-behavioral therapy, operant and respondent conditioning.}
+\item[Third-wave, ACT and contextual approaches] Contextual and acceptance-based therapies that target the function of experience.
+{\small \textit{Ontology subdomain:} Third Wave Therapies ACT and Contextual Approaches. \textit{Constructs:} acceptance, defusion, values clarification, self-as-context, mindfulness practice, functional contextualism. \textit{Frameworks:} acceptance and commitment therapy, contextual behavioural science, mindfulness-based stress reduction.}
+\item[Resilience, positive psychology and growth] Protective strengths and positive adaptation despite persistent pain.
+{\small \textit{Ontology subdomain:} Resilience Positive Psychology and Post Traumatic Growth. \textit{Constructs:} resilience, optimism, hope, benefit-finding, post-traumatic growth, positive affect, gratitude. \textit{Frameworks:} broaden-and-build theory, resilience frameworks.}
+\item[Identity, self-concept and pain biography] How pain reshapes self-concept, roles, and life narrative.
+{\small \textit{Ontology subdomain:} Identity Self Concept and Chronic Pain Biography. \textit{Constructs:} pain identity, self-discrepancy, biographical disruption, role loss, self-concept, loss of self. \textit{Frameworks:} self-discrepancy theory, narrative and biographical approaches.}
+\item[Trauma, adversity and life events] Traumatic and adverse experiences that predispose to or maintain chronic pain.
+{\small \textit{Ontology subdomain:} Trauma Adverse Childhood and Life Events. \textit{Constructs:} post-traumatic stress, trauma, adverse childhood experiences, abuse history, life stressors, victimization. \textit{Frameworks:} mutual maintenance model, diathesis-stress, shared vulnerability model.}
+\item[Personality and individual differences] Stable traits and dispositions that shape pain experience and response.
+{\small \textit{Ontology subdomain:} Personality Psychological Traits and Individual Differences. \textit{Constructs:} neuroticism, negative affectivity, harm avoidance, perfectionism, alexithymia, trait anxiety. \textit{Frameworks:} trait vulnerability models, diathesis-stress models.}
+\item[Cognitive function and executive processes] Cognitive resources and executive processes affected by or affecting pain.
+{\small \textit{Ontology subdomain:} Cognitive Function Executive Processes and Brain Health. \textit{Constructs:} attention, working memory, executive function, cognitive load, mental fatigue or brain fog, processing speed. \textit{Frameworks:} cognitive resource models, interruption models.}
+\item[Motivation, goal pursuit and engagement] Motivational dynamics of pursuing valued goals alongside pain.
+{\small \textit{Ontology subdomain:} Motivational Processes Goal Pursuit and Engagement. \textit{Constructs:} goal pursuit, goal conflict, approach and avoidance motivation, activity engagement, endurance, valued goals. \textit{Frameworks:} self-regulation, motivational control theory, goal pursuit models.}
+\item[Healthcare-seeking, adherence and engagement] Behaviour around seeking, engaging with, and adhering to care.
+{\small \textit{Ontology subdomain:} Healthcare Seeking Treatment Adherence and Engagement. \textit{Constructs:} treatment adherence, healthcare utilization, help-seeking, therapeutic alliance, treatment expectations, engagement. \textit{Frameworks:} health belief model, common-sense model of self-regulation, expectancy models.}
+\item[Emotion regulation and pain affect processing] Strategies for regulating emotion and processing the affective dimension of pain.
+{\small \textit{Ontology subdomain:} Emotional Regulation and Pain Affect Processing. \textit{Constructs:} emotion regulation, expressive suppression, cognitive reappraisal, alexithymia, emotional awareness, affect regulation. \textit{Frameworks:} process model of emotion regulation, emotion regulation frameworks.}
+\item[Mental health comorbidity and wellbeing] Co-occurring mental health conditions and overall psychological wellbeing.
+{\small \textit{Ontology subdomain:} Mental Health Comorbidity and Psychological Wellbeing. \textit{Constructs:} comorbid depression or anxiety, distress, quality of life, wellbeing, suicidality, life satisfaction. \textit{Frameworks:} mutual maintenance model, biopsychosocial wellbeing models.}
+\end{description}
 
 \section*{Analytic Role}
 \begin{itemize}

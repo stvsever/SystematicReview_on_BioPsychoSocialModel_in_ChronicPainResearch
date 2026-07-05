@@ -44,12 +44,25 @@ PROJECT = {
     "status_long": (
         "These coding schemes are a working draft circulated for expert "
         "evaluation. They have not been applied to a final review corpus. "
-        "The current manuscript is a test run built with an earlier, coarser "
-        "generation of these schemes; the refinements proposed here are "
-        "awaiting expert sign-off before any re-run."
+        "The current manuscript is a test run that exercised an earlier, "
+        "coarser generation of these schemes in the Python workflow with an "
+        "LLM (gemini-2.5-flash); the full end-to-end run is deliberately held "
+        "until after expert feedback, and the refinements proposed here are "
+        "awaiting sign-off before any re-run."
     ),
-    "version": "2.0-draft",
+    "version": "2.1-draft",
     "release_date": "2026-07-05",
+    "review_scope": (
+        "The team plans two parallel reviews: one on musculoskeletal chronic "
+        "pain and one on neuropathic chronic pain. These coding schemes are "
+        "designed as a single uniform instrument for both. The pain-condition "
+        "family (musculoskeletal or neuropathic) is the varying input that "
+        "selects which records enter each review; the coding logic, value "
+        "vocabularies, and anchors stay the same across both tracks. This keeps "
+        "the two reviews directly comparable and avoids maintaining two "
+        "divergent codebooks."
+    ),
+    "test_run_model": "gemini-2.5-flash",
     "reviewers": [
         "Geert Crombez",
         "Christopher Eccleston",
@@ -255,7 +268,6 @@ SCHEME_1 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme operationalizes title and abstract screening after "
                 "search and deduplication. Its function is to decide whether a "
@@ -537,7 +549,6 @@ SCHEME_2 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme standardizes abstract-level extraction for all "
                 "eligible chronic pain reviews. It is the main corpus-wide coding "
@@ -779,9 +790,11 @@ SCHEME_2 = {
                 "without integration mechanisms.",
                 "Use rhetorical label when BPS is ceremonial, aspirational, or "
                 "symbolic with no substantive analytic work.",
-                "Set stage3_candidate to yes for musculoskeletal reviews and for "
-                "mixed or unspecified chronic pain reviews where musculoskeletal "
-                "relevance cannot be ruled out.",
+                "Set stage3_candidate to yes for musculoskeletal or neuropathic "
+                "reviews, and for mixed or unspecified chronic pain reviews where "
+                "either relevance cannot be ruled out. The two planned reviews "
+                "(musculoskeletal and neuropathic) draw from this same candidate "
+                "pool, routed by pain-condition family.",
                 "Use potential integrative signal only when all three core domains "
                 "are substantively present and the abstract signals cross-domain "
                 "explanation or organization beyond simple listing.",
@@ -899,6 +912,10 @@ SCHEME_2 = {
                 "them explicitly.",
                 "Prose and code both emphasize that BPS language alone is "
                 "insufficient evidence of true triadic coverage.",
+                "The test-run fallback forces stage3_candidate to yes only from "
+                "musculoskeletal_flag. For the two-review design a parallel "
+                "neuropathic flag should drive the neuropathic candidate pool; "
+                "this is a proposed change awaiting expert sign-off.",
             ],
         },
     ],
@@ -913,9 +930,10 @@ SCHEME_3 = {
     "id": "scheme_3",
     "num": 3,
     "title": "Stage 3 Full-Text Deep Coding Scheme",
-    "subtitle": "Musculoskeletal-focused full-text adjudication and interpretive "
-                "coding",
-    "tagline": "Human-coded template with pilot and reliability subsamples",
+    "subtitle": "Full-text adjudication and interpretive coding for the "
+                "musculoskeletal and neuropathic reviews",
+    "tagline": "One uniform instrument applied to both pain-condition tracks; "
+               "human-coded with pilot and reliability subsamples",
     "stage": "Stage 3",
     "stage_key": "fulltext",
     "meta": {
@@ -950,15 +968,20 @@ SCHEME_3 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme is the full-text deep coding framework for Stage 3 "
-                "candidate reviews, especially musculoskeletal chronic pain "
-                "reviews. It captures conceptual depth that cannot be resolved "
-                "reliably at the abstract level: coverage of each BPS domain, "
-                "pairwise and triadic integration quality, biopsychosocial "
-                "typology, psychological concepts, theoretical frameworks, "
-                "conceptual problems, and evidential quotations.",
+                "candidate reviews. It is applied as one uniform instrument to "
+                "both planned reviews: the musculoskeletal chronic pain review "
+                "and the neuropathic chronic pain review. The pain-condition "
+                "family is the varying input that decides which records each "
+                "review reads; the coding fields, value vocabularies, and anchors "
+                "are identical across both tracks so the two reviews stay "
+                "directly comparable.",
+                "It captures conceptual depth that cannot be resolved reliably at "
+                "the abstract level: coverage of each BPS domain, pairwise and "
+                "triadic integration quality, biopsychosocial typology, "
+                "psychological concepts, theoretical frameworks, conceptual "
+                "problems, and evidential quotations.",
                 "Stage 3 is where the review's central claim is tested: does a "
                 "BPS-labelled review actually integrate the three domains, and if "
                 "so, how.",
@@ -1218,7 +1241,6 @@ SCHEME_4 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme governs the transition from Stage 2 abstract coding "
                 "to Stage 3 full-text work. It standardizes which candidate "
@@ -1397,7 +1419,6 @@ SCHEME_5 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme standardizes higher-order concept mapping after "
                 "concept detection. It groups extracted psychological concepts "
@@ -1413,7 +1434,9 @@ SCHEME_5 = {
             "kind": "list",
             "id": "detection-concepts",
             "title": "Upstream Concept Detection Seeds (current)",
-            "intro": "The 16 fixed patterns currently used to detect concepts.",
+            "feedback": True,
+            "intro": "The 16 fixed patterns currently used to detect concepts. "
+                     "The proposed taxonomy below expands and structures these.",
             "items": [
                 "fear-avoidance, catastrophizing, kinesiophobia, depression, "
                 "anxiety, coping, self-efficacy, acceptance",
@@ -1479,6 +1502,199 @@ SCHEME_5 = {
             ],
         },
         {
+            "kind": "taxonomy",
+            "id": "psych-taxonomy",
+            "title": "Comprehensive Psychological Concept Taxonomy",
+            "enhancement": True,
+            "feedback": True,
+            "intro": "Refinement proposed for expert evaluation. This is the "
+                     "comprehensive concept space that the clustering step should "
+                     "normalize toward. Each family is aligned one to one with a "
+                     "psychological subdomain of the Scheme 6 ontology, so the "
+                     "concept map and the semantic ontology share a single "
+                     "vocabulary. Members are representative constructs (not "
+                     "exhaustive); frameworks are the theories most often invoked "
+                     "for that family in chronic pain research. Experts are asked "
+                     "to add, move, rename, or remove members and frameworks.",
+            "families": [
+                {"family": "Catastrophizing and negative cognitive appraisal",
+                 "subdomain": "Catastrophizing and Negative Cognitive Appraisal",
+                 "definition": "Exaggerated negative interpretation and mental "
+                 "amplification of pain and its threat value.",
+                 "members": ["pain catastrophizing", "rumination", "magnification",
+                             "helplessness", "negative appraisal", "worry about pain"],
+                 "frameworks": ["fear-avoidance model", "cognitive-behavioral model",
+                                "communal coping model"]},
+                {"family": "Fear, avoidance and pain-related fear",
+                 "subdomain": "Fear Avoidance and Pain Related Fear",
+                 "definition": "Fear of pain, movement, or reinjury and the "
+                 "avoidance or escape behaviour it motivates.",
+                 "members": ["kinesiophobia", "fear of movement or reinjury",
+                             "pain-related fear", "avoidance behaviour",
+                             "escape behaviour", "threat hypervigilance"],
+                 "frameworks": ["fear-avoidance model", "avoidance-endurance model",
+                                "operant learning"]},
+                {"family": "Depression, low mood and negative affect",
+                 "subdomain": "Depression Emotional Distress and Affect",
+                 "definition": "Depressive symptoms and sustained negative affect "
+                 "linked to living with pain.",
+                 "members": ["depression", "depressive symptoms", "anhedonia",
+                             "hopelessness", "demoralization", "negative affect"],
+                 "frameworks": ["cognitive model of depression", "diathesis-stress",
+                                "mutual maintenance model"]},
+                {"family": "Anxiety and psychological reactivity",
+                 "subdomain": "Anxiety and Psychological Reactivity",
+                 "definition": "Anxious apprehension and heightened physiological "
+                 "or cognitive reactivity to pain.",
+                 "members": ["anxiety", "pain anxiety", "health anxiety",
+                             "anxiety sensitivity", "physiological reactivity"],
+                 "frameworks": ["anxiety sensitivity model", "fear-avoidance model"]},
+                {"family": "Self-efficacy, control and mastery",
+                 "subdomain": "Self Efficacy Control Beliefs and Perceived Mastery",
+                 "definition": "Beliefs about ability to manage pain and exert "
+                 "control over outcomes.",
+                 "members": ["pain self-efficacy", "perceived control",
+                             "locus of control", "mastery", "agency", "confidence"],
+                 "frameworks": ["social cognitive theory", "self-efficacy theory"]},
+                {"family": "Acceptance, psychological flexibility and mindfulness",
+                 "subdomain": "Acceptance Psychological Flexibility and Mindfulness",
+                 "definition": "Willingness to experience pain without avoidance "
+                 "while pursuing valued activity.",
+                 "members": ["pain acceptance", "psychological flexibility",
+                             "values-based action", "committed action",
+                             "present-moment awareness", "cognitive defusion",
+                             "willingness"],
+                 "frameworks": ["acceptance and commitment therapy",
+                                "psychological flexibility model",
+                                "mindfulness-based approaches"]},
+                {"family": "Coping strategies and adjustment",
+                 "subdomain": "Pain Coping Strategies and Adjustment",
+                 "definition": "Cognitive and behavioural efforts to manage pain "
+                 "and the resulting adjustment.",
+                 "members": ["active coping", "passive coping",
+                             "problem-focused coping", "emotion-focused coping",
+                             "adaptive coping", "maladaptive coping", "adjustment"],
+                 "frameworks": ["transactional model of stress and coping",
+                                "self-regulation"]},
+                {"family": "Attention, vigilance and pain processing",
+                 "subdomain": "Attention Vigilance and Pain Processing",
+                 "definition": "How attention is captured by or directed away from "
+                 "pain and bodily threat.",
+                 "members": ["attentional bias", "hypervigilance", "distraction",
+                             "pain interruption", "attentional control",
+                             "somatic focus"],
+                 "frameworks": ["threat interpretation model",
+                                "cognitive-affective model of interruption"]},
+                {"family": "Illness beliefs, pain representations and meaning",
+                 "subdomain": "Illness Beliefs Pain Representations and Meaning",
+                 "definition": "Beliefs about the nature, cause, timeline, and "
+                 "consequences of pain and its meaning.",
+                 "members": ["illness perceptions", "pain beliefs",
+                             "causal attributions", "timeline beliefs",
+                             "consequence beliefs", "meaning of pain",
+                             "illness identity"],
+                 "frameworks": ["common-sense model of self-regulation",
+                                "illness perception framework"]},
+                {"family": "Cognitive-behavioural and psychotherapeutic approaches",
+                 "subdomain": "Cognitive Behavioral and Psychotherapeutic Approaches",
+                 "definition": "Structured psychological techniques targeting pain "
+                 "cognition and behaviour.",
+                 "members": ["cognitive restructuring", "behavioural activation",
+                             "graded activity", "graded exposure", "relaxation",
+                             "psychoeducation"],
+                 "frameworks": ["cognitive-behavioral therapy",
+                                "operant and respondent conditioning"]},
+                {"family": "Third-wave, ACT and contextual approaches",
+                 "subdomain": "Third Wave Therapies ACT and Contextual Approaches",
+                 "definition": "Contextual and acceptance-based therapies that "
+                 "target the function of experience.",
+                 "members": ["acceptance", "defusion", "values clarification",
+                             "self-as-context", "mindfulness practice",
+                             "functional contextualism"],
+                 "frameworks": ["acceptance and commitment therapy",
+                                "contextual behavioural science",
+                                "mindfulness-based stress reduction"]},
+                {"family": "Resilience, positive psychology and growth",
+                 "subdomain": "Resilience Positive Psychology and Post Traumatic Growth",
+                 "definition": "Protective strengths and positive adaptation "
+                 "despite persistent pain.",
+                 "members": ["resilience", "optimism", "hope", "benefit-finding",
+                             "post-traumatic growth", "positive affect", "gratitude"],
+                 "frameworks": ["broaden-and-build theory", "resilience frameworks"]},
+                {"family": "Identity, self-concept and pain biography",
+                 "subdomain": "Identity Self Concept and Chronic Pain Biography",
+                 "definition": "How pain reshapes self-concept, roles, and life "
+                 "narrative.",
+                 "members": ["pain identity", "self-discrepancy",
+                             "biographical disruption", "role loss",
+                             "self-concept", "loss of self"],
+                 "frameworks": ["self-discrepancy theory",
+                                "narrative and biographical approaches"]},
+                {"family": "Trauma, adversity and life events",
+                 "subdomain": "Trauma Adverse Childhood and Life Events",
+                 "definition": "Traumatic and adverse experiences that predispose "
+                 "to or maintain chronic pain.",
+                 "members": ["post-traumatic stress", "trauma",
+                             "adverse childhood experiences", "abuse history",
+                             "life stressors", "victimization"],
+                 "frameworks": ["mutual maintenance model", "diathesis-stress",
+                                "shared vulnerability model"]},
+                {"family": "Personality and individual differences",
+                 "subdomain": "Personality Psychological Traits and Individual Differences",
+                 "definition": "Stable traits and dispositions that shape pain "
+                 "experience and response.",
+                 "members": ["neuroticism", "negative affectivity", "harm avoidance",
+                             "perfectionism", "alexithymia", "trait anxiety"],
+                 "frameworks": ["trait vulnerability models",
+                                "diathesis-stress models"]},
+                {"family": "Cognitive function and executive processes",
+                 "subdomain": "Cognitive Function Executive Processes and Brain Health",
+                 "definition": "Cognitive resources and executive processes "
+                 "affected by or affecting pain.",
+                 "members": ["attention", "working memory", "executive function",
+                             "cognitive load", "mental fatigue or brain fog",
+                             "processing speed"],
+                 "frameworks": ["cognitive resource models", "interruption models"]},
+                {"family": "Motivation, goal pursuit and engagement",
+                 "subdomain": "Motivational Processes Goal Pursuit and Engagement",
+                 "definition": "Motivational dynamics of pursuing valued goals "
+                 "alongside pain.",
+                 "members": ["goal pursuit", "goal conflict",
+                             "approach and avoidance motivation",
+                             "activity engagement", "endurance", "valued goals"],
+                 "frameworks": ["self-regulation", "motivational control theory",
+                                "goal pursuit models"]},
+                {"family": "Healthcare-seeking, adherence and engagement",
+                 "subdomain": "Healthcare Seeking Treatment Adherence and Engagement",
+                 "definition": "Behaviour around seeking, engaging with, and "
+                 "adhering to care.",
+                 "members": ["treatment adherence", "healthcare utilization",
+                             "help-seeking", "therapeutic alliance",
+                             "treatment expectations", "engagement"],
+                 "frameworks": ["health belief model",
+                                "common-sense model of self-regulation",
+                                "expectancy models"]},
+                {"family": "Emotion regulation and pain affect processing",
+                 "subdomain": "Emotional Regulation and Pain Affect Processing",
+                 "definition": "Strategies for regulating emotion and processing "
+                 "the affective dimension of pain.",
+                 "members": ["emotion regulation", "expressive suppression",
+                             "cognitive reappraisal", "alexithymia",
+                             "emotional awareness", "affect regulation"],
+                 "frameworks": ["process model of emotion regulation",
+                                "emotion regulation frameworks"]},
+                {"family": "Mental health comorbidity and wellbeing",
+                 "subdomain": "Mental Health Comorbidity and Psychological Wellbeing",
+                 "definition": "Co-occurring mental health conditions and overall "
+                 "psychological wellbeing.",
+                 "members": ["comorbid depression or anxiety", "distress",
+                             "quality of life", "wellbeing", "suicidality",
+                             "life satisfaction"],
+                 "frameworks": ["mutual maintenance model",
+                                "biopsychosocial wellbeing models"]},
+            ],
+        },
+        {
             "kind": "list",
             "id": "analytic-role",
             "title": "Analytic Role",
@@ -1535,7 +1751,6 @@ SCHEME_6 = {
             "kind": "prose",
             "id": "purpose",
             "title": "Purpose",
-            "feedback": True,
             "body": [
                 "This scheme supplies the ontology scaffold used to quantify "
                 "semantic emphasis across biological, psychological, and social "
@@ -1570,6 +1785,7 @@ SCHEME_6 = {
             "id": "biological",
             "title": "Biological Subdomains (10)",
             "domain": "biological",
+            "feedback": True,
             "items": [
                 "Central Sensitization and Neuroplasticity",
                 "Musculoskeletal and Structural Pathology",
@@ -1588,6 +1804,7 @@ SCHEME_6 = {
             "id": "psychological",
             "title": "Psychological Subdomains (20)",
             "domain": "psychological",
+            "feedback": True,
             "items": [
                 "Catastrophizing and Negative Cognitive Appraisal",
                 "Fear Avoidance and Pain Related Fear",
@@ -1616,6 +1833,7 @@ SCHEME_6 = {
             "id": "social",
             "title": "Social Subdomains (12)",
             "domain": "social",
+            "feedback": True,
             "items": [
                 "Social Support Network and Interpersonal Resources",
                 "Work Disability Occupational Function and Productivity",
@@ -1664,7 +1882,6 @@ SCHEME_6 = {
             "kind": "prose",
             "id": "interpretive-note",
             "title": "Interpretive Note",
-            "feedback": True,
             "body": [
                 "This is an analytic coding scheme, not a human extraction "
                 "codebook. It is included because the project uses ontology "

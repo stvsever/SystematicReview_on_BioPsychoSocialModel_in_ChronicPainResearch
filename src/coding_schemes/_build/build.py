@@ -177,6 +177,20 @@ def render_section(sec):
     elif kind == "fields":
         for f in sec["fields"]:
             parts.append(render_field(f))
+    elif kind == "taxonomy":
+        parts.append('<div class="taxo">')
+        for fam in sec["families"]:
+            parts.append('<div class="tfam">')
+            parts.append(f'<h4>{h(fam["family"])}</h4>')
+            parts.append(f'<div class="tsub">Aligns to ontology subdomain: {h(fam["subdomain"])}</div>')
+            parts.append(f'<div class="tdef">{h(fam["definition"])}</div>')
+            parts.append('<div class="tgrouplabel">Representative constructs</div><div class="tchips">')
+            parts.extend(f'<span class="tchip">{h(m)}</span>' for m in fam["members"])
+            parts.append('</div>')
+            parts.append('<div class="tgrouplabel">Candidate frameworks</div><div class="tchips">')
+            parts.extend(f'<span class="tchip fw">{h(fw)}</span>' for fw in fam["frameworks"])
+            parts.append('</div></div>')
+        parts.append('</div>')
     elif kind == "examples":
         for ex in sec["examples"]:
             parts.append('<div class="example">')
@@ -223,10 +237,7 @@ def scheme_html(s):
   <div class="spacer"></div>
   <span class="savechip" id="savechip">All changes saved</span>
   <div class="sep"></div>
-  <button class="btn sm" id="btn-import" title="Load a previously exported feedback file">Import</button>
-  <input type="file" id="file-import" accept="application/json" hidden>
-  <button class="btn sm" id="btn-copy" title="Copy feedback JSON to clipboard">Copy JSON</button>
-  <button class="btn primary sm" id="btn-export" title="Download feedback as JSON (shortcut: s)">Export feedback</button>
+  <button class="btn primary" id="btn-export" title="Download all your feedback for this scheme as one JSON file (shortcut: s)">&#8595;&nbsp;Export feedback (JSON)</button>
   <button class="btn ghost sm" id="btn-print" title="Print or save as PDF">Print</button>
 </div></div>'''
 
@@ -248,7 +259,7 @@ def scheme_html(s):
 
     howto = '''<div class="howto">
   <h2>How to give feedback</h2>
-  <p class="intro">Every section below has an <b>Expert feedback</b> box. Pick one verdict, rate how clearly the specification is written, and add comments. Everything you enter autosaves in this browser; use <b>Export feedback</b> in the top bar to download a JSON file to share, or <b>Import</b> to restore one.</p>
+  <p class="intro">Each coding decision below has its own <b>Expert feedback</b> box. For each one, pick a single verdict, rate how clearly it is specified, and add comments. Your feedback autosaves in this browser as you go, so you can stop and return later. When you are finished, click <b>Export feedback (JSON)</b> (top bar, or the button at the end of the page) to download one file and send it to the review team. That single export is the only step needed to share your review.</p>
   <div class="legend">
     <div class="lrow"><span class="pill approve">Approve</span><span class="ld"><b>Ready as written</b><span>Adopt this section without changes.</span></span></div>
     <div class="lrow"><span class="pill revise">Approve with revisions</span><span class="ld"><b>Adopt after edits</b><span>Fine in principle; note the changes in the comment.</span></span></div>
@@ -273,8 +284,8 @@ def scheme_html(s):
   </div>
   {fb_widget("overall", "Overall assessment of Scheme " + str(num))}
   <div class="endbar">
-    <button class="btn primary" id="btn-export2" onclick="document.getElementById('btn-export').click()">Export feedback as JSON</button>
-    <span style="font-size:12.5px;color:var(--muted)">Your feedback stays in this browser until you export it.</span>
+    <button class="btn primary" id="btn-export2" title="Download all your feedback for this scheme as one JSON file" onclick="document.getElementById('btn-export').click()">&#8595;&nbsp;Export my feedback (JSON)</button>
+    <span style="font-size:12.5px;color:var(--muted)"><b>Final step.</b> Downloads one file with every verdict and comment on this page. Send it to the review team, or drop it into the console on the home page to consolidate.</span>
     <span class="spacer" style="flex:1"></span>
     <button class="btn ghost sm" id="btn-reset" title="Clear all saved feedback for this scheme">Clear all feedback</button>
   </div>
@@ -424,6 +435,17 @@ def index_html():
   <div class="stat"><div class="n">111</div><div class="l">test-run records</div></div>
 </div>'''
 
+    scope = f'''<section class="card"><h2>Scope: two reviews, one shared instrument</h2>
+  <p class="intro">Why the same schemes serve two reviews.</p>
+  <p>{h(proj["review_scope"])}</p>
+  <div class="chips" style="margin-top:6px">
+    <span class="chip" style="border-left:3px solid var(--bio)">Review A: musculoskeletal chronic pain</span>
+    <span class="chip" style="border-left:3px solid var(--soc)">Review B: neuropathic chronic pain</span>
+    <span class="chip rq">Varying input: pain-condition family</span>
+    <span class="chip">Constant: fields, values, anchors</span>
+  </div>
+</section>'''
+
     pipe = f'''<section class="card"><h2>Where each scheme sits in the pipeline</h2>
   <p class="intro">The six schemes form one classification and categorization pipeline. Click a blue, teal, violet, or amber node to open its evaluation surface.</p>
   <div class="pipe-wrap">{pipeline_svg()}</div>
@@ -471,6 +493,7 @@ def index_html():
 <div class="wrap" style="grid-template-columns:1fr">
   <main class="main">
     {hero}
+    {scope}
     {pipe}
     <section class="card"><h2>The six coding schemes</h2>
       <p class="intro">Each card opens a dedicated, self-contained evaluation surface.</p>
@@ -521,7 +544,10 @@ def latex_section(sec):
     title = sec["title"]
     out = []
     if sec.get("enhancement"):
-        out.append(r"\section*{Proposed Refinement: " + lx(title.split(":", 1)[-1].strip() if ":" in title else title) + "}")
+        t = title
+        if ":" in t:
+            t = "Proposed Refinement: " + t.split(":", 1)[-1].strip()
+        out.append(r"\section*{" + lx(t) + "}")
         out.append(r"\refbadge")
     else:
         out.append(r"\section*{" + lx(title) + "}")
@@ -553,6 +579,14 @@ def latex_section(sec):
                 out.append(latex_values(f["values"]))
             if f["notes"]:
                 out.append(r"{\small " + lx(f["notes"]) + "}")
+        out.append(r"\end{description}")
+    elif kind == "taxonomy":
+        out.append(r"\begin{description}")
+        for fam in sec["families"]:
+            out.append(r"\item[" + lx(fam["family"]) + r"] " + lx(fam["definition"]))
+            out.append(r"{\small \textit{Ontology subdomain:} " + lx(fam["subdomain"])
+                       + r". \textit{Constructs:} " + lx(", ".join(fam["members"]))
+                       + r". \textit{Frameworks:} " + lx(", ".join(fam["frameworks"])) + ".}")
         out.append(r"\end{description}")
     elif kind == "examples":
         out.append(r"\begin{description}")
@@ -704,7 +738,7 @@ def scheme_readme(s):
         L.append("These are the enhancements that raise semantic resolution. They are proposals only and are not yet applied to the pipeline:")
         L.append("")
         for sec in enh:
-            first = sec["body"][0] if sec.get("body") else ""
+            first = sec["body"][0] if sec.get("body") else sec.get("intro", "")
             # strip the standard lead sentence for brevity
             first = first.replace("Refinement proposed for expert evaluation. ", "")
             L.append(f"- **{sec['title'].split(':',1)[-1].strip()}.** {first}")
@@ -726,6 +760,16 @@ def scheme_readme(s):
             L.append("")
     if not any_fields:
         L.append("This scheme is specified through its prompts, seeds, and ontology rather than a single coded-field table. See the HTML or PDF for the full specification.")
+        L.append("")
+    tax = [sec for sec in s["sections"] if sec["kind"] == "taxonomy"]
+    for sec in tax:
+        L.append(f"## {sec['title']} (proposed)")
+        L.append("")
+        L.append("Each family aligns one to one with a Scheme 6 psychological subdomain.")
+        L.append("")
+        for fam in sec["families"]:
+            L.append(f"- **{fam['family']}** (subdomain: {fam['subdomain']}). {fam['definition']} "
+                     f"Constructs: {', '.join(fam['members'])}. Frameworks: {', '.join(fam['frameworks'])}.")
         L.append("")
     L.append("## Canonical source paths")
     L.append("")
@@ -763,7 +807,11 @@ def index_readme():
     L.append("")
     L.append("## Why these schemes are circulated now")
     L.append("")
-    L.append("The current manuscript is a **test run** built with an earlier, coarser generation of these schemes. This release raises their semantic quality and resolution (operational anchors for every value, positive and negative indicators, explicit boundary rules, worked examples from the real corpus, and clearly labelled proposed refinements). Nothing here has been applied to a final corpus yet. The schemes are being circulated for expert evaluation first; the pipeline will be re-run only after sign-off.")
+    L.append("The current manuscript is a **test run** (it exercised an earlier, coarser generation of these schemes in the Python workflow with an LLM, gemini-2.5-flash). This release raises their semantic quality and resolution (operational anchors for every value, positive and negative indicators, explicit boundary rules, worked examples from the real corpus, a comprehensive psychological concept taxonomy, and clearly labelled proposed refinements). Nothing here has been applied to a final corpus yet. The schemes are being circulated for expert evaluation first; the pipeline will be re-run only after sign-off.")
+    L.append("")
+    L.append("## Scope: two reviews, one shared instrument")
+    L.append("")
+    L.append(proj["review_scope"])
     L.append("")
     L.append("## Inventory")
     L.append("")
