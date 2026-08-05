@@ -1,0 +1,22 @@
+{
+  "built_at_utc": "2026-08-05T08:53:04+00:00",
+  "source": "PubMed Central open-access subset via NCBI E-utilities",
+  "input": "abstract-level consensus candidate set",
+  "n_candidates": 88,
+  "n_with_pmcid": 53,
+  "n_retrieved": 47,
+  "n_dropped": 41,
+  "drop_reasons": {
+    "no PubMed Central record (not open access)": 35,
+    "retrieved body too short (0 chars)": 6
+  },
+  "min_body_chars": 4000,
+  "median_body_chars": 41633.0,
+  "max_body_chars": 201188,
+  "outputs": {
+    "corpus_csv": "02_fulltext_corpus.csv",
+    "candidates_csv": "01_retrieval_candidates.csv",
+    "retrieval_log_csv": "04_retrieval_log.csv",
+    "fulltext_dir": "03_fulltext_txt"
+  }
+}

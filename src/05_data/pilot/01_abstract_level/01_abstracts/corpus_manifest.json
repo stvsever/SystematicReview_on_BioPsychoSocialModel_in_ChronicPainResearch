@@ -1,0 +1,23 @@
+{
+  "built_at_utc": "2026-08-05T08:32:56+00:00",
+  "source": "MEDLINE via PubMed (NCBI E-utilities)",
+  "query_key": "pubmed_operational_primary",
+  "query_label": "Operational PubMed query",
+  "query_string": "(\"biopsychosocial\"[Title/Abstract] OR \"bio-psycho-social\"[Title/Abstract] OR \"bio psycho social\"[Title/Abstract]) AND (\"chronic pain\"[Title/Abstract] OR \"persistent pain\"[Title/Abstract]) AND Review[ptyp]",
+  "date_window": {
+    "start": "1977-01-01",
+    "end": "2026-03-31"
+  },
+  "sort": "publication date, most recent first",
+  "total_query_hits": 509,
+  "candidates_retrieved": 220,
+  "candidates_parsed": 219,
+  "with_usable_abstract": 219,
+  "min_abstract_chars": 250,
+  "sample_size": 100,
+  "with_pmcid": 60,
+  "year_range": [
+    "2024",
+    "2026"
+  ]
+}

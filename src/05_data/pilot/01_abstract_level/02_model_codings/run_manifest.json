@@ -1,0 +1,57 @@
+{
+  "n_abstracts": 100,
+  "n_models": 3,
+  "n_codings": 300,
+  "n_api_calls": 300,
+  "models": [
+    {
+      "order": 1,
+      "label": "DeepSeek-V4-Flash",
+      "openrouter_id": "deepseek/deepseek-v4-flash",
+      "provider": "DeepSeek"
+    },
+    {
+      "order": 2,
+      "label": "Nex-N2-Mini",
+      "openrouter_id": "nex-agi/nex-n2-mini",
+      "provider": "Nex AGI"
+    },
+    {
+      "order": 3,
+      "label": "Laguna-XS-2.1",
+      "openrouter_id": "poolside/laguna-xs-2.1",
+      "provider": "Poolside"
+    }
+  ],
+  "coding_method_counts": {
+    "llm_structured": 300
+  },
+  "batch_size": 1,
+  "max_workers": 16,
+  "token_usage_by_model": {
+    "DeepSeek-V4-Flash": {
+      "prompt_tokens": 228256,
+      "completion_tokens": 170546,
+      "total_tokens": 398802,
+      "cost_usd": 0.0633
+    },
+    "Laguna-XS-2.1": {
+      "prompt_tokens": 236567,
+      "completion_tokens": 130247,
+      "total_tokens": 366814,
+      "cost_usd": 0.0243
+    },
+    "Nex-N2-Mini": {
+      "prompt_tokens": 234163,
+      "completion_tokens": 375816,
+      "total_tokens": 609979,
+      "cost_usd": 0.0434
+    }
+  },
+  "token_usage_total": {
+    "prompt_tokens": 698986,
+    "completion_tokens": 676609,
+    "total_tokens": 1375595,
+    "cost_usd": 0.131
+  }
+}

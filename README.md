@@ -6,6 +6,7 @@
 
 [![Type](https://img.shields.io/badge/Type-systematic_review-7C3AED)](paper/report/main.tex)
 [![OSF Registered](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FT4FAM-0F766E)](https://osf.io/t4fam)
+[![Stage](https://img.shields.io/badge/Stage-coding_schemes_under_expert_review-B45309)](src/02_coding_schemes/index.html)
 [![Dockerized](https://img.shields.io/badge/Docker-ready-2496ED)](docker/)
 [![MIT License](https://img.shields.io/badge/License-MIT-16A34A)](LICENSE)
 
@@ -24,16 +25,67 @@
 
 **The current manuscript is a test run, not a final result.** It was produced with an earlier, coarser generation of the coding schemes. Everything in [paper/report/main.pdf](paper/report/main.pdf) (the 111 record counts, the typology distribution, the semantic-loading figures) should be read as a pipeline demonstration on provisional schemes, not as confirmed findings.
 
-The coding schemes that define how biopsychosocial (BPS) reviews are classified and categorized have since been revised for higher semantic quality and resolution: operational anchors for every code value, positive and negative indicators, explicit boundary rules between adjacent categories, worked examples drawn from the real corpus, a comprehensive psychological concept taxonomy, and clearly labelled proposed refinements. They are built as one uniform instrument for **two planned reviews**, one on musculoskeletal chronic pain and one on neuropathic chronic pain, with uniformity relaxed only where the biology genuinely differs (the routing flags and the biological subdomain ontology). These revised schemes are now circulated for **expert evaluation** and are **awaiting sign-off before the pipeline is re-run**.
+The coding schemes that define how biopsychosocial (BPS) reviews are classified and categorized have since been revised for higher semantic quality and resolution: operational anchors for every code value, positive and negative indicators, and explicit boundary rules between adjacent categories. They are built as one uniform instrument for **two planned reviews**, one on musculoskeletal chronic pain and one on neuropathic chronic pain, with uniformity relaxed only where the biology genuinely differs (the routing flags and the biological subdomain ontology). These revised schemes are now circulated for **expert evaluation** and are **awaiting sign-off before the pipeline is re-run**.
 
-- Interactive evaluation package (open in a browser): [src/coding_schemes/index.html](src/coding_schemes/index.html)
-- Per-scheme dossiers (HTML, PDF, README): [src/coding_schemes/](src/coding_schemes/)
+- Interactive evaluation package (open in a browser): [src/02_coding_schemes/index.html](src/02_coding_schemes/index.html)
+- Per-scheme dossiers (HTML, PDF, README): [src/02_coding_schemes/](src/02_coding_schemes/)
 
-Each scheme has its own HTML surface where reviewers record a verdict and comments per section and export their feedback as JSON. A re-run with the finalized schemes, and an updated manuscript, will follow once evaluation is complete. Please do not cite the test-run numbers as conclusions in the meantime.
+Each dossier carries the purpose of the scheme and the scheme itself, and nothing else. Every coded field has its own expert-feedback box, every section has a section-level box, and the overall assessment closes the page. Reviewers export one JSON file per scheme and the console on the index page consolidates them. A re-run with the finalized schemes, and an updated manuscript, will follow once evaluation is complete. Please do not cite the test-run numbers as conclusions in the meantime.
+
+## 🧪 Cross-provider test runs
+
+Before the schemes go back through the pipeline, the workflow itself was validated end to end. Both coding levels are stress-tested the same way: apply the scheme once per model, with **three deliberately cheap large language models from three different providers**, and quantify how strongly the providers agree. The three models act as three independent raters, so each run is a cross-provider inter-rater reliability check on the scheme and on the code that applies it.
+
+> The three models (`deepseek/deepseek-v4-flash`, `nex-agi/nex-n2-mini`, `poolside/laguna-xs-2.1`) are low-cost stand-ins, chosen because they verified the highest share of their quoted evidence in an earlier five-model comparison. The real study will run the same workflow with state-of-the-art models. The test runs exist to validate the code, the metrics, and the reporting, so that step becomes a drop-in model swap in one config file.
+
+The two runs are one chain, not two exercises:
+
+```text
+operational PubMed query
+        |
+        v
+100 abstracts  ---->  Stage 2 coding, 3 models, 300 API calls
+        |
+        v
+consensus filter (majority vote)  ---->  88 candidates
+        |
+        v
+PubMed Central open access  ---->  47 full texts
+        |
+        v
+Stage 3 deep coding, same 3 models, graded ladders with verbatim evidence
+```
+
+### Test run 1: abstract level (scheme 2)
+
+100 records from the operational query x 3 models = 300 codings from 300 API calls, for about 13 US cents. Reliability per coded field with Fleiss' kappa, Krippendorff's alpha, observed agreement, and the unanimous rate, plus model-by-model matrices, set overlap on the open extraction lists, and a majority-vote consensus.
+
+Mean Fleiss' kappa is 0.60 across the twelve coded fields, and the spread is the finding: substantial agreement on what a paper *is* (ICD-11 pain family 0.76, review type 0.71), fair agreement on what a paper *does* (BPS function 0.35, provisional typology 0.33). The two weakest fields are the ones carrying the review's own argument, which is exactly what the expert evaluation should concentrate on.
+
+- Notebook: [`src/04_notebooks/01_abstractlevel_testrun.ipynb`](src/04_notebooks/01_abstractlevel_testrun.ipynb) or `python -m bps_review run-abstract-testrun`
+- Code: [src/03_pipeline/bps_review/pilot/](src/03_pipeline/bps_review/pilot/README.md) · Results: [src/05_data/pilot/01_abstract_level/](src/05_data/pilot/01_abstract_level/)
+
+### Test run 2: full text (scheme 3)
+
+The open-access subset of the candidate set the abstract stage produced: 47 full texts x 3 models. Everything from the first run is computed again, plus three things a full-text scheme needs:
+
+- **Graded ladders with evidence.** Coverage per domain on a four-rung ladder, three pairwise and one triadic integration on their own ladders, and a verbatim quote behind every graded judgement. An adjacent-agreement rate is reported alongside kappa, because on an ordered ladder a one-rung difference and a total disagreement are not the same error.
+- **Quote verification.** Every extracted quote is matched back against its source article. Unverified quotes are reported, not hidden, and the per-model spread is a concrete criterion for choosing the state-of-the-art model later.
+- **Evidence discipline.** For every domain pair graded above `mentioned`, the run checks whether the coder returned a quoted claim for exactly that pair. A graded link with no passage behind it is a judgement the review cannot audit.
+
+- Notebook: [`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](src/04_notebooks/02_fulltextlevel_testrun.ipynb) or `python -m bps_review run-fulltext-testrun`
+- Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_data/pilot/02_fulltext_level/](src/05_data/pilot/02_fulltext_level/)
+
+### What the test run found in the pipeline
+
+The first execution produced perfect agreement, Fleiss' kappa of exactly 1.00, on five fields including all three domain-mention flags. Three different models do not agree perfectly on whether a review carries substantive social content. The cause was that the Stage 2 prompt listed value vocabularies but never named the fields to return: the models omitted those five, and the deterministic repair layer filled them from the lexical rule-based coder. The output looked like a complete structured coding and was in fact keyword matching for the review's core RQ2 variables.
+
+The prompt now carries an explicit field specification and output contract, and a test asserts that the specification and the validated schema cannot drift apart again. The same defect was present in the pipeline that produced the current manuscript, which is one more reason the manuscript numbers are held as provisional.
 
 ## 📋 Table of Contents
 
 - [🚧 Project Status](#-project-status-test-run-coding-schemes-under-expert-review)
+- [🧪 Cross-provider test runs](#-cross-provider-test-runs)
 - [📝 Abstract](#-abstract)
 - [📌 Key Findings](#-key-findings)
 - [📄 Full Paper](#-full-paper)
@@ -48,9 +100,9 @@ Each scheme has its own HTML surface where reviewers record a verdict and commen
 
 ## 📝 Abstract
 
-This repository contains the end-to-end research pipeline for an OSF-registered systematic review of how the biopsychosocial (BPS) model is operationalized in chronic pain review literature. The project is not a static manuscript dump: it links protocol, search, deduplication, screening, abstract coding, Stage 3 full-text preparation, ontology-aligned semantic loading, figure generation, and LaTeX compilation in one auditable workflow.
+This repository contains the end-to-end research pipeline for an OSF-registered systematic review of how the biopsychosocial (BPS) model is operationalized in chronic pain review literature. The project is not a static manuscript dump: it links protocol, search, deduplication, screening, abstract coding, full-text coding, ontology-aligned semantic loading, figure generation, and LaTeX compilation in one auditable workflow.
 
-The current review asks four questions: how BPS is operationalized, how biological/psychological/social scope and integration are distributed in musculoskeletal pain reviews, which psychological concepts and frameworks dominate the literature, and which conceptual problems recur when BPS is invoked. To answer those questions, the repository combines OSF-anchored review methods with structured LLM-based abstract coding, transformer embeddings, and benchmark-relative semantic analyses across a two-layer BPS ontology.
+The current review asks four questions: how BPS is operationalized, how biological/psychological/social scope and integration are distributed in musculoskeletal pain reviews, which psychological concepts and frameworks dominate the literature, and which conceptual problems recur when BPS is invoked. To answer those questions, the repository combines OSF-anchored review methods with structured LLM-based coding, transformer embeddings, and benchmark-relative semantic analyses across a two-layer BPS ontology.
 
 > Main manuscript result: BPS language is widespread, but substantive triadic integration is uncommon; the most stable corpus-level signal is a persistent social shortfall relative to biological and psychological loading.
 
@@ -84,47 +136,38 @@ The current review asks four questions: how BPS is operationalized, how biologic
 
 ## 🗂️ Repository Structure
 
+`src/` is grouped into numbered sections that follow the order of the review: what it committed to, the instruments, the code, the notebooks, the data, the stage outputs, the semantic layer, and the documentation. A full source map lives in [src/README.md](src/README.md).
+
 ```text
-SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/ # project root
-├── README.md # project overview and usage guide
-├── LICENSE # license terms
-├── Makefile # shortcut commands for pipeline/report tasks
-├── pyproject.toml # Python package metadata and dependencies
-├── .env.example # example environment variables
-├── config/ # YAML configs controlling pipeline behavior
-│   ├── pipeline.yaml # stage toggles and runtime settings
-│   ├── protocol.yaml # protocol constraints and coding rules
-│   └── search_queries.yaml # search strings per database/source
-├── docker/ # containerized reproducible environment
-│   ├── Dockerfile # image definition
-│   └── docker-compose.yml # multi-service/local orchestration
-├── paper/ # manuscript and publication assets
-│   ├── assets/ # generated figure/table inputs
-│   │   ├── figures/ # PNG/PDF visual outputs
-│   │   └── tables/ # CSV table outputs used in report
-│   └── report/ # LaTeX manuscript sources and outputs
-│       ├── generated/ # auto-generated .tex fragments
-│       ├── main.tex # main manuscript file
-│       └── main.pdf # compiled manuscript PDF
-└── src/ # source code and stage artifacts
-        ├── bps_review/ # main Python package
-        │   ├── cli.py # CLI entry points and command routing
-        │   ├── search/ # search/import and dedup logic
-        │   ├── screening/ # stage 1/2 screening workflows
-        │   ├── extraction/ # extraction and coding utilities
-        │   ├── reporting/ # figure/table/report asset builders
-        │   └── llm/ # LLM-assisted classification helpers
-        ├── protocol/ # protocol support documents/codebooks
-        │   ├── codebooks/ # coding dictionaries and labels
-        │   └── osf/ # OSF registration materials
-        ├── review_stages/ # organized outputs by review stage
-        │   ├── 01_protocol/ # stage 1 protocol artifacts
-        │   ├── 02_search/ # stage 2 search outputs
-        │   ├── 03_screening/ # stage 3 screening decisions
-        │   ├── 04_extraction/ # stage 4 extraction datasets
-        │   └── 05_synthesis/ # stage 5 synthesis outputs
-        └── vector_db/ # semantic embedding/index data
-                └── semantic_loading/ # semantic loading vectors and exports
+SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/   # project root
+├── README.md                  # this file
+├── LICENSE · Makefile · pyproject.toml · .env.example
+├── docker/                    # containerized reproducible environment
+├── paper/                     # manuscript, generated tables and figures
+└── src/
+    ├── README.md              # a clean source map of everything under src/
+    ├── 01_protocol/           # OSF registration, codebooks, decision rules
+    ├── 02_coding_schemes/     # expert-evaluation dossiers (HTML / PDF / README)
+    │   ├── _build/                # single source of truth and generator
+    │   └── scheme_1/ ... scheme_6/
+    ├── 03_pipeline/           # everything that runs
+    │   ├── bps_review/            # the Python package
+    │   │   ├── pilot/                 # abstract-level test run (scheme 2)
+    │   │   └── fulltext/              # full-text test run (scheme 3)
+    │   ├── config/                # YAML configs controlling pipeline behavior
+    │   └── tests/                 # the test suite
+    ├── 04_notebooks/
+    │   ├── 01_abstractlevel_testrun.ipynb
+    │   └── 02_fulltextlevel_testrun.ipynb
+    ├── 05_data/
+    │   ├── raw/ interim/ processed/   # main-pipeline data areas
+    │   └── pilot/                     # both test runs, side by side
+    │       ├── 01_abstract_level/         # 100 abstracts x 3 models
+    │       └── 02_fulltext_level/         # 47 full texts x 3 models
+    ├── 06_review_stages/      # organized outputs of the main pipeline, by stage
+    ├── 07_semantic_space/     # ontology-aligned embeddings and loadings
+    ├── 08_docs/               # project status
+    └── 09_artifacts/          # run logs and validation scratch space
 ```
 
 ## 🛠️ Setup and Installation
@@ -133,7 +176,7 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/ # project root
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach.git
+git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch.git
 cd SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch
 
 # 2. Create and activate a Python environment
@@ -150,39 +193,41 @@ cp .env.example .env
 
 Recommended `.env` keys:
 
-- `NCBI_EMAIL`
-- `NCBI_API_KEY` (optional but recommended)
-- `OPENROUTER_API_KEY`
+- `OPENROUTER_API_KEY` (required for both coding stages)
+- `NCBI_EMAIL` and `NCBI_API_KEY` (optional but recommended for PubMed and PubMed Central)
 - `CLARIVATE_API_KEY` if Web of Science Starter access is available
 - `EDS_API_USER`, `EDS_API_PASSWORD`, `EDS_API_PROFILE`, `EDS_API_ORG` if PsycINFO EDS access is available
 
 ### Option B. 🐳 Docker
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach.git
-cd SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch
-
-# 2. Configure environment variables
 cp .env.example .env
-
-# 3. Build and run
 docker compose -f docker/docker-compose.yml up --build
-```
-
-Manual Docker build:
-
-```bash
-docker build -f docker/Dockerfile -t bps-review .
-docker run --env-file .env -v "$(pwd):/workspace" bps-review
 ```
 
 ## 🚀 Usage
 
-### Run the full pipeline
+### Run the cross-provider test runs
+
+```bash
+python -m bps_review run-abstract-testrun                  # reuse cached sample and codings
+python -m bps_review run-abstract-testrun --force-coding   # re-code all 100 abstracts (300 calls)
+python -m bps_review build-fulltext-corpus                 # retrieve the open-access full texts
+python -m bps_review run-fulltext-testrun --force-coding   # re-code every full text
+```
+
+### Run the full main pipeline
 
 ```bash
 python -m bps_review run-all
+```
+
+### Rebuild the coding-scheme dossiers
+
+```bash
+cd src/02_coding_schemes/_build
+python3 build.py            # HTML, README, and PDF for every scheme (needs tectonic)
+python3 build.py --no-pdf   # text surfaces only
 ```
 
 ### Compile the paper
@@ -206,6 +251,9 @@ python -m bps_review extract-stage2
 python -m bps_review prepare-stage3
 python -m bps_review semantic-loading
 python -m bps_review build-assets
+python -m bps_review run-abstract-testrun
+python -m bps_review build-fulltext-corpus
+python -m bps_review run-fulltext-testrun
 ```
 
 ### What `run-all` does
@@ -238,28 +286,31 @@ Normalization + deduplication
 Stage 1 screening
         |
         v
-Stage 2 abstract coding
-  - deterministic metadata fields
-  - structured LLM semantic judgments
-  - provisional typology
+Stage 2 abstract coding                        <-- scheme 2, cross-provider test run
+  - structured LLM judgements with an explicit field contract
+  - deterministic repair and rule-derived candidacy
         |
         v
-Stage 3 preparation
-  - candidate manifest
-  - full-text retrieval
-  - coding template
+Stage 3 full-text coding                       <-- scheme 3, cross-provider test run
+  - coverage and integration ladders
+  - verbatim evidence per graded judgement
+  - quote verification against the source text
         |
         v
 Ontology-aligned semantic loading
-  - record embeddings
-  - 2-layer BPS ontology
-  - benchmark-relative domain / pairwise analyses
+  - record embeddings, 2-layer BPS ontology
+  - benchmark-relative domain and pairwise analyses
         |
         v
 Figures, tables, generated LaTeX, compiled manuscript
 ```
 
 ## 📦 Outputs
+
+### Test-run outputs
+
+- `src/05_data/pilot/01_abstract_level/` (sample, codings, reliability tables, figures, candidate set, summary)
+- `src/05_data/pilot/02_fulltext_level/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
 
 ### Core manuscript outputs
 
@@ -268,58 +319,41 @@ Figures, tables, generated LaTeX, compiled manuscript
 - `paper/assets/figures/*.png`
 - `paper/assets/tables/*.csv`
 
-### Table 1 audit outputs
-
-- `paper/report/generated/characteristics_table.tex`
-- `paper/assets/tables/table1_description_audit.csv`
-- `paper/assets/tables/included_review_full_references.csv`
-
-The Table 1 Description column is generated as a concise past-tense one-sentence summary. The generator prioritizes cached full-text objective statements (Stage 3 open-access records), then `objective_text`, then abstract first sentence, with title fallback when needed. Description provenance, focus phrases, and full-text availability flags are exported for reproducible QA.
-
-### Relevance + OSF alignment audits
-
-- `paper/assets/tables/manual_relevance_audit.csv`
-- `paper/assets/tables/osf_alignment_checklist.csv`
-- `src/review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv`
-- `src/review_stages/04_extraction/outputs/stage3_retrieval_validation.csv`
-
-These outputs provide a human-adjudication queue for relevance and retrieval checks and document protocol-alignment checkpoints against the OSF registration.
-
-### Domain-coding audit outputs
-
-- `paper/assets/tables/domain_mentions.csv`
-- `paper/assets/tables/musculoskeletal_scope.csv`
-- `paper/assets/tables/domain_mention_recode_audit.csv`
-
-The domain audit captures the transition from Stage 2 lexical/LLM mention flags to the substantive recode used in manuscript figures and tables.
-
 ### Review-stage outputs
 
-- `src/review_stages/02_search/outputs/combined_records.csv`
-- `src/review_stages/02_search/outputs/deduplicated_records.csv`
-- `src/review_stages/03_screening/outputs/stage1_screening.csv`
-- `src/review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
-- `src/review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
-- `src/review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
-- `src/review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
+- `src/06_review_stages/02_search/outputs/deduplicated_records.csv`
+- `src/06_review_stages/03_screening/outputs/stage1_screening.csv`
+- `src/06_review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
+- `src/06_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
+- `src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
+- `src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
 
 ### Semantic outputs
 
-- `src/vector_db/semantic_loading/records/semantic_corpus.jsonl`
-- `src/vector_db/semantic_loading/records/record_embeddings.npy`
-- `src/vector_db/semantic_loading/analysis/record_domain_loadings.csv`
-- `src/vector_db/semantic_loading/analysis/pairwise_domain_loadings.csv`
-- `paper/assets/tables/semantic_embedding_landscape_coordinates.csv`
+- `src/07_semantic_space/semantic_loading/records/semantic_corpus.jsonl`
+- `src/07_semantic_space/semantic_loading/records/record_embeddings.npy`
+- `src/07_semantic_space/semantic_loading/analysis/record_domain_loadings.csv`
+- `src/07_semantic_space/semantic_loading/analysis/pairwise_domain_loadings.csv`
+
+### Coding-scheme dossiers
+
+- `src/02_coding_schemes/index.html`
+- `src/02_coding_schemes/scheme_N/scheme_N.html`, `scheme_N.pdf`, `README.md`
 
 ## 🔬 Methodological Notes
 
-- The OSF registration is the governing framework. Deviations are logged rather than silently absorbed into the pipeline.
-- Stage 2 is no longer documented as a light optional LLM sidecar. It is a structured semantic coding layer with fixed output vocabularies and archived JSON batches.
-- Domain coding is intentionally conservative: the mere presence of the word `biopsychosocial` does not automatically imply substantive biological, psychological, and social coverage.
+- **The OSF registration is the governing framework.** Deviations are logged rather than silently absorbed into the pipeline.
+- **Verdicts are derived, never asked.** Stage 3 candidacy, full-text eligibility, conceptual yield, synthesis priority, and every binary presence flag are computed deterministically from the coded content, so the filter is auditable and identical across providers. Derived fields are recomputed on load, so a cached run always reports the current rules.
+- **The word biopsychosocial is never evidence of coverage.** A domain counts only when domain-specific content is present, and the coding scheme says so in the anchor of every domain field.
+- **Agreement is measured on the right variable.** Categorical decisions get kappa-style coefficients; ordered ladders additionally get an adjacent-agreement rate; conceptual elements are reduced to a derived binary presence; open extraction lists are compared with set overlap.
+- **Evidence is checkable.** Every full-text judgement carries a verbatim quote, and every quote is matched back against the source article after the run. Unverified quotes are reported, not hidden.
+- **Nothing is fabricated to fill a gap.** A response that is not a coding of the given paper is rejected and retried; a paper that never codes is written as an explicit failure row. Item caps are ceilings and never targets, so an empty list is a coding rather than a hole.
+- **The typology is checked against itself.** The full-text scheme codes `bps_typology` and independently derives it from coverage and integration, and reports the concordance, which is a direct test of how tightly that definition is specified.
+- The LLM stages use a high-concurrency `ThreadPoolExecutor`, structured JSON output, schema validation, deterministic repair, hard wall-clock timeouts, and per-model runtime settings where an endpoint requires them.
 - Domain notation in outputs uses `B`, `P`, `S` for biological, psychological, and social; `S_lex` denotes lexical mention and `S_subst` denotes substantive mention after lexical-token exclusion.
-- Table 1 descriptions are evidence-bound to each included record and are generated from objective/abstract text before title fallback to reduce over-short and over-long entries.
-- Stage 3 remains the final adjudication layer for mechanistic integration, framework architecture, and concept-definition evidence.
-- The semantic ontology contains 42 subdomains distributed across biological, psychological, and social levels, and the manuscript keeps only the most RQ-relevant figures in the main body while pushing tables and audit material to supplementary outputs.
+- Web of Science and PsycINFO records are imported manually; the programmatic search covers MEDLINE (PubMed) and, for the full-text stage, PubMed Central open access.
+- All coding schemes are validated by experts before the pipeline is re-run on the full corpus.
+- No em dashes are used anywhere in the generated dossiers or the codebase.
 
 ## 📚 Citation
 
@@ -336,7 +370,7 @@ If you use this repository, manuscript, or outputs, cite the paper and OSF regis
   title        = {How the Biopsychosocial Model Frames Chronic Pain Research},
   author       = {Van Severen, Stijn and Eccleston, Christopher and De Paepe, Annick and Braun, Maya and Dendauw, Julie and Socorro Cumplido, Jose Luis and Crombez, Geert},
   year         = {2026},
-        howpublished = {\url{https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainReseach}},
+  howpublished = {\url{https://github.com/stvsever/SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch}},
   note         = {OSF registration DOI: 10.17605/OSF.IO/T4FAM}
 }
 ```

@@ -1,0 +1,4 @@
+field,field_label,mean_pairwise_jaccard,n_comparable_pairs,distinct_labels_total,items_with_a_shared_label,mean_items_DeepSeek-V4-Flash,mean_items_Nex-N2-Mini,mean_items_Laguna-XS-2.1
+psychological_concepts_detected,Psychological concepts,0.5554397299979722,253,263,68,2.95,3.41,2.62
+theoretical_frameworks_detected,Theoretical frameworks,0.4698232323232323,264,87,41,1.07,1.22,0.99
+conceptual_problem_flags,Conceptual problems,0.44124513618677047,257,7,50,2.41,2.28,1.55

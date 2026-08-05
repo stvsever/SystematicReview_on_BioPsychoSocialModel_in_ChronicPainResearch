@@ -1,0 +1,13 @@
+field,field_label,group,n_categories,mean_pairwise_agreement,unanimous_rate,fleiss_kappa,krippendorff_alpha,landis_koch
+review_type,Review type,nominal,9,0.8166666666666668,0.74,0.7078715342941111,0.7088452958464644,Substantial
+objective_category,Objective category,nominal,5,0.7233333333333333,0.6,0.5120899792295329,0.5137163459654348,Moderate
+icd11_pain_category,ICD-11 pain category,nominal,9,0.8466666666666667,0.78,0.7585808754067387,0.7593856058220496,Substantial
+musculoskeletal_flag,Musculoskeletal flag,nominal,3,0.7233333333333333,0.63,0.567648284483956,0.5690894568690096,Moderate
+bps_function,BPS function,nominal,9,0.49666666666666665,0.34,0.3453946417733592,0.34757665963411466,Fair
+quality_assessment_reported,Quality assessment,nominal,3,0.9733333333333333,0.96,0.9182282793867118,0.9185008517887564,Almost perfect
+provisional_typology,Provisional typology,nominal,4,0.5766666666666667,0.43,0.3271166684327647,0.3293596128713221,Fair
+stage3_candidate,Stage 3 candidate,nominal,2,0.94,0.91,0.7347480106100793,0.735632183908046,Substantial
+bio_mentioned,Biological mention,domain,2,0.7866666666666667,0.68,0.49524160050475835,0.4969241285030759,Moderate
+psych_mentioned,Psychological mention,domain,2,0.8533333333333334,0.78,0.5358323370138544,0.5373795625571418,Moderate
+social_mentioned,Social mention,domain,2,0.8866666666666667,0.83,0.7716179302315166,0.7723792037974117,Substantial
+stage3_priority,Stage 3 priority,ordinal,3,0.7233333333333333,0.63,0.567648284483956,0.5690894568690096,Moderate

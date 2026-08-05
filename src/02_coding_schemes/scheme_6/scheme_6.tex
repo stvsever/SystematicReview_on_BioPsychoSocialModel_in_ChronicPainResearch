@@ -1,0 +1,139 @@
+\documentclass[11pt]{article}
+\input{../common_preamble.tex}
+
+\begin{document}
+\schemeheader
+  {Scheme 6}
+  {BPS Ontology and Semantic Loading Benchmark Scheme}
+  {Ontology prompts for benchmark-relative semantic quantification}
+
+\statusnote{DRAFT FOR EXPERT EVALUATION}{These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes. The workflow itself has since been validated end to end in two cross-provider test runs, in which three large language models from three different providers applied the abstract-level and the full-text scheme independently and their agreement was quantified per coded field. The full run on the review corpus is deliberately held until this evaluation is complete.}
+
+\section*{At a Glance}
+\begin{description}
+\item[Workflow position] Semantic loading and synthesis after Stage 2 coding.
+\item[Operational mode] Ontology-prompted embedding benchmark, with OpenRouter embeddings when available and TF-IDF fallback otherwise.
+\item[Unit of analysis] One composed record string (title, abstract, objective) scored against domain and subdomain prompts.
+\item[Provenance basis] semantic\_loading.py and the archived ontology terms JSON (openai/text-embedding-3-small).
+\item[Research questions] RQ2 (scope and balance via benchmark-relative domain loading)
+\item[Tagline] Ontology-prompted embedding benchmark with TF-IDF fallback
+\end{description}
+
+\section*{Canonical Source Paths}
+\begin{itemize}
+\item \filepath{src/03_pipeline/bps_review/reporting/semantic_loading.py}
+\item \filepath{src/07_semantic_space/semantic_loading/ontology/ontology_terms.json}
+\item \filepath{src/07_semantic_space/semantic_loading/analysis/domain_loading_summary.csv}
+\item \filepath{src/07_semantic_space/semantic_loading/analysis/subdomain_loading_summary.csv}
+\end{itemize}
+
+\section*{Purpose}
+This scheme supplies the ontology scaffold used to quantify semantic emphasis across biological, psychological, and social axes. It is not a manual adjudication form, but it is an operational text-classification framework: it standardizes the domain and subdomain prompts against which review records are embedded and compared.
+
+Because loadings are benchmark-relative, the ontology prompts are the measuring instrument. Their wording and coverage directly determine the domain-balance results, so they warrant expert scrutiny.
+
+
+\section*{Scoring Construction}
+{\small\itshape How a record is scored.}\par\smallskip
+\begin{description}
+\item[Record text] Title, abstract, and extracted objective text composed into one semantic analysis string.
+\item[Domain prompt] \{domain\} chronic pain ontology. \{joined subdomains\}.
+\item[Biological prompt assembly] Shared biological core plus the active track's extension: shared core plus musculoskeletal for the musculoskeletal review, shared core plus neuropathic for the neuropathic review. Psychological and social prompts are identical across both tracks.
+\item[Subdomain prompt] \{domain\} chronic pain subdomain. \{term\}.
+\item[Domain order] Always biological, psychological, social.
+\item[Embedding] OpenRouter openai/text-embedding-3-small when available; TF-IDF cosine fallback otherwise.
+\end{description}
+
+\section*{Biological Ontology: Shared Core Plus Track Extensions}
+The biological pole is the one place where a single uniform subdomain list would distort the science, because the biological mechanisms of musculoskeletal and neuropathic pain genuinely differ. The biological ontology is therefore built as a shared core that applies to both reviews, plus a musculoskeletal extension used only for the musculoskeletal review and a neuropathic extension used only for the neuropathic review.
+
+When a record is scored, the biological domain prompt is assembled from the shared core plus the active track's extension. The psychological and social ontologies below are identical for both reviews. This keeps the two reviews comparable on the psychological and social axes while measuring each one's biology against the mechanisms that actually matter for it.
+
+
+\section*{Biological Subdomains: Shared Core (9)}
+{\small\itshape Applied to both the musculoskeletal and neuropathic reviews.}\par\smallskip
+\begin{itemize}
+\item Central Sensitization and Neuroplasticity
+\item Nociceptive and Pain Signalling Pathways
+\item Immune Inflammatory and Neuroinflammatory Processes
+\item Neuroimaging Brain Structure and Function
+\item Genetic Epigenetic and Biological Vulnerability
+\item Sleep Disruption and Circadian Dysregulation
+\item Pharmacological and Biomedical Treatment
+\item Metabolic Nutritional and Hormonal Factors
+\item Physical Function Mobility and Deconditioning
+\end{itemize}
+
+\section*{Biological Extension: Musculoskeletal (3)}
+{\small\itshape Added only for the musculoskeletal review.}\par\smallskip
+\begin{itemize}
+\item Musculoskeletal and Structural Pathology
+\item Joint Degeneration and Osteoarthritic Change
+\item Muscle Tendon and Soft Tissue Pathology
+\end{itemize}
+
+\section*{Biological Extension: Neuropathic (5)}
+{\small\itshape Added only for the neuropathic review.}\par\smallskip
+\begin{itemize}
+\item Peripheral Nerve Injury and Neuropathy
+\item Sensory Phenotype and Quantitative Sensory Testing
+\item Ectopic Firing Ion Channels and Neuronal Excitability
+\item Small Fiber and Nerve Conduction Pathology
+\item Deafferentation and Central Neuropathic Mechanisms
+\end{itemize}
+
+\section*{Psychological Subdomains (20, uniform across both reviews)}
+{\small\itshape Identical for the musculoskeletal and neuropathic reviews.}\par\smallskip
+\begin{itemize}
+\item Catastrophizing and Negative Cognitive Appraisal
+\item Fear Avoidance and Pain Related Fear
+\item Depression Emotional Distress and Affect
+\item Anxiety and Psychological Reactivity
+\item Self Efficacy Control Beliefs and Perceived Mastery
+\item Acceptance Psychological Flexibility and Mindfulness
+\item Pain Coping Strategies and Adjustment
+\item Attention Vigilance and Pain Processing
+\item Illness Beliefs Pain Representations and Meaning
+\item Cognitive Behavioral and Psychotherapeutic Approaches
+\item Third Wave Therapies ACT and Contextual Approaches
+\item Resilience Positive Psychology and Post Traumatic Growth
+\item Identity Self Concept and Chronic Pain Biography
+\item Trauma Adverse Childhood and Life Events
+\item Personality Psychological Traits and Individual Differences
+\item Cognitive Function Executive Processes and Brain Health
+\item Motivational Processes Goal Pursuit and Engagement
+\item Healthcare Seeking Treatment Adherence and Engagement
+\item Emotional Regulation and Pain Affect Processing
+\item Mental Health Comorbidity and Psychological Wellbeing
+\end{itemize}
+
+\section*{Social Subdomains (12, uniform across both reviews)}
+{\small\itshape Identical for the musculoskeletal and neuropathic reviews.}\par\smallskip
+\begin{itemize}
+\item Social Support Network and Interpersonal Resources
+\item Work Disability Occupational Function and Productivity
+\item Family Caregiver and Household Dynamics
+\item Socioeconomic Status and Health Inequity
+\item Healthcare Access Navigation and System Factors
+\item Cultural Ethnic and Demographic Context
+\item Community Participation and Social Role Functioning
+\item Legal Compensation and Medicolegal Systems
+\item Health Literacy Education and Patient Empowerment
+\item Stigma Social Isolation and Exclusion
+\item Return to Work Vocational Rehabilitation and Employment
+\item Social Determinants of Pain and Environment
+\end{itemize}
+
+\section*{Interpretive Note}
+This is an analytic coding scheme, not a human extraction codebook. It is included because the project uses ontology prompts as a standardized semantic coding scaffold, and because the instrument's design determines the domain-balance results that answer RQ2.
+
+
+\section*{Primary Outputs Using This Scheme}
+\begin{itemize}
+\item Record-level domain and subdomain loadings
+\item Domain summary and subdomain summary tables
+\item Pairwise loading analyses
+\item Dominance-by-review-type summaries
+\end{itemize}
+
+\end{document}

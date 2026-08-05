@@ -33,10 +33,10 @@ dependencies = [
 bps-review = "bps_review.cli:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = {"" = "src/03_pipeline"}
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src/03_pipeline"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["src/03_pipeline/tests"]

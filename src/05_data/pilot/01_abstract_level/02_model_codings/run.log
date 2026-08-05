@@ -1,0 +1,8 @@
+[08:47:40] Coding 100 abstracts x 3 models = 300 codings in 300 API calls (parallel_models=True, workers=16)
+[08:47:40] start  Nex-N2-Mini
+[08:47:40] start  DeepSeek-V4-Flash
+[08:47:40] start  Laguna-XS-2.1
+[08:50:35] done   DeepSeek-V4-Flash: 100/100 llm_structured in 175.2s
+[08:50:41] done   Laguna-XS-2.1: 100/100 llm_structured in 181.1s
+[08:52:03] done   Nex-N2-Mini: 100/100 llm_structured in 263.2s
+[08:52:03] ALL DONE: 300 codings -> src/05_data/pilot/01_abstract_level/02_model_codings/all_model_codings_long.csv | 1375595 tokens | $0.131 | methods={'llm_structured': 300}

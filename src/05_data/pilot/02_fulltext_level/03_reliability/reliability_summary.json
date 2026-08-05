@@ -1,0 +1,78 @@
+{
+  "n_papers": 47,
+  "n_models": 3,
+  "n_codings": 141,
+  "mean_fleiss_kappa": 0.17831844855653373,
+  "mean_krippendorff_alpha": 0.1841459772901751,
+  "mean_pairwise_agreement": 0.6589577551649708,
+  "mean_unanimous_rate": 0.5328399629972248,
+  "categorical_mean_fleiss_kappa": 0.2167095194156161,
+  "presence_mean_fleiss_kappa": 0.11859900499796121,
+  "coverage_mean_adjacent_agreement": 0.921985815602837,
+  "integration_mean_adjacent_agreement": 0.6755319148936171,
+  "key_field_reliability": {
+    "integration_triadic": {
+      "fleiss_kappa": 0.07105412298101459,
+      "krippendorff_alpha": 0.07764239161235476,
+      "mean_pairwise_agreement": 0.34042553191489366,
+      "adjacent_agreement": 0.8156028368794326
+    },
+    "bps_typology": {
+      "fleiss_kappa": 0.00044306601683657515,
+      "krippendorff_alpha": 0.007532122286220688,
+      "mean_pairwise_agreement": 0.3191489361702127,
+      "adjacent_agreement": null
+    },
+    "domain_coverage_social": {
+      "fleiss_kappa": 0.2725795053003532,
+      "krippendorff_alpha": 0.27773851590106,
+      "mean_pairwise_agreement": 0.48226950354609927,
+      "adjacent_agreement": 0.8368794326241135
+    },
+    "fulltext_eligibility": {
+      "fleiss_kappa": 0.06297468354430426,
+      "krippendorff_alpha": 0.069620253164557,
+      "mean_pairwise_agreement": 0.8510638297872339,
+      "adjacent_agreement": null
+    },
+    "present_integration_evidence": {
+      "fleiss_kappa": 0.013986013986015065,
+      "krippendorff_alpha": 0.020979020979020935,
+      "mean_pairwise_agreement": 0.8581560283687942,
+      "adjacent_agreement": null
+    }
+  },
+  "most_agreeing_pair": {
+    "models": [
+      "DeepSeek-V4-Flash",
+      "Laguna-XS-2.1"
+    ],
+    "agreement": 0.7086031452358926
+  },
+  "least_agreeing_pair": {
+    "models": [
+      "Nex-N2-Mini",
+      "Laguna-XS-2.1"
+    ],
+    "agreement": 0.6207215541165587
+  },
+  "eligibility_unanimous_items": 38,
+  "consensus_include": 47,
+  "consensus_typology_counts": {
+    "pseudo_bps": 18,
+    "true_integrative": 17,
+    "multifactorial": 12
+  },
+  "consensus_triadic_counts": {
+    "none": 19,
+    "descriptive": 12,
+    "partial": 10,
+    "mechanistic": 6
+  },
+  "list_overlap": {
+    "psychological_concepts": 0.369,
+    "theoretical_frameworks": 0.304,
+    "conceptual_problems": 0.296
+  },
+  "typology_coded_matches_derived": 0.6028368794326241
+}

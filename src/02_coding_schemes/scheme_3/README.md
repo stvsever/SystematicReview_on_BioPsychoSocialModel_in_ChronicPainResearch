@@ -1,0 +1,83 @@
+# Scheme 3: Stage 3 Full-Text Deep Coding Scheme
+
+> **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes. The workflow itself has since been validated end to end in two cross-provider test runs, in which three large language models from three different providers applied the abstract-level and the full-text scheme independently and their agreement was quantified per coded field. The full run on the review corpus is deliberately held until this evaluation is complete.
+
+*Full-text adjudication and interpretive coding for the musculoskeletal and neuropathic reviews*
+
+One uniform instrument applied to both pain-condition tracks; human-coded with pilot and reliability subsamples.
+
+## What this scheme does
+
+This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain review. The pain-condition family is the varying input that decides which records each review reads; the coding fields, value vocabularies, and anchors are identical across both tracks so the two reviews stay directly comparable.
+
+It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+
+Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.
+
+## At a glance
+
+| Property | Value |
+| --- | --- |
+| Workflow position | Full-text coding after Stage 3 candidate identification and retrieval triage. |
+| Operational mode | Human-coded template with pilot and reliability subsamples. AI may assist concept mapping; final adjudication is human. |
+| Unit of analysis | One retrieved full-text review, coded against the complete text. |
+| Provenance basis | The generated full-text template and the prose Stage 3 codebook. |
+| Research questions | RQ2 (scope, balance, integration); RQ3 (concepts, frameworks, definitions); SQ1 (conceptual problems) |
+
+## Files in this folder
+
+- [`scheme_3.html`](scheme_3.html) is the interactive evaluation surface. Open it in a browser, record a verdict and comments per section, then export your feedback as JSON.
+- [`scheme_3.pdf`](scheme_3.pdf) is the formal dossier for sharing and printing.
+- [`scheme_3.tex`](scheme_3.tex) is the LaTeX source (generated from `_build/content.py`).
+
+## Coded fields
+
+### Record Routing and Domain Coverage Fields
+
+- `review_track` (musculoskeletal, neuropathic): Which review this coded record belongs to. The coding fields are uniform across both; the track only tunes which biological ontology extension the coder reads the biological domain against.
+- `pain_condition_detail` (free text): Free-text specification of the exact pain condition studied (for example knee osteoarthritis, painful diabetic neuropathy).
+- `domain_coverage_bio` (elaborated, mentioned, minimal, absent): Depth of biological content, read against the track-appropriate biological mechanisms.
+- `domain_coverage_psych` (elaborated, mentioned, minimal, absent): Depth of psychological content.
+- `domain_coverage_social` (elaborated, mentioned, minimal, absent): Depth of social content.
+
+### Integration Fields (the core RQ2 contribution)
+
+- `integration_bio_psych` (mechanistic, directional, descriptive, mentioned, none): Biological to psychological integration.
+- `integration_psych_social` (mechanistic, directional, descriptive, mentioned, none): Psychological to social integration.
+- `integration_bio_social` (mechanistic, directional, descriptive, mentioned, none): Biological to social integration.
+- `integration_triadic` (mechanistic, descriptive, partial, none): Three-domain integration.
+- `integration_mechanism_summary` (free text): Concise free-text summary of the proposed cross-domain pathways.
+
+### Typology and Balance
+
+- `overall_balance` (balanced, psych-dominant, bio-dominant, social-dominant, dyadic, unclear): Relative emphasis across domains.
+- `bps_typology` (true_integrative, multifactorial, pseudo_bps, rhetorical_bps, narrow_despite_label, unclear): Full-text BPS operationalization type.
+
+### Psychological Concepts and Evidence
+
+- `concept_definitions_present` (yes, partial, no): Whether the review defines the psychological constructs it uses.
+- `psychological_concepts_fulltext` (free text): Normalized, semicolon-delimited full-text concept list.
+- `theoretical_frameworks_fulltext` (free text): Normalized, semicolon-delimited framework list.
+- `conceptual_problems_fulltext` (free text): Conceptual issues such as vague definitions, construct overlap, tokenistic BPS use, missing social analysis, missing biology, mechanistic absence, or unclear boundaries.
+- `integration_quotes_or_evidence` (free text): Supporting quotations, section references, or evidential anchors from the full text.
+- `coder_id / coder_notes / adjudication_status`: Provenance and adjudication tracking fields.
+
+## Canonical source paths
+
+- `src/01_protocol/codebooks/stage3_codebook.md`
+- `src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv`
+- `src/03_pipeline/bps_review/extraction/stage3_prep.py`
+- `src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
+- `src/06_review_stages/04_extraction/forms/stage3_pilot_sample.csv`
+- `src/06_review_stages/04_extraction/forms/stage3_reliability_sample.csv`
+
+## Regenerating this dossier
+
+All three surfaces (PDF, HTML, README) are generated from one source of truth:
+
+```bash
+cd src/coding_schemes/_build
+python3 build.py
+```
+
+Edit the scheme content in `_build/content.py`, not the generated files.

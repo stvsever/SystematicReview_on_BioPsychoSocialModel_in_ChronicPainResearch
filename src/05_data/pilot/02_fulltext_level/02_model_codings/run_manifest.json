@@ -1,0 +1,80 @@
+{
+  "n_papers": 47,
+  "n_models": 3,
+  "n_codings": 141,
+  "n_extracted_items": 4080,
+  "models": [
+    {
+      "order": 1,
+      "label": "DeepSeek-V4-Flash",
+      "openrouter_id": "deepseek/deepseek-v4-flash",
+      "provider": "DeepSeek"
+    },
+    {
+      "order": 2,
+      "label": "Nex-N2-Mini",
+      "openrouter_id": "nex-agi/nex-n2-mini",
+      "provider": "Nex AGI"
+    },
+    {
+      "order": 3,
+      "label": "Laguna-XS-2.1",
+      "openrouter_id": "poolside/laguna-xs-2.1",
+      "provider": "Poolside"
+    }
+  ],
+  "coding_method_counts": {
+    "llm_structured": 141
+  },
+  "max_workers": 12,
+  "model_runtime": {
+    "DeepSeek-V4-Flash": {
+      "reasoning": {
+        "enabled": false
+      },
+      "max_output_tokens": 8000
+    },
+    "Nex-N2-Mini": {
+      "reasoning": {
+        "effort": "low"
+      },
+      "max_output_tokens": 32000
+    },
+    "Laguna-XS-2.1": {
+      "reasoning": {
+        "enabled": false
+      },
+      "max_output_tokens": 8000
+    }
+  },
+  "token_usage_by_model": {
+    "Laguna-XS-2.1": {
+      "prompt_tokens": 616518,
+      "completion_tokens": 136670,
+      "reasoning_tokens": 0,
+      "total_tokens": 753188,
+      "cost_usd": 0.0482
+    },
+    "DeepSeek-V4-Flash": {
+      "prompt_tokens": 591586,
+      "completion_tokens": 97440,
+      "reasoning_tokens": 0,
+      "total_tokens": 689026,
+      "cost_usd": 0.09
+    },
+    "Nex-N2-Mini": {
+      "prompt_tokens": 608979,
+      "completion_tokens": 1104055,
+      "reasoning_tokens": 931058,
+      "total_tokens": 1713034,
+      "cost_usd": 0.1256
+    }
+  },
+  "token_usage_total": {
+    "prompt_tokens": 1817083,
+    "completion_tokens": 1338165,
+    "reasoning_tokens": 931058,
+    "total_tokens": 3155248,
+    "cost_usd": 0.2638
+  }
+}

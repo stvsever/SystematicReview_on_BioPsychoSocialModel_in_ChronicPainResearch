@@ -1,0 +1,52 @@
+{
+  "completeness": {
+    "expected_codings": 141,
+    "actual_codings": 141,
+    "grid_complete": true,
+    "coding_method_counts": {
+      "llm_structured": 141
+    },
+    "structured_share_per_model": {
+      "DeepSeek-V4-Flash": 1.0,
+      "Laguna-XS-2.1": 1.0,
+      "Nex-N2-Mini": 1.0
+    },
+    "n_failed_codings": 0,
+    "n_empty_coding_rationale": 0,
+    "papers_missing_any_model": []
+  },
+  "extraction_totals": {
+    "total_extracted_items": 4080,
+    "total_evidence_quotes": 3312,
+    "mean_items_per_coding": 28.94,
+    "mean_items_per_paper_across_models": 86.81,
+    "distinct_normalized_labels": 771,
+    "items_per_field": {
+      "psychological_concepts": 1302,
+      "integration_claims": 792,
+      "key_quotes": 639,
+      "conceptual_problems": 469,
+      "theoretical_frameworks": 466,
+      "domain_evidence": 412
+    }
+  },
+  "quote_verification": {
+    "n_quotes_checked": 3306,
+    "verified_rate": 0.9939503932244405,
+    "exact_rate": 0.911070780399274,
+    "per_model_verified_rate": {
+      "DeepSeek-V4-Flash": 0.9915,
+      "Nex-N2-Mini": 0.9988,
+      "Laguna-XS-2.1": 0.9862
+    }
+  },
+  "evidence_discipline": {
+    "n_graded_links": 356,
+    "share_backed_by_quote": 0.952247191011236,
+    "per_model": {
+      "DeepSeek-V4-Flash": 1.0,
+      "Laguna-XS-2.1": 0.9619,
+      "Nex-N2-Mini": 0.9226
+    }
+  }
+}

@@ -1,0 +1,4 @@
+model_label,provider,candidate_yes_rate,msk_yes_rate,integrative_signal_rate,multifactorial_rate,bio_rate,psych_rate,social_rate,mean_domain_count,mean_concepts,mean_frameworks,structured_share
+DeepSeek-V4-Flash,DeepSeek,0.89,0.48,0.15,0.13,0.6,0.74,0.49,1.83,2.95,1.07,1.0
+Nex-N2-Mini,Nex AGI,0.88,0.36,0.18,0.21,0.79,0.86,0.6,2.25,3.41,1.22,1.0
+Laguna-XS-2.1,Poolside,0.84,0.34,0.49,0.05,0.7,0.81,0.54,2.05,2.62,0.99,1.0

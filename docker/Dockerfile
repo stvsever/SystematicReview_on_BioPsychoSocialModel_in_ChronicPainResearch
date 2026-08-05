@@ -13,10 +13,9 @@ WORKDIR /workspace
 
 COPY pyproject.toml README.md LICENSE .env.example /workspace/
 COPY src /workspace/src
-COPY config /workspace/config
 COPY paper /workspace/paper
 
-RUN mkdir -p /workspace/src/data/manual_imports
+RUN mkdir -p /workspace/src/05_data/manual_imports
 
 RUN python -m pip install --upgrade pip \
     && python -m pip install -e .

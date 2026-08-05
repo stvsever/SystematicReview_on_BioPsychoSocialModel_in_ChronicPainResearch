@@ -1,0 +1,8 @@
+[08:57:39] Coding 47 full texts x 3 models = 141 codings (parallel_models=True, workers=12)
+[08:57:39] start  DeepSeek-V4-Flash
+[08:57:39] start  Nex-N2-Mini
+[08:57:39] start  Laguna-XS-2.1
+[08:59:39] done   Laguna-XS-2.1: 47/47 coded, 1152 extracted items, 119.5s
+[09:01:41] done   DeepSeek-V4-Flash: 47/47 coded, 983 extracted items, 242.1s
+[09:07:18] done   Nex-N2-Mini: 47/47 coded, 1945 extracted items, 579.1s
+[09:07:19] ALL DONE: 141 codings, 4080 extracted items, 3155248 tokens, $0.264 | methods={'llm_structured': 141}

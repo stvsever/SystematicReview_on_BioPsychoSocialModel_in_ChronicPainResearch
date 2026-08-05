@@ -1,14 +1,17 @@
 .DS_Store
 .env
 .idea/
+.claude/
 .venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.ipynb_checkpoints/
 
 paper/report/*.aux
 paper/report/*.bbl
@@ -18,7 +21,8 @@ paper/report/*.out
 paper/report/*.toc
 paper/report/*.xdv
 
-src/review_stages/**/.ipynb_checkpoints/
-src/review_stages/04_extraction/inputs/fulltext_cache/
-src/data/fulltext_cache/
-src/logs/*.tmp
+src/02_coding_schemes/**/*.aux
+src/02_coding_schemes/**/*.log
+src/02_coding_schemes/**/*.out
+src/06_review_stages/04_extraction/inputs/fulltext_cache/
+src/08_docs/*.tmp
