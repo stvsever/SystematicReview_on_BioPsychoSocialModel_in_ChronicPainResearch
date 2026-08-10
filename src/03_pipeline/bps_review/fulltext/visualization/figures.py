@@ -370,13 +370,17 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
     # Panel A: extraction volume per model.
     ax = axes[0, 0]
     categories = [("mean_integration_claims", "integration claims"),
+                  ("mean_biological_factors", "bio factors"),
+                  ("mean_social_factors", "social factors"),
                   ("mean_psychological_concepts", "concepts"),
+                  ("mean_concept_relations", "relations"),
                   ("mean_theoretical_frameworks", "frameworks"),
                   ("mean_conceptual_problems", "problems")]
     available = [(column, label) for column, label in categories if column in yield_table.columns]
     x = np.arange(len(yield_table))
     width = 0.8 / max(1, len(available))
-    colors = [PALETTE["primary"], PALETTE["violet"], PALETTE["teal"], PALETTE["amber"]]
+    colors = [PALETTE["primary"], PALETTE["teal"], PALETTE["amber"], PALETTE["violet"],
+              PALETTE["primary"], PALETTE["teal"], PALETTE["amber"]]
     for index, (column, label) in enumerate(available):
         ax.bar(x + (index - (len(available) - 1) / 2) * width, yield_table[column].values, width,
                color=colors[index % len(colors)], edgecolor="white", label=label)
@@ -387,7 +391,7 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
     _despine(ax)
     ax.yaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=4, frameon=False, fontsize=7.4)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=4, frameon=False, fontsize=6.8)
     _panel_label(ax, "A")
 
     # Panel B: quote verification per model.

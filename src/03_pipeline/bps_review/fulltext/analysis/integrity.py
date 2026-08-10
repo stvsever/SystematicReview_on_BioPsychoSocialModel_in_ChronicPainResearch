@@ -247,6 +247,59 @@ def extraction_yield(long_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def spine_coverage(items_df: pd.DataFrame) -> pd.DataFrame:
+    """How much of what was extracted lands on the project vocabularies.
+
+    Every extracted item carries both readings of its label: what the coder wrote
+    and, where a vocabulary applies, what that maps onto. This table compares the
+    two per extraction list. A low controlled share is a statement about the
+    ontology rather than about the coder: it says the literature is naming things
+    the project vocabulary does not yet carry, and the off-spine labels are the
+    candidate list for extending it.
+    """
+    if items_df.empty or "anchor_controlled" not in items_df.columns:
+        return pd.DataFrame()
+    mapped = items_df[items_df["anchor_vocabulary"].astype(str).str.len() > 0].copy()
+    if mapped.empty:
+        return pd.DataFrame()
+    mapped["on_spine"] = (mapped["anchor_controlled"] == "yes").astype(float)
+    mapped["has_anchor"] = (mapped["anchor_label"].astype(str).str.len() > 0).astype(float)
+    table = (
+        mapped.groupby("extraction_field")
+        .agg(n_items=("on_spine", "size"),
+             anchored_share=("has_anchor", "mean"),
+             controlled_share=("on_spine", "mean"),
+             distinct_raw_labels=("label_raw", "nunique"),
+             distinct_anchors=("anchor_label", "nunique"))
+        .reset_index()
+        .sort_values("n_items", ascending=False)
+    )
+    return table
+
+
+def off_spine_labels(items_df: pd.DataFrame, top_n: int = 40) -> pd.DataFrame:
+    """What the reviews named that the project vocabularies do not carry.
+
+    Shown in the coders' own words, most frequent first. This is the working list
+    for extending the ontology after expert evaluation, so it deliberately keeps
+    the raw label rather than a normalized approximation of it.
+    """
+    if items_df.empty or "anchor_controlled" not in items_df.columns:
+        return pd.DataFrame()
+    subset = items_df[(items_df["anchor_controlled"] == "no")
+                      & (items_df["anchor_vocabulary"].astype(str).str.len() > 0)]
+    if subset.empty:
+        return pd.DataFrame()
+    return (
+        subset.groupby(["extraction_field", "label_normalized"])
+        .agg(n_extractions=("record_id", "size"), n_papers=("record_id", "nunique"),
+             n_models=("model_label", "nunique"))
+        .reset_index()
+        .sort_values(["n_papers", "n_extractions"], ascending=False)
+        .head(top_n)
+    )
+
+
 def corpus_extraction_totals(long_df: pd.DataFrame, items_df: pd.DataFrame) -> dict[str, object]:
     """Headline numbers on how much material the run harvested."""
     numeric = lambda column: pd.to_numeric(long_df[column], errors="coerce")  # noqa: E731
@@ -259,8 +312,19 @@ def corpus_extraction_totals(long_df: pd.DataFrame, items_df: pd.DataFrame) -> d
         ),
     }
     if not items_df.empty:
+        totals["distinct_raw_labels"] = int(items_df["label_raw"].nunique())
         totals["distinct_normalized_labels"] = int(items_df["label_normalized"].nunique())
         totals["items_per_field"] = items_df["extraction_field"].value_counts().to_dict()
+        if "anchor_controlled" in items_df.columns:
+            mapped = items_df[items_df["anchor_vocabulary"].astype(str).str.len() > 0]
+            if not mapped.empty:
+                totals["controlled_anchor_share"] = round(
+                    float((mapped["anchor_controlled"] == "yes").mean()), 4)
+                totals["n_off_spine_labels"] = int(
+                    mapped[mapped["anchor_controlled"] == "no"]["label_normalized"].nunique())
+    if "n_open_list_entries" in long_df.columns:
+        totals["total_open_list_entries"] = int(
+            pd.to_numeric(long_df["n_open_list_entries"], errors="coerce").sum())
     return totals
 
 
@@ -274,6 +338,8 @@ def build_integrity(long_df: pd.DataFrame, items_df: pd.DataFrame, records: list
     discipline = integration_evidence_discipline(long_df)
     discipline_summary = evidence_discipline_summary(discipline)
     totals = corpus_extraction_totals(long_df, items_df)
+    spine = spine_coverage(items_df)
+    off_spine = off_spine_labels(items_df)
 
     checkable = (verification[verification["verification"] != "too_short_to_check"]
                  if not verification.empty else verification)
@@ -314,6 +380,10 @@ def build_integrity(long_df: pd.DataFrame, items_df: pd.DataFrame, records: list
                       verification[verification["verification"] == "unverified"])
         if not discipline.empty:
             write_csv(out / "13_integration_evidence_discipline.csv", discipline)
+        if not spine.empty:
+            write_csv(out / "14_ontology_spine_coverage.csv", spine)
+        if not off_spine.empty:
+            write_csv(out / "15_off_spine_labels.csv", off_spine)
         write_json(out / "integrity_summary.json", summary)
 
     return {
@@ -324,6 +394,8 @@ def build_integrity(long_df: pd.DataFrame, items_df: pd.DataFrame, records: list
         "extraction_yield": yield_table,
         "evidence_discipline": discipline,
         "evidence_discipline_by_model": discipline_summary,
+        "spine_coverage": spine,
+        "off_spine_labels": off_spine,
         "extraction_totals": totals,
         "summary": summary,
     }

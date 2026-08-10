@@ -115,15 +115,30 @@ def v(value, anchor, pos=None, neg=None, boundary=None):
     }
 
 
-def field(name, construct, values=None, notes=None, free_text=False):
-    """One coded field."""
+def field(name, construct, values=None, notes=None, free_text=False,
+          subfields=None, kind="", cap=None):
+    """One coded field.
+
+    ``subfields`` describes a structured extraction item (a list field whose
+    entries are objects), ``kind`` labels the field for the reader (for example
+    "extraction list" or "derived"), and ``cap`` is the maximum number of items
+    the coder may return for a list field.
+    """
     return {
         "name": name,
         "construct": construct,
         "values": values or [],
         "notes": notes or "",
         "free_text": free_text,
+        "subfields": subfields or [],
+        "kind": kind,
+        "cap": cap,
     }
+
+
+def sub(name, desc, values=None):
+    """One field inside a structured extraction item."""
+    return {"name": name, "desc": desc, "values": values or []}
 
 
 # --------------------------------------------------------------------------
@@ -786,6 +801,34 @@ SCHEME_2 = {
 
 
 # --------------------------------------------------------------------------
+# Shared value lists used inside the Stage 3 structured extraction items.
+# --------------------------------------------------------------------------
+
+SECTION_VALUES = [
+    "abstract", "introduction", "methods", "results", "discussion", "conclusion",
+    "table or figure", "other", "unclear",
+]
+
+EVIDENCE_BASIS_VALUES = [
+    "asserted", "theorized", "empirically_supported", "empirically_contested",
+    "cited_from_other_work", "clinical_observation", "other", "unclear",
+]
+
+FACTOR_ROLE_VALUES = [
+    "determinant or risk factor", "protective factor", "mediator", "moderator",
+    "outcome", "correlate", "treatment target", "intervention component",
+    "contextual condition", "descriptive theme", "other", "unclear",
+]
+
+BPS_FUNCTION_VALUES = [
+    "explanatory framework", "intervention rationale", "organizing principle",
+    "justification", "background framing", "conclusion",
+    "policy or practice implication", "rhetorical label",
+    "critique or problematization", "operational definition", "unclear",
+]
+
+
+# --------------------------------------------------------------------------
 # SCHEME 3 -- Stage 3 full-text deep coding scheme
 # --------------------------------------------------------------------------
 
@@ -793,37 +836,60 @@ SCHEME_3 = {
     "id": "scheme_3",
     "num": 3,
     "title": "Stage 3 Full-Text Deep Coding Scheme",
-    "subtitle": "Full-text adjudication and interpretive coding for the "
-                "musculoskeletal and neuropathic reviews",
-    "tagline": "One uniform instrument applied to both pain-condition tracks; "
-               "human-coded with pilot and reliability subsamples",
+    "subtitle": "High-resolution full-text extraction of biopsychosocial usage, "
+                "factors, integration, and concepts, for the musculoskeletal and "
+                "neuropathic reviews",
+    "tagline": "Graded ladders with a quoted passage behind every rung, plus a "
+               "named-item extraction layer that supplies the nodes and edges of "
+               "the biopsychosocial ontology",
     "stage": "Stage 3",
     "stage_key": "fulltext",
     "meta": {
         "Workflow position": "Full-text coding after Stage 3 candidate "
-            "identification and retrieval triage.",
-        "Operational mode": "Human-coded template with pilot and reliability "
-            "subsamples. AI may assist concept mapping; final adjudication is "
-            "human.",
+            "identification and retrieval triage. It is the pass that feeds the "
+            "synthesis: the domain-balance tables, the integration analysis, and "
+            "the concept map.",
+        "Operational mode": "One article per request, structured JSON output, "
+            "deterministic vocabulary repair, item caps, and an explicit failure "
+            "row when a model returns no usable coding. Nothing is fabricated to "
+            "fill a gap. Human adjudication remains the final authority on "
+            "eligibility, as the registration specifies.",
         "Unit of analysis": "One retrieved full-text review, coded against the "
-            "complete text.",
-        "Provenance basis": "The generated full-text template and the prose "
-            "Stage 3 codebook.",
+            "complete text. Every extracted item carries a verbatim quote and the "
+            "section it came from.",
+        "Evidence rule": "Quotes are checked against the source text after the "
+            "run. A quote that cannot be found in the article is reported as "
+            "unverified rather than accepted.",
+        "Resolution": "Thirteen structured extraction lists, seven open free-text "
+            "lists, 82 fields inside the list items, and a ceiling of 116 "
+            "extracted items per coding. Presence is never the answer; the answer "
+            "is which ones.",
+        "Provenance basis": "The implementation in bps_review/fulltext (schema, "
+            "vocabulary, prompt, derivations, runner) and the human coding "
+            "template generated by stage3_prep.py.",
     },
-    "rqs": ["RQ2 (scope, balance, integration)",
-            "RQ3 (concepts, frameworks, definitions)", "SQ1 (conceptual problems)"],
+    "rqs": ["RQ1 (what the BPS label actually does, passage by passage)",
+            "RQ2 (scope, balance, integration, with named factors on both ends of "
+            "every link)",
+            "RQ3 (concepts, definitions, hierarchical and semantic relations, "
+            "frameworks, measures)",
+            "SQ1 (conceptual problems, with the constructs they concern)"],
     "sources": [
+        "src/03_pipeline/bps_review/fulltext/coding/schema.py",
+        "src/03_pipeline/bps_review/fulltext/coding/vocabulary.py",
+        "src/03_pipeline/bps_review/fulltext/coding/prompt.py",
+        "src/03_pipeline/bps_review/fulltext/coding/derive.py",
+        "src/03_pipeline/bps_review/fulltext/coding/runner.py",
+        "src/03_pipeline/bps_review/fulltext/analysis/integrity.py",
         "src/01_protocol/codebooks/stage3_codebook.md",
         "src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv",
-        "src/03_pipeline/bps_review/extraction/stage3_prep.py",
         "src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_pilot_sample.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_reliability_sample.csv",
     ],
     "outputs": [
+        "src/05_data/pilot/02_fulltext_level/02_model_codings/all_model_codings_long.csv",
+        "src/05_data/pilot/02_fulltext_level/02_model_codings/all_extracted_items_long.csv",
+        "src/05_data/pilot/02_fulltext_level/03_reliability/",
         "src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_pilot_sample.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_reliability_sample.csv",
         "src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
     ],
     "sections": [
@@ -840,20 +906,358 @@ SCHEME_3 = {
                 "review reads; the coding fields, value vocabularies, and anchors "
                 "are identical across both tracks so the two reviews stay "
                 "directly comparable.",
-                "It captures conceptual depth that cannot be resolved reliably at "
-                "the abstract level: coverage of each BPS domain, pairwise and "
-                "triadic integration quality, biopsychosocial typology, "
-                "psychological concepts, theoretical frameworks, conceptual "
-                "problems, and evidential quotations.",
+                "It does two things at once. It grades: how deeply each domain is "
+                "treated, and how each pair of domains and the triad are "
+                "integrated, on explicit ladders with a quoted passage behind "
+                "every rung. And it extracts: the specific things a review names. "
+                "That second half is the larger one, and it is what changed in "
+                "this revision. Where the earlier generation recorded that a "
+                "domain was present, this one records which biological, "
+                "psychological, social, lifestyle, and existential factors carry "
+                "it, what role each plays, and on the strength of which sentence.",
+                "Resolution is the point. A single article routinely yields "
+                "between thirty and seventy extracted items: passages where the "
+                "biopsychosocial label does work, factors per domain, "
+                "psychological constructs with their definitional status, "
+                "relations drawn between constructs, frameworks, instruments, "
+                "conceptual problems, and quotable claims. Those items are the "
+                "nodes and edges of the biopsychosocial ontology the synthesis "
+                "builds, so they have to be nameable, countable, and traceable to "
+                "a passage.",
+                "Every extraction list carries a maximum number of items. The cap "
+                "is a ceiling and never a target: a list is left empty when the "
+                "article offers nothing of that kind, and an empty list is itself "
+                "a coding, not a gap.",
                 "Stage 3 is where the review's central claim is tested: does a "
                 "BPS-labelled review actually integrate the three domains, and if "
-                "so, how.",
+                "so, how, between which factors, and by what mechanism.",
+            ],
+        },
+        {
+            "kind": "list",
+            "id": "metadata",
+            "title": "Carried-Through Metadata Fields",
+            "intro": "Descriptive fields retained from earlier stages and from "
+                     "retrieval, not coded by the model.",
+            "items": [
+                "record_id, abstract_record_id, pmid, pmcid, doi",
+                "title, journal, year, authors",
+                "n_sections, section_titles, body_chars (what was available to read)",
+                "coder_id, coding_method, llm_model, adjudication_status "
+                "(provenance of the row)",
             ],
         },
         {
             "kind": "fields",
-            "id": "coverage",
-            "title": "Record Routing and Domain Coverage Fields",
+            "id": "fields-context",
+            "title": "A. Source, Context, and Routing",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "What kind of source this is, which review it belongs to, "
+                     "and which population, condition, and setting it concerns. "
+                     "These are the registration's contextual variables, now read "
+                     "from the full text rather than inferred from an abstract.",
+            "fields": [
+                field("review_track",
+                      "Which review this coded record belongs to. The coding "
+                      "fields are uniform across both; the track only tunes which "
+                      "biological ontology extension the coder reads the "
+                      "biological domain against.",
+                      values=[v("musculoskeletal", "Low back, neck, "
+                                "osteoarthritis, fibromyalgia, shoulder, and "
+                                "similar."),
+                              v("neuropathic", "Painful neuropathy, radicular "
+                                "pain, post-herpetic neuralgia, and similar."),
+                              v("mixed_or_other", "Several pain families are "
+                                "genuinely covered, or the condition belongs to "
+                                "neither."),
+                              v("unclear", "The paper does not say.")]),
+                field("source_type",
+                      "The evidence-synthesis design, read from how the paper "
+                      "describes itself in its abstract and methods.",
+                      values=[
+                          v("systematic review", "Explicit systematic methods."),
+                          v("meta-analysis", "Quantitative pooling of effect sizes.",
+                            boundary="Outranks systematic review when pooling is "
+                                     "explicit."),
+                          v("network meta-analysis", "Multiple-treatment comparison "
+                            "with indirect evidence."),
+                          v("umbrella review", "Review of reviews."),
+                          v("scoping or mapping review", "Breadth-oriented mapping."),
+                          v("rapid review", "Streamlined systematic methods."),
+                          v("realist review", "Theory-driven mechanism review."),
+                          v("integrative review", "Mixed evidence integration."),
+                          v("narrative or expert review", "Non-systematic expert "
+                            "synthesis."),
+                          v("clinical guideline or consensus statement", "A guideline "
+                            "or a formal consensus."),
+                          v("other evidence synthesis", "A synthesis type none of "
+                            "the values above describes."),
+                          v("primary study", "Reads as a primary study rather than "
+                            "a synthesis.",
+                            boundary="An eligibility signal: the registration "
+                                     "excludes primary studies, so this routes the "
+                                     "record to human adjudication."),
+                          v("unclear", "The design cannot be determined."),
+                      ]),
+                field("icd11_pain_category",
+                      "The ICD-11 aligned pain category, now read from the full "
+                      "text. Recording it again at Stage 3 makes the abstract-level "
+                      "classification checkable rather than final.",
+                      values=[
+                          v("chronic secondary musculoskeletal pain", "Low back, "
+                            "neck, osteoarthritis, whiplash, and similar."),
+                          v("chronic neuropathic pain", "Neuropathic, CRPS, "
+                            "radiculopathy."),
+                          v("chronic cancer-related pain", "Cancer or oncology pain."),
+                          v("chronic postsurgical or posttraumatic pain",
+                            "Persistent pain after surgery or trauma."),
+                          v("chronic secondary headache or orofacial pain",
+                            "Headache, migraine, orofacial, TMD."),
+                          v("chronic secondary visceral pain", "Visceral, abdominal, "
+                            "pelvic pain."),
+                          v("chronic primary pain", "Fibromyalgia and other primary "
+                            "pain syndromes."),
+                          v("mixed or unspecified chronic pain", "Several categories "
+                            "genuinely covered."),
+                          v("unclear", "The category cannot be inferred."),
+                      ]),
+                field("population",
+                      "The population the reviewed evidence concerns.",
+                      values=[v("adult", "Adults, the eligible population."),
+                              v("older adult", "Explicitly an older population, "
+                                "foregrounded by the paper."),
+                              v("mixed ages", "Adults and younger participants both "
+                                "included."),
+                              v("pediatric", "Children or adolescents only.",
+                                boundary="An exclusion signal under the "
+                                         "registration."),
+                              v("unclear", "The paper does not report it."),
+                              v("not applicable", "A purely theoretical paper with "
+                                "no population.")]),
+                field("care_setting",
+                      "The care setting the paper concerns, when it reports one. "
+                      "The registration lists setting among the contextual "
+                      "variables to extract.",
+                      values=[v("primary care", "General practice and first-line care."),
+                              v("secondary or tertiary specialist care", "Specialist "
+                                "clinics, pain centres, hospital care."),
+                              v("rehabilitation or multidisciplinary programme",
+                                "Rehabilitation and multimodal programmes."),
+                              v("occupational or workplace", "Workplace and "
+                                "occupational health settings."),
+                              v("community or population", "Community, population, "
+                                "or public-health settings."),
+                              v("mixed", "Several settings genuinely covered."),
+                              v("not reported", "The paper does not say.",
+                                boundary="The honest answer for most reviews, and "
+                                         "preferred over a guess.")]),
+                field("primary_discipline",
+                      "The disciplinary home of the paper, read from the journal, "
+                      "the framing, and the vocabulary rather than from author "
+                      "affiliations alone.",
+                      values=[v("physiotherapy or rehabilitation", ""),
+                              v("clinical or health psychology", ""),
+                              v("rheumatology or orthopaedics", ""),
+                              v("pain medicine or anaesthesiology", ""),
+                              v("neurology or neuroscience", ""),
+                              v("nursing", ""),
+                              v("general or family medicine", ""),
+                              v("public health or epidemiology", ""),
+                              v("multidisciplinary", "The paper is genuinely written "
+                                "across disciplines.",
+                                boundary="Multidisciplinary describes the writing, "
+                                         "not the author list."),
+                              v("other", "A discipline none of the values above "
+                                "describes."),
+                              v("unclear", "It cannot be read off the paper.")],
+                      notes="Discipline is a covariate for the synthesis: whether "
+                            "biopsychosocial usage differs by field is one of the "
+                            "descriptive questions the corpus can answer."),
+                field("pain_condition_detail",
+                      "The exact pain condition or conditions studied, in the "
+                      "paper's own words. At most 40 words.",
+                      free_text=True),
+                field("pain_conditions",
+                      "The specific pain conditions named, as a list. Preferred "
+                      "labels exist (chronic low back pain, knee osteoarthritis, "
+                      "painful diabetic neuropathy, and others) and the paper's "
+                      "own wording is used whenever it is more precise.",
+                      free_text=True, kind="open list", cap=6),
+                field("context_note",
+                      "The cultural, geographic, or healthcare-system context, "
+                      "when the paper states one. At most 40 words, empty when it "
+                      "does not.",
+                      free_text=True),
+                field("quality_assessment_reported",
+                      "Whether the paper reports a formal quality or risk-of-bias "
+                      "assessment of the evidence it reviews.",
+                      values=[v("yes", "An appraisal is reported."),
+                              v("no", "No appraisal is reported."),
+                              v("unclear", "It cannot be determined.")],
+                      notes="Descriptive only. The registration is explicit that "
+                            "this review does not appraise the methodological "
+                            "quality of the reviews it studies."),
+                field("quality_assessment_tools",
+                      "The appraisal tools named (AMSTAR, AMSTAR-2, ROBIS, GRADE, "
+                      "Cochrane risk of bias, and others). Empty when none is named.",
+                      free_text=True, kind="open list", cap=4),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-bps",
+            "title": "B. What the Biopsychosocial Label Does (RQ1)",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "The primary research question of the review, coded at "
+                     "passage level. The registration asks for the location and "
+                     "the function of the biopsychosocial mention; at full text "
+                     "that becomes an inventory, because one paper routinely uses "
+                     "the label for two or three different purposes in different "
+                     "sections, and which purposes it combines is the finding.",
+            "fields": [
+                field("bps_label_used",
+                      "Which biopsychosocial vocabulary the paper actually uses.",
+                      values=[
+                          v("explicit_bps_term", "The words biopsychosocial or "
+                            "bio-psycho-social appear somewhere in the text."),
+                          v("variant_term_only", "Only a neighbouring term appears "
+                            "(psychosocial, multidimensional, multifactorial, "
+                            "holistic).",
+                            boundary="Prefer explicit_bps_term whenever the full "
+                                     "term appears at all, even once."),
+                          v("domain_language_only", "The domains are discussed with "
+                            "no model label at all."),
+                          v("absent", "Neither the label nor domain language appears."),
+                      ]),
+                field("bps_primary_function",
+                      "The single dominant work the label does, judged over the "
+                      "paper as a whole. Shares its vocabulary with the "
+                      "abstract-level scheme so the two readings of a record are "
+                      "directly comparable.",
+                      values=[
+                          v("explanatory framework", "BPS is used as a model that "
+                            "explains pain or pain-related disability.",
+                            pos=["explains, accounts for, mechanism of"],
+                            neg=["Only justifies multimodal treatment, which is "
+                                 "intervention rationale"],
+                            boundary="Requires explanatory intent, not only "
+                                     "endorsement of the model's existence."),
+                          v("intervention rationale", "BPS mainly justifies "
+                            "multimodal or interdisciplinary treatment."),
+                          v("organizing principle", "BPS structures the scope or "
+                            "the categories of the review without specifying "
+                            "integration mechanisms.",
+                            pos=["We organize factors into bio, psycho, social"],
+                            neg=["A stated cross-domain mechanism"]),
+                          v("justification", "BPS justifies the relevance or the "
+                            "importance of the topic."),
+                          v("background framing", "BPS sets context in the "
+                            "background without analytic use."),
+                          v("conclusion", "BPS appears mainly in the concluding "
+                            "claims."),
+                          v("policy or practice implication", "BPS frames a policy "
+                            "or practice recommendation."),
+                          v("rhetorical label", "BPS is invoked ceremonially, "
+                            "aspirationally, or symbolically with no substantive "
+                            "analytic work.",
+                            pos=["a biopsychosocial approach is needed, with no "
+                                 "follow-through"]),
+                          v("critique or problematization", "The paper argues about "
+                            "the model itself: what it leaves out, what it cannot "
+                            "explain, how it is misused.",
+                            boundary="New at full-text level. These papers are the "
+                                     "most informative for the review and are "
+                                     "almost invisible in an abstract."),
+                          v("operational definition", "The paper turns the model "
+                            "into the variables it actually codes or measures.",
+                            boundary="New at full-text level. Reserve it for a "
+                                     "paper that operationalizes the model, not "
+                                     "one that merely organizes prose by domain."),
+                          v("unclear", "The function cannot be determined."),
+                      ]),
+                field("bps_functions_present",
+                      "Every function the label performs anywhere in the paper, "
+                      "as a multi-label list from the same vocabulary. A paper "
+                      "routinely does two or three of these at once.",
+                      values=[v(value, "") for value in BPS_FUNCTION_VALUES],
+                      kind="multi-label list", cap=6,
+                      notes="This is the field that answers RQ1 as a distribution "
+                            "rather than as a single label. Collapsing a paper's "
+                            "usage into one function is exactly the flattening "
+                            "this revision removes."),
+                field("bps_definition_status",
+                      "How the paper handles the meaning of the model itself.",
+                      values=[
+                          v("formally_defined", "The paper states what the model "
+                            "means."),
+                          v("described_informally", "The meaning is carried by "
+                            "description rather than by a definition."),
+                          v("cited_only", "A citation stands in for a definition."),
+                          v("undefined", "The label is used with no meaning given "
+                            "anywhere.",
+                            boundary="A finding, not a coding failure. Papers that "
+                                     "use the model without ever saying what it is "
+                                     "are exactly what this review is about."),
+                      ]),
+                field("bps_model_variants",
+                      "The model labels the paper actually uses, verbatim and "
+                      "de-duplicated (biopsychosocial model, bio-psycho-social "
+                      "framework, sociopsychobiological model, extended "
+                      "biopsychosocial model, and others). This is what makes "
+                      "terminological drift visible.",
+                      free_text=True, kind="open list", cap=5),
+                field("bps_usage_instances",
+                      "One item for every distinct passage where the label does "
+                      "work. A paper that invokes the model in the introduction to "
+                      "justify the topic and again in the discussion to recommend "
+                      "multidisciplinary care yields two items, not one.",
+                      kind="extraction list", cap=8,
+                      subfields=[
+                          sub("usage_verbatim", "The exact passage, at most 60 words."),
+                          sub("bps_function", "The function the label serves in "
+                                              "this passage.",
+                              values=BPS_FUNCTION_VALUES),
+                          sub("is_definitional", "Whether this passage also says "
+                                                 "what the model is.",
+                              values=["yes", "no"]),
+                          sub("attributed_source", "Who the model is credited to "
+                                                   "here (Engel, Gatchel, Waddell, "
+                                                   "IASP, a guideline, or nobody)."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                          sub("note", "Anything the fields above cannot hold."),
+                      ]),
+                field("bps_definitions",
+                      "One item for every place where the paper says what the "
+                      "biopsychosocial model is. Empty when it never does.",
+                      kind="extraction list", cap=3,
+                      subfields=[
+                          sub("definition_verbatim", "The exact passage, at most 60 words."),
+                          sub("definition_type", "What kind of definitional act it is.",
+                              values=["explicit_formal", "operational",
+                                      "implicit_description", "borrowed",
+                                      "critique_of_definition", "other"]),
+                          sub("attributed_source", "The citation the paper credits."),
+                          sub("elements_named", "The components the definition "
+                                                "lists, as short labels."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ]),
+                field("bps_operationalization_summary",
+                      "At most 90 words, in the coder's words: what this paper "
+                      "actually does with the model, as opposed to what it says "
+                      "about it. Written to name the mechanism of use, for example "
+                      "organizes the results section into three domain headings "
+                      "and never relates them.",
+                      free_text=True),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-coverage",
+            "title": "C. Domain Coverage",
             "feedback": True,
             "field_feedback": True,
             "intro": "Coverage is coded at the level of substantive treatment, "
@@ -864,19 +1268,6 @@ SCHEME_3 = {
                      "musculoskeletal mechanisms, and for a neuropathic record "
                      "against neuropathic mechanisms (see Scheme 6).",
             "fields": [
-                field("review_track",
-                      "Which review this coded record belongs to. The coding "
-                      "fields are uniform across both; the track only tunes which "
-                      "biological ontology extension the coder reads the "
-                      "biological domain against.",
-                      values=[v("musculoskeletal", "Coded for the musculoskeletal "
-                                "chronic pain review."),
-                              v("neuropathic", "Coded for the neuropathic chronic "
-                                "pain review.")]),
-                field("pain_condition_detail",
-                      "Free-text specification of the exact pain condition studied "
-                      "(for example knee osteoarthritis, painful diabetic "
-                      "neuropathy).", free_text=True),
                 field("domain_coverage_bio", "Depth of biological content, read "
                       "against the track-appropriate biological mechanisms.",
                       values=DOMAIN_COVERAGE_LADDER),
@@ -884,17 +1275,147 @@ SCHEME_3 = {
                       values=DOMAIN_COVERAGE_LADDER),
                 field("domain_coverage_social", "Depth of social content.",
                       values=DOMAIN_COVERAGE_LADDER),
+                field("coverage_lifestyle",
+                      "Depth of lifestyle content on the same ladder: physical "
+                      "activity and exercise behaviour, sleep hygiene, diet and "
+                      "weight, smoking, alcohol.",
+                      values=DOMAIN_COVERAGE_LADDER,
+                      notes="The registration lists lifestyle factors alongside "
+                            "the three core domains. Coding it separately keeps it "
+                            "out of the triad, where it would inflate biological "
+                            "or social coverage."),
+                field("coverage_spiritual_existential",
+                      "Depth of spiritual or existential content on the same "
+                      "ladder: meaning, faith or religion, hope, existential "
+                      "suffering.",
+                      values=DOMAIN_COVERAGE_LADDER,
+                      notes="Also registered as a domain of its own. Absent is the "
+                            "expected value for most papers, and that distribution "
+                            "is itself a result."),
+                field("domain_evidence",
+                      "One item per core domain not scored as absent, carrying the "
+                      "passage that justifies the coverage level.",
+                      kind="extraction list", cap=5,
+                      subfields=[
+                          sub("domain", "Which domain this passage carries.",
+                              values=["biological", "psychological", "social"]),
+                          sub("coverage_level", "The level given above, repeated "
+                                                "here so the judgement and its "
+                                                "evidence travel together.",
+                              values=["elaborated", "mentioned", "minimal", "absent"]),
+                          sub("constructs_named", "The domain-specific constructs "
+                                                  "the paper actually names."),
+                          sub("subdomains_named", "The Scheme 6 ontology "
+                                                  "subdomains the content belongs "
+                                                  "to, mapped when they fit."),
+                          sub("evidence_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ]),
             ],
         },
         {
             "kind": "fields",
-            "id": "integration",
-            "title": "Integration Fields (the core RQ2 contribution)",
+            "id": "fields-factors",
+            "title": "D. Which Factors Carry Each Domain (the Ontology Nodes)",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "The heart of the revision. A coverage grade says how much of "
+                     "a domain a review carries; these lists say what it carries. "
+                     "Each item holds the review's own label, an anchor onto the "
+                     "project ontology where one fits, the role the factor plays "
+                     "in the paper's account, and the passage behind it. "
+                     "Psychological constructs are recorded in section G instead, "
+                     "which carries the extra definitional fields RQ3 needs, so no "
+                     "factor is ever written twice.",
+            "fields": [
+                field("biological_factors",
+                      "Every biological factor the paper names.",
+                      kind="extraction list", cap=12,
+                      subfields=[
+                          sub("factor_label", "The paper's own term, as specifically "
+                                              "as the paper puts it."),
+                          sub("subdomain_label", "The Scheme 6 biological subdomain "
+                                                 "it belongs to, when one fits. "
+                                                 "Empty when none does, and the "
+                                                 "label then also goes into "
+                                                 "emergent_labels."),
+                          sub("mechanism_level", "Where the factor sits.",
+                              values=["peripheral or tissue",
+                                      "spinal or central nervous system",
+                                      "systemic or whole body", "genetic or molecular",
+                                      "structural or anatomical", "treatment related",
+                                      "other", "unclear"]),
+                          sub("factor_role", "What the factor does in this paper.",
+                              values=FACTOR_ROLE_VALUES),
+                          sub("factor_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                          sub("evidence_basis", "What the claim rests on.",
+                              values=EVIDENCE_BASIS_VALUES),
+                      ],
+                      notes="The role field is what separates a review that lists "
+                            "biology from one that gives biology a job. A factor "
+                            "coded as mediator or moderator is a different "
+                            "contribution from the same factor coded as a "
+                            "descriptive theme."),
+                field("social_factors",
+                      "Every social factor the paper names, with the level of "
+                      "social organization it sits at.",
+                      kind="extraction list", cap=12,
+                      subfields=[
+                          sub("factor_label", "The paper's own term."),
+                          sub("subdomain_label", "The Scheme 6 social subdomain, "
+                                                 "when one fits."),
+                          sub("social_level", "The level of social organization.",
+                              values=["interpersonal", "family or household",
+                                      "workplace", "community", "healthcare system",
+                                      "societal or policy", "cultural", "economic",
+                                      "other", "unclear"]),
+                          sub("factor_role", "What the factor does in this paper.",
+                              values=FACTOR_ROLE_VALUES),
+                          sub("factor_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                          sub("evidence_basis", "What the claim rests on.",
+                              values=EVIDENCE_BASIS_VALUES),
+                      ],
+                      notes="The social domain is the one this literature is "
+                            "thinnest on, and the level field is what shows "
+                            "whether social means an interpersonal relationship or "
+                            "a structural condition. Both are coded as social by "
+                            "the coverage ladder; they are not the same claim."),
+                field("other_domain_factors",
+                      "Factors outside the triad, kept visible rather than folded "
+                      "into it.",
+                      kind="extraction list", cap=6,
+                      subfields=[
+                          sub("factor_label", "The paper's own term."),
+                          sub("domain", "Which non-triad domain it belongs to.",
+                              values=["lifestyle", "spiritual or existential",
+                                      "environmental", "other"]),
+                          sub("factor_role", "What the factor does in this paper.",
+                              values=FACTOR_ROLE_VALUES),
+                          sub("factor_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ]),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-integration",
+            "title": "E. Integration (the Core RQ2 Contribution, the Ontology Edges)",
             "feedback": True,
             "field_feedback": True,
             "intro": "Integration is the scheme's highest-resolution construct. "
                      "The pairwise ladder distinguishes a stated mechanism from a "
-                     "mere direction, an association, or a bare co-mention.",
+                     "mere direction, an association, or a bare co-mention, and "
+                     "every graded link has to point at the sentence that carries "
+                     "it. The claim items now name the two factors on either end "
+                     "of the link, which is what turns a count of integration "
+                     "statements into a map of what this literature says connects "
+                     "to what.",
             "fields": [
                 field("integration_bio_psych",
                       "Biological to psychological integration.",
@@ -908,21 +1429,62 @@ SCHEME_3 = {
                 field("integration_triadic",
                       "Three-domain integration.",
                       values=TRIADIC_INTEGRATION_LADDER),
+                field("integration_claims",
+                      "One item for every passage in which the paper relates two "
+                      "or three domains to each other. A pairwise field graded "
+                      "above mentioned should have at least one item behind it, "
+                      "and the pipeline checks exactly that.",
+                      kind="extraction list", cap=12,
+                      subfields=[
+                          sub("domains_linked", "Which domains the passage relates.",
+                              values=["bio_psych", "psych_social", "bio_social",
+                                      "triadic"]),
+                          sub("integration_level", "The rung this passage supports.",
+                              values=["mechanistic", "directional", "descriptive",
+                                      "mentioned", "none"]),
+                          sub("source_factor_label", "The factor doing the "
+                                                     "influencing, in the paper's "
+                                                     "own wording."),
+                          sub("target_factor_label", "The factor being influenced."),
+                          sub("direction", "Whether the influence runs one way or "
+                                           "both.",
+                              values=["unidirectional", "bidirectional or reciprocal",
+                                      "unspecified"]),
+                          sub("mediator_or_moderator", "The named intermediate, "
+                                                       "when the paper gives one."),
+                          sub("claim_verbatim", "The passage, at most 60 words."),
+                          sub("mechanism_note", "The pathway in the coder's words, "
+                                                "empty when none is given."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                          sub("evidence_basis", "What the claim rests on.",
+                              values=EVIDENCE_BASIS_VALUES),
+                      ],
+                      notes="Naming both ends of the link is the single largest "
+                            "gain in this revision. It lets the synthesis ask "
+                            "which specific factors this literature connects, "
+                            "rather than only how often it connects domains, and "
+                            "it makes two coders' integration claims comparable as "
+                            "edges rather than as counts."),
                 field("integration_mechanism_summary",
-                      "Concise free-text summary of the proposed cross-domain "
-                      "pathways.", free_text=True),
+                      "At most 90 words, in the coder's words: the cross-domain "
+                      "pathways this paper actually proposes. Written as none "
+                      "proposed when the paper proposes none.",
+                      free_text=True),
             ],
         },
         {
             "kind": "fields",
             "id": "typology-balance",
-            "title": "Typology and Balance",
+            "title": "F. Typology and Balance",
             "feedback": True,
             "field_feedback": True,
-            "intro": "The summary judgments that answer RQ1 at full-text depth.",
+            "intro": "The summary judgments that answer RQ1 at full-text depth. "
+                     "Both are also derived independently by rule, and the two "
+                     "readings are compared (see section J).",
             "fields": [
                 field("overall_balance",
-                      "Relative emphasis across domains.",
+                      "Relative emphasis across the three core domains.",
                       values=[
                           v("balanced", "No domain dominates; the three are "
                             "weighted comparably."),
@@ -951,43 +1513,429 @@ SCHEME_3 = {
                           v("narrow_despite_label", "BPS claimed but substantive "
                             "scope is essentially single-domain."),
                           v("unclear", "Type cannot be determined."),
-                      ]),
+                      ],
+                      notes="The cross-provider test run showed this to be the "
+                            "loosest field in the scheme, both between coders and "
+                            "against the rule-derived typology. It is the field "
+                            "most in need of expert attention."),
             ],
         },
         {
             "kind": "fields",
-            "id": "concepts",
-            "title": "Psychological Concepts and Evidence",
+            "id": "fields-concepts",
+            "title": "G. Psychological Concepts, Their Relations, Frameworks, and Measures (RQ3)",
             "feedback": True,
             "field_feedback": True,
-            "intro": "Concept-level fields that feed RQ3 and the concept map.",
+            "intro": "The registration asks for concept names, whether definitions "
+                     "are provided and their text, the theoretical frameworks "
+                     "invoked, and the hierarchical and semantic relationships "
+                     "between concepts. All four are coded here as named items "
+                     "rather than as delimited strings, and the relations list is "
+                     "new in this revision.",
             "fields": [
                 field("concept_definitions_present",
                       "Whether the review defines the psychological constructs it "
                       "uses.",
                       values=[
-                          v("yes", "Constructs are explicitly defined or "
-                            "operationalized."),
-                          v("partial", "Some constructs defined, others named "
-                            "only."),
-                          v("no", "Constructs named without definition."),
+                          v("yes", "The main constructs are explicitly defined or "
+                            "clearly operationalized."),
+                          v("partial", "Some constructs defined, others named only."),
+                          v("no", "Constructs used without any meaning given."),
                       ]),
-                field("psychological_concepts_fulltext",
-                      "Normalized, semicolon-delimited full-text concept list.",
+                field("psychological_concepts",
+                      "Every psychological construct the paper uses, one item "
+                      "each, at the resolution the paper uses it.",
+                      kind="extraction list", cap=16,
+                      subfields=[
+                          sub("concept_label", "The paper's own term, always."),
+                          sub("concept_family", "The Scheme 5 family it belongs to, "
+                                                "when one fits. Empty when none "
+                                                "does."),
+                          sub("definitional_status", "What kind of meaning the "
+                                                     "paper gives it.",
+                              values=["formally_defined", "operationalized_only",
+                                      "described_informally", "named_only", "unclear"]),
+                          sub("definition_verbatim", "The passage that defines it, "
+                                                     "at most 60 words, empty when "
+                                                     "there is none."),
+                          sub("definition_source", "Whose definition it is.",
+                              values=["own definition", "cited from other work",
+                                      "taken from an instrument", "unattributed",
+                                      "unclear"]),
+                          sub("measure_named", "The instrument the paper "
+                                               "operationalizes it with, when any."),
+                          sub("factor_role", "What the construct does in this paper.",
+                              values=FACTOR_ROLE_VALUES),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ],
+                      notes="concept_label and concept_family are both filled and "
+                            "neither replaces the other: the family makes concepts "
+                            "comparable across reviews, the label keeps the "
+                            "distinction between fear of movement during lifting "
+                            "and kinesiophobia."),
+                field("concept_relations",
+                      "Every relation the paper draws between two constructs. "
+                      "These are the edges of the concept map the registration "
+                      "asks for.",
+                      kind="extraction list", cap=12,
+                      subfields=[
+                          sub("source_concept", "The construct the relation starts from."),
+                          sub("target_concept", "The construct it relates to."),
+                          sub("relation_type", "What kind of relation it is.",
+                              values=["is_a_subtype_of", "part_of_or_component_of",
+                                      "synonym_or_used_interchangeably",
+                                      "overlapping_or_related",
+                                      "antecedent_or_cause_of",
+                                      "consequence_or_outcome_of", "mediates",
+                                      "moderates", "measured_by",
+                                      "contrasted_as_distinct_from",
+                                      "conflated_without_comment", "other", "unclear"]),
+                          sub("explicitly_stated", "Whether the paper states the "
+                                                   "relation or merely behaves as "
+                                                   "though it holds.",
+                              values=["yes", "no"]),
+                          sub("relation_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ],
+                      notes="conflated_without_comment is deliberately available. "
+                            "Silent conflation of two constructs is one of the "
+                            "main findings SQ1 can produce, and it is invisible "
+                            "unless a coder is allowed to record it."),
+                field("theoretical_frameworks",
+                      "Every theoretical model or framework the paper invokes.",
+                      kind="extraction list", cap=8,
+                      subfields=[
+                          sub("framework_label", "The model, in the paper's own "
+                                                 "wording, with preferred labels "
+                                                 "available."),
+                          sub("role", "What the paper does with the model.",
+                              values=["organizing framework", "tested or modelled",
+                                      "extended or revised", "critiqued or rejected",
+                                      "compared with another model",
+                                      "mentioned in passing", "other", "unclear"]),
+                          sub("domains_covered", "Which of biological, "
+                                                 "psychological, and social the "
+                                                 "model actually spans."),
+                          sub("attributed_source", "The citation the paper credits."),
+                          sub("framework_verbatim", "The passage, at most 60 words."),
+                          sub("section_located", "Where the passage appears.",
+                              values=SECTION_VALUES),
+                      ]),
+                field("instruments",
+                      "Every measurement or appraisal instrument named.",
+                      kind="extraction list", cap=8,
+                      subfields=[
+                          sub("instrument_label", "The instrument, with preferred "
+                                                  "labels available."),
+                          sub("abbreviation", "The abbreviation the paper uses."),
+                          sub("domain_measured", "Which domain the instrument "
+                                                 "measures in.",
+                              values=["biological", "psychological", "social",
+                                      "pain or symptom", "function or disability",
+                                      "quality of life", "multiple domains",
+                                      "methodological quality", "other", "unclear"]),
+                          sub("construct_measured_as_stated", "What the paper says "
+                                                              "the instrument "
+                                                              "captures, in its own "
+                                                              "wording."),
+                          sub("role", "What the instrument does in this paper.",
+                              values=["primary outcome", "secondary outcome",
+                                      "predictor or covariate", "mediator or moderator",
+                                      "screening or classification",
+                                      "developed or validated here",
+                                      "discussed conceptually", "critiqued",
+                                      "referenced only", "other", "unclear"]),
+                          sub("instrument_verbatim", "The passage, at most 60 words."),
+                      ],
+                      notes="What a review measures is the most concrete form its "
+                            "operationalization of the model takes. A paper that "
+                            "claims a biopsychosocial frame and measures only "
+                            "psychological questionnaires has told you something "
+                            "its prose did not."),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-problems",
+            "title": "H. Conceptual Problems (SQ1)",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "The secondary question of the review. Coded as items rather "
+                     "than as flags, so a problem carries what it is about, which "
+                     "constructs it concerns, and whether the paper noticed it.",
+            "fields": [
+                field("conceptual_problems",
+                      "One item per problem the paper names or displays. An empty "
+                      "list is a legitimate coding.",
+                      kind="extraction list", cap=8,
+                      subfields=[
+                          sub("problem_type", "The kind of problem.",
+                              values=["vague_definition", "tokenistic_bps",
+                                      "missing_social", "missing_biology",
+                                      "missing_psychology", "mechanistic_absence",
+                                      "construct_overlap",
+                                      "parallel_listing_without_integration",
+                                      "measurement_mismatch", "definitional_drift",
+                                      "domain_reductionism",
+                                      "unfalsifiable_or_untestable", "other"]),
+                          sub("problem_scope", "What the problem is about.",
+                              values=["the biopsychosocial model itself",
+                                      "a psychological construct",
+                                      "a biological construct", "a social construct",
+                                      "integration between domains", "measurement",
+                                      "terminology", "scope or coverage", "other"]),
+                          sub("affected_labels", "The constructs or terms the "
+                                                 "problem concerns."),
+                          sub("named_by_authors", "Whether the paper points the "
+                                                  "problem out itself, or merely "
+                                                  "displays it.",
+                              values=["yes", "no"]),
+                          sub("problem_verbatim", "The passage that shows it, which "
+                                                  "for a displayed problem may be "
+                                                  "the passage where the gap is "
+                                                  "visible."),
+                          sub("note", "Anything the fields above cannot hold."),
+                      ],
+                      notes="The distinction between a problem the authors name and "
+                            "one they display is the difference between a "
+                            "literature that knows its difficulties and one that "
+                            "does not. Both are coded; only the second is a "
+                            "finding the reviews themselves cannot report."),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-synthesis",
+            "title": "I. Synthesis Hooks (Free Text)",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "Deliberately unconstrained fields. They exist so that nuance "
+                     "no controlled vocabulary can hold still reaches the "
+                     "synthesis, and so that the coder never has to force an "
+                     "observation into a field where it does not belong.",
+            "fields": [
+                field("key_quotes",
+                      "The most conceptually load-bearing passages: the ones a "
+                      "reviewer would read first when writing the synthesis.",
+                      kind="extraction list", cap=6,
+                      subfields=[
+                          sub("claim_verbatim", "The passage, at most 60 words, "
+                                                "quotable on its own."),
+                          sub("claim_type", "What kind of claim it is.",
+                              values=["definitional", "integrative", "operationalizing",
+                                      "critical or problematizing", "measurement",
+                                      "theoretical", "clinical or applied", "other"]),
+                          sub("section_located", "Where it appears.",
+                              values=SECTION_VALUES),
+                          sub("why_it_matters", "One short sentence on why this "
+                                                "passage was selected."),
+                      ]),
+                field("emergent_labels",
+                      "Every conceptually important term the paper uses that the "
+                      "project vocabularies do not contain: a factor, construct, "
+                      "mechanism, framework, instrument, or population label with "
+                      "no good home on the spine, written exactly as the paper "
+                      "writes it.",
+                      free_text=True, kind="open list", cap=12,
+                      notes="The review's own error signal. It is how the project "
+                            "ontology learns what it is missing, and the coder is "
+                            "explicitly told to use it generously whenever a spine "
+                            "field had to be left empty."),
+                field("conceptual_tensions",
+                      "Contradictions, ambiguities, unresolved debates, and gaps "
+                      "the paper names or displays, including tensions visible "
+                      "inside the paper itself.",
+                      free_text=True, kind="open list", cap=5),
+                field("additional_observations",
+                      "Anything else conceptually relevant that no other field "
+                      "captures. One observation per item, as long as it needs to "
+                      "be.",
+                      free_text=True, kind="open list", cap=6),
+                field("synthesis_note",
+                      "At most 90 words on what this paper contributes to the "
+                      "question of how the biopsychosocial model is "
+                      "operationalized, and what it does not, written for a "
+                      "reviewer who has not read it.",
                       free_text=True),
-                field("theoretical_frameworks_fulltext",
-                      "Normalized, semicolon-delimited framework list.",
+                field("coding_rationale",
+                      "At most 40 words justifying the main judgements: the "
+                      "typology, the triadic integration level, and any close call.",
                       free_text=True),
-                field("conceptual_problems_fulltext",
-                      "Conceptual issues such as vague definitions, construct "
-                      "overlap, tokenistic BPS use, missing social analysis, "
-                      "missing biology, mechanistic absence, or unclear "
-                      "boundaries.", free_text=True),
-                field("integration_quotes_or_evidence",
-                      "Supporting quotations, section references, or evidential "
-                      "anchors from the full text.", free_text=True),
-                field("coder_id / coder_notes / adjudication_status",
-                      "Provenance and adjudication tracking fields."),
+            ],
+        },
+        {
+            "kind": "fields",
+            "id": "fields-derived",
+            "title": "J. Derived Fields",
+            "feedback": True,
+            "field_feedback": True,
+            "intro": "Never asked of the coder. Computed from the coded content by "
+                     "fixed rules, so that the same coding always produces the "
+                     "same verdict, in every model and in every run, and so that a "
+                     "change to a rule takes effect without re-coding anything.",
+            "fields": [
+                field("presence flags",
+                      "One yes or no per conceptual element, read off the coded "
+                      "content rather than asked of the coder: BPS usage evidence, "
+                      "a BPS definition, integration evidence, a triadic claim, a "
+                      "named integration edge, biological factors, social factors, "
+                      "other-domain factors, psychological concepts, defined "
+                      "concepts, concept relations, a hierarchical relation, "
+                      "frameworks, instruments, conceptual problems, and domain "
+                      "evidence per domain.",
+                      values=[
+                          v("yes", "The coder returned at least one item of this "
+                            "kind for this paper."),
+                          v("no", "Nothing of this kind was returned.",
+                            boundary="An observable fact about the coding, not a "
+                                     "judgement: it says this coder recorded no "
+                                     "material of this kind in this paper."),
+                      ],
+                      kind="derived",
+                      notes="These are the variables part of the cross-provider "
+                            "agreement is computed on. Whether two coders both "
+                            "found a framework in a paper has one answer; which "
+                            "label each wrote for it is a different question, "
+                            "answered by the set-overlap metrics on the extraction "
+                            "lists."),
+                field("coverage and integration depth",
+                      "coverage_depth per domain, coverage_total, domains_present, "
+                      "pairwise_depth_total, pairwise_depth_max, triadic_depth, and "
+                      "an integration_index between 0 and 1 that averages the "
+                      "normalized pairwise mean with the normalized triadic rung.",
+                      kind="derived"),
+                field("ontology breadth",
+                      "n_subdomains_bio, n_subdomains_psych, n_subdomains_social, "
+                      "n_subdomains_named, n_named_integration_edges, "
+                      "n_emergent_labels, and controlled_label_share.",
+                      kind="derived",
+                      notes="controlled_label_share measures the ontology against "
+                            "the literature, not the coder against the ontology. A "
+                            "low share says this literature is naming things the "
+                            "project vocabularies do not yet carry, and the "
+                            "off-spine labels are the candidate list for extending "
+                            "them."),
+                field("BPS usage profile",
+                      "bps_function_set, n_bps_functions, "
+                      "bps_has_substantive_function, and the sections the label "
+                      "appears in, all read off the usage items.",
+                      kind="derived"),
+                field("item counts",
+                      "One count per extraction list, plus n_triadic_claims, "
+                      "n_defined_concepts, n_hierarchical_relations, "
+                      "n_evidence_quotes, n_extracted_items, and "
+                      "n_open_list_entries.",
+                      kind="derived"),
+                field("derived_typology",
+                      "The typology recomputed from coverage and integration by a "
+                      "fixed rule, alongside typology_matches_derived.",
+                      kind="derived",
+                      notes="The typology is the one judgement that is both coded "
+                            "and derived. Comparing the two is the sharpest "
+                            "available test of whether the typology is defined "
+                            "tightly enough to be applied the same way twice. Where "
+                            "they diverge, the codebook is under-specified, not the "
+                            "coder."),
+                field("conceptual_yield",
+                      "How much conceptual material the paper actually yielded. A "
+                      "measure of harvest, not of promise.",
+                      values=[
+                          v("high", "Three domains present with at least "
+                            "descriptive triadic integration and three or more "
+                            "integration claims; or four or more claims with two "
+                            "defined concepts or two frameworks; or eight or more "
+                            "distinct subdomains with two or more claims."),
+                          v("moderate", "Two or more integration claims, or three "
+                            "or more concept relations, or three concepts across "
+                            "two substantive domains."),
+                          v("low", "Some conceptual material, but thin."),
+                          v("minimal", "Nothing extracted."),
+                      ],
+                      kind="derived"),
+                field("fulltext_eligibility",
+                      "The post-retrieval verdict. A recommendation for a human "
+                      "adjudicator, not a final decision, and deliberately "
+                      "recall-protecting.",
+                      values=[
+                          v("include", "Eligible and conceptually usable."),
+                          v("uncertain", "Eligible on the formal criteria but "
+                            "doubtful in substance.",
+                            boundary="Everything doubtful lands here rather than "
+                                     "in exclude. Uncertain is a request for human "
+                                     "adjudication."),
+                          v("exclude", "No biopsychosocial domain content at all, "
+                            "or a single-domain review with no cross-domain claim."),
+                      ],
+                      kind="derived"),
+                field("synthesis_priority",
+                      "Reading order for the later synthesis: core, supporting, "
+                      "background, or not_relevant.",
+                      kind="derived"),
+            ],
+        },
+        {
+            "kind": "prose",
+            "id": "spine-and-free-text",
+            "title": "How the Preferred Labels and the Free Text Work Together",
+            "feedback": True,
+            "body": [
+                "Two demands pull against each other in an extraction scheme this "
+                "large. Comparability wants one label per thing, so that two "
+                "reviews discussing central sensitization land on the same node "
+                "whatever they call it. Resolution wants the review's own words, "
+                "because a term the ontology cannot hold is a finding about the "
+                "ontology.",
+                "The scheme holds both, by never making them compete for the same "
+                "field. Each item carries the paper's own label in one field and, "
+                "where the project vocabularies apply, an anchor onto the ontology "
+                "in another: subdomain_label sits beside factor_label, "
+                "concept_family sits beside concept_label. Both are filled. A "
+                "mapped label never replaces the specific term the paper used.",
+                "The mapping itself is conservative. A label is snapped to a "
+                "canonical one only on an exact match or a whole-token match on "
+                "one of its lexical variants; anything else is kept as written. "
+                "The vocabularies are the project's own: the Scheme 6 subdomain "
+                "ontology for biological and social factors, the Scheme 5 concept "
+                "taxonomy for psychological constructs, plus framework, "
+                "instrument, pain-condition, and attributed-source lists.",
+                "Whatever falls outside is wanted rather than discarded. The coder "
+                "is told explicitly to record the item anyway, leave the anchor "
+                "empty, and repeat the term in emergent_labels. After a run the "
+                "pipeline reports, per extraction list, how much of what was "
+                "extracted anchored to the spine and which off-spine labels recur, "
+                "which is the working list for extending the vocabularies once the "
+                "expert evaluation is in.",
+            ],
+        },
+        {
+            "kind": "prose",
+            "id": "filter-logic",
+            "title": "How the Eligibility Verdict Is Derived",
+            "feedback": True,
+            "body": [
+                "The verdict is not asked of the coder. The coder codes what the "
+                "article contains, and the pipeline then computes eligibility, "
+                "yield, and priority by fixed rules. Given the same coded content "
+                "the verdict is fixed, so two coders who read a paper the same way "
+                "cannot disagree about the verdict, and a disagreement in the "
+                "output always points back to a disagreement about the paper.",
+                "The rule is recall-protecting by design. Only two conditions "
+                "exclude: no biopsychosocial domain content anywhere in the full "
+                "text, and a single-domain review with no cross-domain claim. "
+                "Everything else that looks doubtful becomes uncertain, which is a "
+                "request for human adjudication rather than a rejection: a source "
+                "that reads as a primary study, fewer than two domains "
+                "substantively covered, no biopsychosocial vocabulary with no "
+                "readable typology, or a typology that cannot be read together "
+                "with no triadic integration.",
+                "This matters because the registration reserves eligibility "
+                "decisions for human screeners and allows generative AI only as an "
+                "assistant under human review. The derived verdict is therefore a "
+                "triage recommendation that tells a reviewer where to look, and "
+                "the adjudication_status field on the coding template is where the "
+                "human decision is recorded.",
             ],
         },
     ],

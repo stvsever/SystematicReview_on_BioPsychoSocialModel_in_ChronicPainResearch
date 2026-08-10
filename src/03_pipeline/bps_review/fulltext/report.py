@@ -137,6 +137,26 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
             f"{int(row['distinct_labels_total'])} | {int(row['papers_with_a_shared_label'])} |"
         )
     lines.append("")
+    spine = integrity.get("spine_coverage")
+    if spine is not None and not spine.empty:
+        lines.append("## How much of the extraction lands on the project ontology")
+        lines.append("")
+        lines.append("| Extraction list | Items | Anchored | On the controlled spine | Distinct labels written |")
+        lines.append("| --- | --- | --- | --- | --- |")
+        for _, row in spine.iterrows():
+            lines.append(
+                f"| {FIELD_LABELS.get(row['extraction_field'], row['extraction_field'])} | "
+                f"{int(row['n_items'])} | {_pct(row['anchored_share'])} | "
+                f"{_pct(row['controlled_share'])} | {int(row['distinct_raw_labels'])} |"
+            )
+        lines.append("")
+        lines.append(
+            "The controlled share measures the ontology against the literature, not the coder against "
+            "the ontology. A label the vocabularies do not carry is kept as the review wrote it and "
+            "listed in `15_off_spine_labels.csv`, which is the working list for extending the "
+            "vocabularies after expert evaluation."
+        )
+        lines.append("")
     lines.append("## Consensus picture of the corpus")
     lines.append("")
     for field in COVERAGE_FIELDS:

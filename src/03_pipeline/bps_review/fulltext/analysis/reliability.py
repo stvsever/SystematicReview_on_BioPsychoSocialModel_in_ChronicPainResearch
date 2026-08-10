@@ -32,8 +32,12 @@ from collections import Counter
 import numpy as np
 import pandas as pd
 
+from bps_review.fulltext.coding.vocabulary import normalize_label
 from bps_review.fulltext.config import (
+    AUXILIARY_COVERAGE_FIELDS,
     BALANCE_ORDER,
+    BPS_DEFINITION_STATUS_ORDER,
+    BPS_LABEL_ORDER,
     CATEGORICAL_FIELDS,
     COVERAGE_FIELDS,
     COVERAGE_ORDER,
@@ -43,6 +47,7 @@ from bps_review.fulltext.config import (
     INTEGRATION_FIELDS,
     LIST_FIELDS,
     LIST_LABEL_KEY,
+    LIST_LABEL_VOCAB,
     MODEL_LABELS,
     NOMINAL_FIELDS,
     PAIRWISE_ORDER,
@@ -52,6 +57,7 @@ from bps_review.fulltext.config import (
     RELIABILITY_FIELDS,
     TRACK_ORDER,
     TRIADIC_ORDER,
+    TRISTATE_ORDER,
     TYPOLOGY_ORDER,
     reliability_dir,
 )
@@ -68,7 +74,7 @@ from bps_review.utils.io import write_csv, write_json
 
 
 ORDER_HINTS: dict[str, list[str]] = {
-    **{field: COVERAGE_ORDER for field in COVERAGE_FIELDS},
+    **{field: COVERAGE_ORDER for field in COVERAGE_FIELDS + AUXILIARY_COVERAGE_FIELDS},
     "integration_bio_psych": PAIRWISE_ORDER,
     "integration_psych_social": PAIRWISE_ORDER,
     "integration_bio_social": PAIRWISE_ORDER,
@@ -79,22 +85,26 @@ ORDER_HINTS: dict[str, list[str]] = {
     "fulltext_eligibility": ELIGIBILITY_ORDER,
     "synthesis_priority": PRIORITY_ORDER,
     "review_track": TRACK_ORDER,
+    "bps_label_used": BPS_LABEL_ORDER,
+    "bps_definition_status": BPS_DEFINITION_STATUS_ORDER,
+    "quality_assessment_reported": TRISTATE_ORDER,
     **{field: PRESENCE_ORDER for field in PRESENCE_FIELDS},
 }
 
 # The ordered ladders, best rung first, used for the adjacent-agreement rate.
 LADDER_ORDERS: dict[str, list[str]] = {
-    **{field: COVERAGE_ORDER for field in COVERAGE_FIELDS},
+    **{field: COVERAGE_ORDER for field in COVERAGE_FIELDS + AUXILIARY_COVERAGE_FIELDS},
     "integration_bio_psych": PAIRWISE_ORDER,
     "integration_psych_social": PAIRWISE_ORDER,
     "integration_bio_social": PAIRWISE_ORDER,
     "integration_triadic": TRIADIC_ORDER,
     "concept_definitions_present": DEFINITIONS_ORDER,
+    "bps_definition_status": BPS_DEFINITION_STATUS_ORDER,
 }
 
 
 def _field_group(field: str) -> str:
-    if field in COVERAGE_FIELDS:
+    if field in COVERAGE_FIELDS + AUXILIARY_COVERAGE_FIELDS:
         return "coverage"
     if field in INTEGRATION_FIELDS:
         return "integration"
@@ -191,8 +201,16 @@ def _normalize_label(value: str) -> str:
 
 
 def _labels_of(value: object, field: str) -> set[str]:
-    """Normalized label set from one JSON-serialized extraction list cell."""
-    key = LIST_LABEL_KEY.get(field, "")
+    """Normalized label set from one JSON-serialized extraction list cell.
+
+    An item is identified by one key or by several joined together, because a
+    concept relation and an integration claim are edges rather than labels. The
+    first key is additionally mapped onto the project vocabulary when one applies,
+    so two coders who wrote the same thing in different words are counted as
+    agreeing, and a label the vocabulary does not carry survives as written.
+    """
+    keys = LIST_LABEL_KEY.get(field, ())
+    kind = LIST_LABEL_VOCAB.get(field, "")
     labels: set[str] = set()
     try:
         items = json.loads(value) if isinstance(value, str) and value.strip() else []
@@ -203,9 +221,16 @@ def _labels_of(value: object, field: str) -> set[str]:
     for item in items:
         if not isinstance(item, dict):
             continue
-        label = _normalize_label(item.get(key, ""))
-        if label:
-            labels.add(label)
+        parts = []
+        for index, key in enumerate(keys):
+            raw = item.get(key, "")
+            if index == 0 and kind:
+                raw = normalize_label(raw, kind)
+            part = _normalize_label(raw)
+            if part:
+                parts.append(part)
+        if parts:
+            labels.add(" | ".join(parts))
     return labels
 
 
@@ -279,10 +304,18 @@ def per_model_behavior(long_df: pd.DataFrame) -> pd.DataFrame:
                 "social_elaborated_rate": _rate(subset["domain_coverage_social"], "elaborated"),
                 "mean_integration_index": float(numeric("integration_index").mean()),
                 "mean_integration_claims": float(numeric("n_integration_claims").mean()),
+                "mean_named_integration_edges": float(numeric("n_named_integration_edges").mean()),
+                "mean_bio_factors": float(numeric("n_biological_factors").mean()),
+                "mean_social_factors": float(numeric("n_social_factors").mean()),
                 "mean_concepts": float(numeric("n_psychological_concepts").mean()),
                 "mean_defined_concepts": float(numeric("n_defined_concepts").mean()),
+                "mean_concept_relations": float(numeric("n_concept_relations").mean()),
                 "mean_frameworks": float(numeric("n_theoretical_frameworks").mean()),
+                "mean_instruments": float(numeric("n_instruments").mean()),
+                "mean_bps_usage_instances": float(numeric("n_bps_usage_instances").mean()),
+                "mean_subdomains_named": float(numeric("n_subdomains_named").mean()),
                 "mean_extracted_items": float(numeric("n_extracted_items").mean()),
+                "mean_controlled_label_share": float(numeric("controlled_label_share").mean()),
                 "typology_matches_derived": _rate(subset["typology_matches_derived"], "yes"),
                 "structured_share": float((subset["coding_method"] == "llm_structured").mean()),
             }

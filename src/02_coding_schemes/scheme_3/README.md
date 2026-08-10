@@ -2,27 +2,33 @@
 
 > **Status: DRAFT FOR EXPERT EVALUATION.** These coding schemes are a working draft circulated for expert evaluation. They have not been applied to a final review corpus. The current manuscript is a test run that exercised an earlier, coarser generation of these schemes. The workflow itself has since been validated end to end in two cross-provider test runs, in which three large language models from three different providers applied the abstract-level and the full-text scheme independently and their agreement was quantified per coded field. The full run on the review corpus is deliberately held until this evaluation is complete.
 
-*Full-text adjudication and interpretive coding for the musculoskeletal and neuropathic reviews*
+*High-resolution full-text extraction of biopsychosocial usage, factors, integration, and concepts, for the musculoskeletal and neuropathic reviews*
 
-One uniform instrument applied to both pain-condition tracks; human-coded with pilot and reliability subsamples.
+Graded ladders with a quoted passage behind every rung, plus a named-item extraction layer that supplies the nodes and edges of the biopsychosocial ontology.
 
 ## What this scheme does
 
 This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain review. The pain-condition family is the varying input that decides which records each review reads; the coding fields, value vocabularies, and anchors are identical across both tracks so the two reviews stay directly comparable.
 
-It captures conceptual depth that cannot be resolved reliably at the abstract level: coverage of each BPS domain, pairwise and triadic integration quality, biopsychosocial typology, psychological concepts, theoretical frameworks, conceptual problems, and evidential quotations.
+It does two things at once. It grades: how deeply each domain is treated, and how each pair of domains and the triad are integrated, on explicit ladders with a quoted passage behind every rung. And it extracts: the specific things a review names. That second half is the larger one, and it is what changed in this revision. Where the earlier generation recorded that a domain was present, this one records which biological, psychological, social, lifestyle, and existential factors carry it, what role each plays, and on the strength of which sentence.
 
-Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how.
+Resolution is the point. A single article routinely yields between thirty and seventy extracted items: passages where the biopsychosocial label does work, factors per domain, psychological constructs with their definitional status, relations drawn between constructs, frameworks, instruments, conceptual problems, and quotable claims. Those items are the nodes and edges of the biopsychosocial ontology the synthesis builds, so they have to be nameable, countable, and traceable to a passage.
+
+Every extraction list carries a maximum number of items. The cap is a ceiling and never a target: a list is left empty when the article offers nothing of that kind, and an empty list is itself a coding, not a gap.
+
+Stage 3 is where the review's central claim is tested: does a BPS-labelled review actually integrate the three domains, and if so, how, between which factors, and by what mechanism.
 
 ## At a glance
 
 | Property | Value |
 | --- | --- |
-| Workflow position | Full-text coding after Stage 3 candidate identification and retrieval triage. |
-| Operational mode | Human-coded template with pilot and reliability subsamples. AI may assist concept mapping; final adjudication is human. |
-| Unit of analysis | One retrieved full-text review, coded against the complete text. |
-| Provenance basis | The generated full-text template and the prose Stage 3 codebook. |
-| Research questions | RQ2 (scope, balance, integration); RQ3 (concepts, frameworks, definitions); SQ1 (conceptual problems) |
+| Workflow position | Full-text coding after Stage 3 candidate identification and retrieval triage. It is the pass that feeds the synthesis: the domain-balance tables, the integration analysis, and the concept map. |
+| Operational mode | One article per request, structured JSON output, deterministic vocabulary repair, item caps, and an explicit failure row when a model returns no usable coding. Nothing is fabricated to fill a gap. Human adjudication remains the final authority on eligibility, as the registration specifies. |
+| Unit of analysis | One retrieved full-text review, coded against the complete text. Every extracted item carries a verbatim quote and the section it came from. |
+| Evidence rule | Quotes are checked against the source text after the run. A quote that cannot be found in the article is reported as unverified rather than accepted. |
+| Resolution | Thirteen structured extraction lists, seven open free-text lists, 82 fields inside the list items, and a ceiling of 116 extracted items per coding. Presence is never the answer; the answer is which ones. |
+| Provenance basis | The implementation in bps_review/fulltext (schema, vocabulary, prompt, derivations, runner) and the human coding template generated by stage3_prep.py. |
+| Research questions | RQ1 (what the BPS label actually does, passage by passage); RQ2 (scope, balance, integration, with named factors on both ends of every link); RQ3 (concepts, definitions, hierarchical and semantic relations, frameworks, measures); SQ1 (conceptual problems, with the constructs they concern) |
 
 ## Files in this folder
 
@@ -32,44 +38,186 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
 
 ## Coded fields
 
-### Record Routing and Domain Coverage Fields
+### A. Source, Context, and Routing
 
-- `review_track` (musculoskeletal, neuropathic): Which review this coded record belongs to. The coding fields are uniform across both; the track only tunes which biological ontology extension the coder reads the biological domain against.
-- `pain_condition_detail` (free text): Free-text specification of the exact pain condition studied (for example knee osteoarthritis, painful diabetic neuropathy).
+- `review_track` (musculoskeletal, neuropathic, mixed_or_other, unclear): Which review this coded record belongs to. The coding fields are uniform across both; the track only tunes which biological ontology extension the coder reads the biological domain against.
+- `source_type` (systematic review, meta-analysis, network meta-analysis, umbrella review, scoping or mapping review, rapid review, realist review, integrative review, narrative or expert review, clinical guideline or consensus statement, other evidence synthesis, primary study, unclear): The evidence-synthesis design, read from how the paper describes itself in its abstract and methods.
+- `icd11_pain_category` (chronic secondary musculoskeletal pain, chronic neuropathic pain, chronic cancer-related pain, chronic postsurgical or posttraumatic pain, chronic secondary headache or orofacial pain, chronic secondary visceral pain, chronic primary pain, mixed or unspecified chronic pain, unclear): The ICD-11 aligned pain category, now read from the full text. Recording it again at Stage 3 makes the abstract-level classification checkable rather than final.
+- `population` (adult, older adult, mixed ages, pediatric, unclear, not applicable): The population the reviewed evidence concerns.
+- `care_setting` (primary care, secondary or tertiary specialist care, rehabilitation or multidisciplinary programme, occupational or workplace, community or population, mixed, not reported): The care setting the paper concerns, when it reports one. The registration lists setting among the contextual variables to extract.
+- `primary_discipline` (physiotherapy or rehabilitation, clinical or health psychology, rheumatology or orthopaedics, pain medicine or anaesthesiology, neurology or neuroscience, nursing, general or family medicine, public health or epidemiology, multidisciplinary, other, unclear): The disciplinary home of the paper, read from the journal, the framing, and the vocabulary rather than from author affiliations alone.
+- `pain_condition_detail` (free text): The exact pain condition or conditions studied, in the paper's own words. At most 40 words.
+- `pain_conditions` (open list; free text; max 6 items): The specific pain conditions named, as a list. Preferred labels exist (chronic low back pain, knee osteoarthritis, painful diabetic neuropathy, and others) and the paper's own wording is used whenever it is more precise.
+- `context_note` (free text): The cultural, geographic, or healthcare-system context, when the paper states one. At most 40 words, empty when it does not.
+- `quality_assessment_reported` (yes, no, unclear): Whether the paper reports a formal quality or risk-of-bias assessment of the evidence it reviews.
+- `quality_assessment_tools` (open list; free text; max 4 items): The appraisal tools named (AMSTAR, AMSTAR-2, ROBIS, GRADE, Cochrane risk of bias, and others). Empty when none is named.
+
+### B. What the Biopsychosocial Label Does (RQ1)
+
+- `bps_label_used` (explicit_bps_term, variant_term_only, domain_language_only, absent): Which biopsychosocial vocabulary the paper actually uses.
+- `bps_primary_function` (explanatory framework, intervention rationale, organizing principle, justification, background framing, conclusion, policy or practice implication, rhetorical label, critique or problematization, operational definition, unclear): The single dominant work the label does, judged over the paper as a whole. Shares its vocabulary with the abstract-level scheme so the two readings of a record are directly comparable.
+- `bps_functions_present` (explanatory framework, intervention rationale, organizing principle, justification, background framing, conclusion, policy or practice implication, rhetorical label, critique or problematization, operational definition, unclear): Every function the label performs anywhere in the paper, as a multi-label list from the same vocabulary. A paper routinely does two or three of these at once.
+- `bps_definition_status` (formally_defined, described_informally, cited_only, undefined): How the paper handles the meaning of the model itself.
+- `bps_model_variants` (open list; free text; max 5 items): The model labels the paper actually uses, verbatim and de-duplicated (biopsychosocial model, bio-psycho-social framework, sociopsychobiological model, extended biopsychosocial model, and others). This is what makes terminological drift visible.
+- `bps_usage_instances` (extraction list; max 8 items): One item for every distinct passage where the label does work. A paper that invokes the model in the introduction to justify the topic and again in the discussion to recommend multidisciplinary care yields two items, not one.
+  - `usage_verbatim`: The exact passage, at most 60 words.
+  - `bps_function`: The function the label serves in this passage. [explanatory framework, intervention rationale, organizing principle, justification, background framing, conclusion, policy or practice implication, rhetorical label, critique or problematization, operational definition, unclear]
+  - `is_definitional`: Whether this passage also says what the model is. [yes, no]
+  - `attributed_source`: Who the model is credited to here (Engel, Gatchel, Waddell, IASP, a guideline, or nobody).
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+  - `note`: Anything the fields above cannot hold.
+- `bps_definitions` (extraction list; max 3 items): One item for every place where the paper says what the biopsychosocial model is. Empty when it never does.
+  - `definition_verbatim`: The exact passage, at most 60 words.
+  - `definition_type`: What kind of definitional act it is. [explicit_formal, operational, implicit_description, borrowed, critique_of_definition, other]
+  - `attributed_source`: The citation the paper credits.
+  - `elements_named`: The components the definition lists, as short labels.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+- `bps_operationalization_summary` (free text): At most 90 words, in the coder's words: what this paper actually does with the model, as opposed to what it says about it. Written to name the mechanism of use, for example organizes the results section into three domain headings and never relates them.
+
+### C. Domain Coverage
+
 - `domain_coverage_bio` (elaborated, mentioned, minimal, absent): Depth of biological content, read against the track-appropriate biological mechanisms.
 - `domain_coverage_psych` (elaborated, mentioned, minimal, absent): Depth of psychological content.
 - `domain_coverage_social` (elaborated, mentioned, minimal, absent): Depth of social content.
+- `coverage_lifestyle` (elaborated, mentioned, minimal, absent): Depth of lifestyle content on the same ladder: physical activity and exercise behaviour, sleep hygiene, diet and weight, smoking, alcohol.
+- `coverage_spiritual_existential` (elaborated, mentioned, minimal, absent): Depth of spiritual or existential content on the same ladder: meaning, faith or religion, hope, existential suffering.
+- `domain_evidence` (extraction list; max 5 items): One item per core domain not scored as absent, carrying the passage that justifies the coverage level.
+  - `domain`: Which domain this passage carries. [biological, psychological, social]
+  - `coverage_level`: The level given above, repeated here so the judgement and its evidence travel together. [elaborated, mentioned, minimal, absent]
+  - `constructs_named`: The domain-specific constructs the paper actually names.
+  - `subdomains_named`: The Scheme 6 ontology subdomains the content belongs to, mapped when they fit.
+  - `evidence_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
 
-### Integration Fields (the core RQ2 contribution)
+### D. Which Factors Carry Each Domain (the Ontology Nodes)
+
+- `biological_factors` (extraction list; max 12 items): Every biological factor the paper names.
+  - `factor_label`: The paper's own term, as specifically as the paper puts it.
+  - `subdomain_label`: The Scheme 6 biological subdomain it belongs to, when one fits. Empty when none does, and the label then also goes into emergent_labels.
+  - `mechanism_level`: Where the factor sits. [peripheral or tissue, spinal or central nervous system, systemic or whole body, genetic or molecular, structural or anatomical, treatment related, other, unclear]
+  - `factor_role`: What the factor does in this paper. [determinant or risk factor, protective factor, mediator, moderator, outcome, correlate, treatment target, intervention component, contextual condition, descriptive theme, other, unclear]
+  - `factor_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+  - `evidence_basis`: What the claim rests on. [asserted, theorized, empirically_supported, empirically_contested, cited_from_other_work, clinical_observation, other, unclear]
+- `social_factors` (extraction list; max 12 items): Every social factor the paper names, with the level of social organization it sits at.
+  - `factor_label`: The paper's own term.
+  - `subdomain_label`: The Scheme 6 social subdomain, when one fits.
+  - `social_level`: The level of social organization. [interpersonal, family or household, workplace, community, healthcare system, societal or policy, cultural, economic, other, unclear]
+  - `factor_role`: What the factor does in this paper. [determinant or risk factor, protective factor, mediator, moderator, outcome, correlate, treatment target, intervention component, contextual condition, descriptive theme, other, unclear]
+  - `factor_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+  - `evidence_basis`: What the claim rests on. [asserted, theorized, empirically_supported, empirically_contested, cited_from_other_work, clinical_observation, other, unclear]
+- `other_domain_factors` (extraction list; max 6 items): Factors outside the triad, kept visible rather than folded into it.
+  - `factor_label`: The paper's own term.
+  - `domain`: Which non-triad domain it belongs to. [lifestyle, spiritual or existential, environmental, other]
+  - `factor_role`: What the factor does in this paper. [determinant or risk factor, protective factor, mediator, moderator, outcome, correlate, treatment target, intervention component, contextual condition, descriptive theme, other, unclear]
+  - `factor_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+
+### E. Integration (the Core RQ2 Contribution, the Ontology Edges)
 
 - `integration_bio_psych` (mechanistic, directional, descriptive, mentioned, none): Biological to psychological integration.
 - `integration_psych_social` (mechanistic, directional, descriptive, mentioned, none): Psychological to social integration.
 - `integration_bio_social` (mechanistic, directional, descriptive, mentioned, none): Biological to social integration.
 - `integration_triadic` (mechanistic, descriptive, partial, none): Three-domain integration.
-- `integration_mechanism_summary` (free text): Concise free-text summary of the proposed cross-domain pathways.
+- `integration_claims` (extraction list; max 12 items): One item for every passage in which the paper relates two or three domains to each other. A pairwise field graded above mentioned should have at least one item behind it, and the pipeline checks exactly that.
+  - `domains_linked`: Which domains the passage relates. [bio_psych, psych_social, bio_social, triadic]
+  - `integration_level`: The rung this passage supports. [mechanistic, directional, descriptive, mentioned, none]
+  - `source_factor_label`: The factor doing the influencing, in the paper's own wording.
+  - `target_factor_label`: The factor being influenced.
+  - `direction`: Whether the influence runs one way or both. [unidirectional, bidirectional or reciprocal, unspecified]
+  - `mediator_or_moderator`: The named intermediate, when the paper gives one.
+  - `claim_verbatim`: The passage, at most 60 words.
+  - `mechanism_note`: The pathway in the coder's words, empty when none is given.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+  - `evidence_basis`: What the claim rests on. [asserted, theorized, empirically_supported, empirically_contested, cited_from_other_work, clinical_observation, other, unclear]
+- `integration_mechanism_summary` (free text): At most 90 words, in the coder's words: the cross-domain pathways this paper actually proposes. Written as none proposed when the paper proposes none.
 
-### Typology and Balance
+### F. Typology and Balance
 
-- `overall_balance` (balanced, psych-dominant, bio-dominant, social-dominant, dyadic, unclear): Relative emphasis across domains.
+- `overall_balance` (balanced, psych-dominant, bio-dominant, social-dominant, dyadic, unclear): Relative emphasis across the three core domains.
 - `bps_typology` (true_integrative, multifactorial, pseudo_bps, rhetorical_bps, narrow_despite_label, unclear): Full-text BPS operationalization type.
 
-### Psychological Concepts and Evidence
+### G. Psychological Concepts, Their Relations, Frameworks, and Measures (RQ3)
 
 - `concept_definitions_present` (yes, partial, no): Whether the review defines the psychological constructs it uses.
-- `psychological_concepts_fulltext` (free text): Normalized, semicolon-delimited full-text concept list.
-- `theoretical_frameworks_fulltext` (free text): Normalized, semicolon-delimited framework list.
-- `conceptual_problems_fulltext` (free text): Conceptual issues such as vague definitions, construct overlap, tokenistic BPS use, missing social analysis, missing biology, mechanistic absence, or unclear boundaries.
-- `integration_quotes_or_evidence` (free text): Supporting quotations, section references, or evidential anchors from the full text.
-- `coder_id / coder_notes / adjudication_status`: Provenance and adjudication tracking fields.
+- `psychological_concepts` (extraction list; max 16 items): Every psychological construct the paper uses, one item each, at the resolution the paper uses it.
+  - `concept_label`: The paper's own term, always.
+  - `concept_family`: The Scheme 5 family it belongs to, when one fits. Empty when none does.
+  - `definitional_status`: What kind of meaning the paper gives it. [formally_defined, operationalized_only, described_informally, named_only, unclear]
+  - `definition_verbatim`: The passage that defines it, at most 60 words, empty when there is none.
+  - `definition_source`: Whose definition it is. [own definition, cited from other work, taken from an instrument, unattributed, unclear]
+  - `measure_named`: The instrument the paper operationalizes it with, when any.
+  - `factor_role`: What the construct does in this paper. [determinant or risk factor, protective factor, mediator, moderator, outcome, correlate, treatment target, intervention component, contextual condition, descriptive theme, other, unclear]
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+- `concept_relations` (extraction list; max 12 items): Every relation the paper draws between two constructs. These are the edges of the concept map the registration asks for.
+  - `source_concept`: The construct the relation starts from.
+  - `target_concept`: The construct it relates to.
+  - `relation_type`: What kind of relation it is. [is_a_subtype_of, part_of_or_component_of, synonym_or_used_interchangeably, overlapping_or_related, antecedent_or_cause_of, consequence_or_outcome_of, mediates, moderates, measured_by, contrasted_as_distinct_from, conflated_without_comment, other, unclear]
+  - `explicitly_stated`: Whether the paper states the relation or merely behaves as though it holds. [yes, no]
+  - `relation_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+- `theoretical_frameworks` (extraction list; max 8 items): Every theoretical model or framework the paper invokes.
+  - `framework_label`: The model, in the paper's own wording, with preferred labels available.
+  - `role`: What the paper does with the model. [organizing framework, tested or modelled, extended or revised, critiqued or rejected, compared with another model, mentioned in passing, other, unclear]
+  - `domains_covered`: Which of biological, psychological, and social the model actually spans.
+  - `attributed_source`: The citation the paper credits.
+  - `framework_verbatim`: The passage, at most 60 words.
+  - `section_located`: Where the passage appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+- `instruments` (extraction list; max 8 items): Every measurement or appraisal instrument named.
+  - `instrument_label`: The instrument, with preferred labels available.
+  - `abbreviation`: The abbreviation the paper uses.
+  - `domain_measured`: Which domain the instrument measures in. [biological, psychological, social, pain or symptom, function or disability, quality of life, multiple domains, methodological quality, other, unclear]
+  - `construct_measured_as_stated`: What the paper says the instrument captures, in its own wording.
+  - `role`: What the instrument does in this paper. [primary outcome, secondary outcome, predictor or covariate, mediator or moderator, screening or classification, developed or validated here, discussed conceptually, critiqued, referenced only, other, unclear]
+  - `instrument_verbatim`: The passage, at most 60 words.
+
+### H. Conceptual Problems (SQ1)
+
+- `conceptual_problems` (extraction list; max 8 items): One item per problem the paper names or displays. An empty list is a legitimate coding.
+  - `problem_type`: The kind of problem. [vague_definition, tokenistic_bps, missing_social, missing_biology, missing_psychology, mechanistic_absence, construct_overlap, parallel_listing_without_integration, measurement_mismatch, definitional_drift, domain_reductionism, unfalsifiable_or_untestable, other]
+  - `problem_scope`: What the problem is about. [the biopsychosocial model itself, a psychological construct, a biological construct, a social construct, integration between domains, measurement, terminology, scope or coverage, other]
+  - `affected_labels`: The constructs or terms the problem concerns.
+  - `named_by_authors`: Whether the paper points the problem out itself, or merely displays it. [yes, no]
+  - `problem_verbatim`: The passage that shows it, which for a displayed problem may be the passage where the gap is visible.
+  - `note`: Anything the fields above cannot hold.
+
+### I. Synthesis Hooks (Free Text)
+
+- `key_quotes` (extraction list; max 6 items): The most conceptually load-bearing passages: the ones a reviewer would read first when writing the synthesis.
+  - `claim_verbatim`: The passage, at most 60 words, quotable on its own.
+  - `claim_type`: What kind of claim it is. [definitional, integrative, operationalizing, critical or problematizing, measurement, theoretical, clinical or applied, other]
+  - `section_located`: Where it appears. [abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear]
+  - `why_it_matters`: One short sentence on why this passage was selected.
+- `emergent_labels` (open list; free text; max 12 items): Every conceptually important term the paper uses that the project vocabularies do not contain: a factor, construct, mechanism, framework, instrument, or population label with no good home on the spine, written exactly as the paper writes it.
+- `conceptual_tensions` (open list; free text; max 5 items): Contradictions, ambiguities, unresolved debates, and gaps the paper names or displays, including tensions visible inside the paper itself.
+- `additional_observations` (open list; free text; max 6 items): Anything else conceptually relevant that no other field captures. One observation per item, as long as it needs to be.
+- `synthesis_note` (free text): At most 90 words on what this paper contributes to the question of how the biopsychosocial model is operationalized, and what it does not, written for a reviewer who has not read it.
+- `coding_rationale` (free text): At most 40 words justifying the main judgements: the typology, the triadic integration level, and any close call.
+
+### J. Derived Fields
+
+- `presence flags` (yes, no): One yes or no per conceptual element, read off the coded content rather than asked of the coder: BPS usage evidence, a BPS definition, integration evidence, a triadic claim, a named integration edge, biological factors, social factors, other-domain factors, psychological concepts, defined concepts, concept relations, a hierarchical relation, frameworks, instruments, conceptual problems, and domain evidence per domain.
+- `coverage and integration depth` (derived): coverage_depth per domain, coverage_total, domains_present, pairwise_depth_total, pairwise_depth_max, triadic_depth, and an integration_index between 0 and 1 that averages the normalized pairwise mean with the normalized triadic rung.
+- `ontology breadth` (derived): n_subdomains_bio, n_subdomains_psych, n_subdomains_social, n_subdomains_named, n_named_integration_edges, n_emergent_labels, and controlled_label_share.
+- `BPS usage profile` (derived): bps_function_set, n_bps_functions, bps_has_substantive_function, and the sections the label appears in, all read off the usage items.
+- `item counts` (derived): One count per extraction list, plus n_triadic_claims, n_defined_concepts, n_hierarchical_relations, n_evidence_quotes, n_extracted_items, and n_open_list_entries.
+- `derived_typology` (derived): The typology recomputed from coverage and integration by a fixed rule, alongside typology_matches_derived.
+- `conceptual_yield` (high, moderate, low, minimal): How much conceptual material the paper actually yielded. A measure of harvest, not of promise.
+- `fulltext_eligibility` (include, uncertain, exclude): The post-retrieval verdict. A recommendation for a human adjudicator, not a final decision, and deliberately recall-protecting.
+- `synthesis_priority` (derived): Reading order for the later synthesis: core, supporting, background, or not_relevant.
 
 ## Canonical source paths
 
+- `src/03_pipeline/bps_review/fulltext/coding/schema.py`
+- `src/03_pipeline/bps_review/fulltext/coding/vocabulary.py`
+- `src/03_pipeline/bps_review/fulltext/coding/prompt.py`
+- `src/03_pipeline/bps_review/fulltext/coding/derive.py`
+- `src/03_pipeline/bps_review/fulltext/coding/runner.py`
+- `src/03_pipeline/bps_review/fulltext/analysis/integrity.py`
 - `src/01_protocol/codebooks/stage3_codebook.md`
 - `src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv`
-- `src/03_pipeline/bps_review/extraction/stage3_prep.py`
 - `src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
-- `src/06_review_stages/04_extraction/forms/stage3_pilot_sample.csv`
-- `src/06_review_stages/04_extraction/forms/stage3_reliability_sample.csv`
 
 ## Regenerating this dossier
 

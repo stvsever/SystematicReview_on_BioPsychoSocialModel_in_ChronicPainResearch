@@ -27,6 +27,8 @@
 
 The coding schemes that define how biopsychosocial (BPS) reviews are classified and categorized have since been revised for higher semantic quality and resolution: operational anchors for every code value, positive and negative indicators, and explicit boundary rules between adjacent categories. They are built as one uniform instrument for **two planned reviews**, one on musculoskeletal chronic pain and one on neuropathic chronic pain, with uniformity relaxed only where the biology genuinely differs (the routing flags and the biological subdomain ontology). These revised schemes are now circulated for **expert evaluation** and are **awaiting sign-off before the pipeline is re-run**.
 
+**The full-text scheme (scheme 3) has since been raised again, to extraction resolution.** Grading how much of a domain a review carries answers only half the question the review asks, so the scheme now also records *which* things it carries: every biological, social, lifestyle, and existential factor with its role and its ontology subdomain, every psychological construct with its definitional status and its measure, every hierarchical or semantic relation drawn between constructs, every framework and instrument, and every passage where the BPS label does work, each with the review's own wording and a verbatim quote. Thirteen structured extraction lists, seven open free-text lists, 82 fields inside the list items. Labels map onto the project vocabularies only when they clearly match, a mapped label never replaces the paper's own wording, and terms the vocabularies do not carry are recorded as written and reported back as the working list for extending the ontology. That extraction layer is what a high-resolution biopsychosocial ontology can be built from.
+
 - Interactive evaluation package (open in a browser): [src/02_coding_schemes/index.html](src/02_coding_schemes/index.html)
 - Per-scheme dossiers (HTML, PDF, README): [src/02_coding_schemes/](src/02_coding_schemes/)
 
@@ -67,11 +69,12 @@ Mean Fleiss' kappa is 0.60 across the twelve coded fields, and the spread is the
 
 ### Test run 2: full text (scheme 3)
 
-The open-access subset of the candidate set the abstract stage produced: 47 full texts x 3 models. Everything from the first run is computed again, plus three things a full-text scheme needs:
+The open-access subset of the candidate set the abstract stage produced: 47 full texts x 3 models. This run was executed on the previous generation of scheme 3, before the extraction layer described above was added, so its counts describe that earlier instrument. Everything from the first run is computed again, plus three things a full-text scheme needs:
 
 - **Graded ladders with evidence.** Coverage per domain on a four-rung ladder, three pairwise and one triadic integration on their own ladders, and a verbatim quote behind every graded judgement. An adjacent-agreement rate is reported alongside kappa, because on an ordered ladder a one-rung difference and a total disagreement are not the same error.
 - **Quote verification.** Every extracted quote is matched back against its source article. Unverified quotes are reported, not hidden, and the per-model spread is a concrete criterion for choosing the state-of-the-art model later.
 - **Evidence discipline.** For every domain pair graded above `mentioned`, the run checks whether the coder returned a quoted claim for exactly that pair. A graded link with no passage behind it is a judgement the review cannot audit.
+- **Ontology coverage** (new with the extraction layer). Every extracted item reports whether its ontology anchor landed on the project vocabularies, so the next run says how much of what this literature names the ontology can currently hold, and which off-spine labels recur.
 
 - Notebook: [`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](src/04_notebooks/02_fulltextlevel_testrun.ipynb) or `python -m bps_review run-fulltext-testrun`
 - Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_data/pilot/02_fulltext_level/](src/05_data/pilot/02_fulltext_level/)

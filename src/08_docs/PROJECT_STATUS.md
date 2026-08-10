@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-05
+Last updated: 2026-08-10
 
 ## Hierarchical goals
 
@@ -29,6 +29,32 @@ Two cross-provider test runs were executed to validate the workflow itself befor
   box, and the overall assessment is the last block on the page.
 - HTML, PDF, and README are in sync for all six schemes; the em-dash check passes.
 
+### Scheme 3 raised to extraction resolution (2026-08-10)
+
+The full-text scheme was rebuilt so that it names what a review carries rather than only grading
+how much of it there is. The graded ladders are unchanged, which keeps the earlier readings
+comparable; everything below is additional.
+
+- Thirteen structured extraction lists (was six), seven open free-text lists, 82 fields inside
+  the list items, and a ceiling of 116 extracted items per coding.
+- New in this revision: per-passage coding of what the biopsychosocial label does and how the
+  model is defined (RQ1); a named-factor inventory per domain with ontology subdomain, role, and
+  level (RQ2); relations between psychological constructs, hierarchical and semantic, as edges
+  (RQ3, registered and previously uncoded); instruments with what they are said to measure;
+  conceptual problems with their scope and the constructs they concern (SQ1); lifestyle and
+  spiritual or existential coverage, which the registration names alongside the triad.
+- Integration claims now name the source factor and the target factor, so the corpus yields a
+  map of what this literature says connects to what rather than a count of domain pairs.
+- A vocabulary module holds the preferred labels (the Scheme 6 subdomain ontology, the Scheme 5
+  concept families, frameworks, instruments, pain conditions, attributed sources). Mapping is
+  conservative, a mapped label never replaces the review's own wording, and off-spine terms are
+  kept verbatim and reported as the working list for extending the ontology.
+- The operational codebook CSV and the human coding form are now generated from the schema, so
+  the dossier, the codebook, the form, and the running code cannot drift apart. Two tests assert
+  that the dossier documents every coded field and every item subfield.
+- The pipeline integrates the change without a re-run: derived columns are recomputed on load,
+  and the notebook reports the new ontology-coverage tables when it is next executed.
+
 ### Abstract-level test run (scheme 2)
 
 - 100 records drawn from the operational PubMed query, most recent first, each with a usable
@@ -42,6 +68,9 @@ Two cross-provider test runs were executed to validate the workflow itself befor
 - Outputs under `src/05_data/pilot/01_abstract_level/`.
 
 ### Full-text test run (scheme 3)
+
+Executed on the previous generation of scheme 3, before the extraction layer above was added.
+The counts below describe that earlier instrument.
 
 - The open-access subset of the abstract-level candidate set: 47 full texts retrieved and parsed
   from PubMed Central out of 88 candidates (53 had a PMC id).
@@ -74,8 +103,9 @@ schema cannot drift apart again.
   Stage 2 abstract-coded 109; Stage 3 candidate set 87.
 - Tables and figures generated under `paper/assets/`; manuscript compiled to
   `paper/report/main.pdf`.
-- Test suite passing (27 tests, including offline coverage of the agreement primitives, the
-  repair and derivation layer, quote verification, and prompt-schema consistency).
+- Test suite passing (33 tests, including offline coverage of the agreement primitives, the
+  repair and derivation layer, quote verification, prompt-schema consistency, and the
+  agreement between the expert dossier and the coded schema).
 
 ## Open constraints
 

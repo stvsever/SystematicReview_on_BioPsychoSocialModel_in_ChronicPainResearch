@@ -14,15 +14,39 @@ candidates and codes them at full resolution.
 
 The review's central claim is that biopsychosocial language is widespread while
 substantive three-domain integration is not. The scheme is built to test exactly
-that, so its most consequential fields are ladders rather than labels.
+that, so its most consequential graded fields are ladders rather than labels. It
+is also the pass that harvests the ontology, so alongside the grades it asks for
+the named things a review carries: presence is never the answer, the answer is
+which ones.
 
 | Layer | Fields |
 | --- | --- |
-| Coverage | `domain_coverage_bio`, `domain_coverage_psych`, `domain_coverage_social` on a four-rung ladder (elaborated, mentioned, minimal, absent) |
+| Coverage | `domain_coverage_bio`, `domain_coverage_psych`, `domain_coverage_social` on a four-rung ladder (elaborated, mentioned, minimal, absent), plus `coverage_lifestyle` and `coverage_spiritual_existential` on the same ladder |
 | Integration | `integration_bio_psych`, `integration_psych_social`, `integration_bio_social` on a five-rung ladder (mechanistic, directional, descriptive, mentioned, none), plus `integration_triadic` on its own four-rung ladder |
+| BPS usage (RQ1) | `bps_label_used`, `bps_primary_function`, `bps_functions_present`, `bps_definition_status`, `bps_model_variants`, plus `bps_usage_instances` and `bps_definitions` as quoted item lists |
 | Typology | `overall_balance`, `bps_typology` |
-| Concepts | `concept_definitions_present`, plus a per-concept list carrying definitional status |
-| Evidence | `integration_claims`, `domain_evidence`, `psychological_concepts`, `theoretical_frameworks`, `conceptual_problems`, `key_quotes`, each item with a verbatim quote and its section |
+| Ontology nodes | `biological_factors`, `social_factors`, `other_domain_factors`, `psychological_concepts`, each item carrying the review's own label, its ontology anchor, the role it plays, and a quote |
+| Ontology edges | `integration_claims` (naming both linked factors, the direction, and any mediator) and `concept_relations` (hierarchical and semantic relations between constructs) |
+| Concepts and measures | `concept_definitions_present`, `theoretical_frameworks`, `instruments` |
+| Problems (SQ1) | `conceptual_problems`, with scope, affected constructs, and whether the authors noticed |
+| Free text | `emergent_labels`, `conceptual_tensions`, `additional_observations`, plus the summaries `bps_operationalization_summary`, `integration_mechanism_summary`, `synthesis_note` |
+
+Thirteen extraction lists, seven open free-text lists, and a ceiling of 116
+extracted items per coding. The caps are ceilings and never targets.
+
+### The spine and the free text
+
+Labels are mapped onto the project vocabularies in
+[`coding/vocabulary.py`](coding/vocabulary.py) (the Scheme 6 subdomain ontology,
+the Scheme 5 concept families, frameworks, instruments, pain conditions) only
+when they clearly match. Two rules protect resolution:
+
+- a mapped label never replaces the review's own wording, because the anchor
+  field (`subdomain_label`, `concept_family`) always sits next to a free-text
+  label field (`factor_label`, `concept_label`), and the item table carries both;
+- a term the vocabularies do not carry is recorded as written and repeated in
+  `emergent_labels`, and the analysis reports the off-spine share per list. That
+  share measures the ontology against the literature, not the other way round.
 
 ## How it runs
 
@@ -51,7 +75,8 @@ than as a fabricated one.
 | `config.py` | models, per-model runtime, field groups, caps, ladder depths, paths |
 | `corpus/pmc.py` | resolve PMC ids, fetch and parse JATS, build and log the corpus |
 | `coding/schema.py` | the validated scheme: controlled decisions and structured items |
-| `coding/prompt.py` | the instruction set, assembled from the schema and the ladders |
+| `coding/vocabulary.py` | the preferred-label vocabularies and the conservative normalizer |
+| `coding/prompt.py` | the instruction set, assembled from the schema, the ladders, and the vocabularies |
 | `coding/condense.py` | fits a long article into the reading budget, dropping the least conceptual paragraphs first |
 | `coding/derive.py` | repair, deterministic derivations, presence flags, serialization |
 | `coding/runner.py` | one article per request, all models in parallel, with retries and usage accounting |
@@ -81,7 +106,11 @@ than as a fabricated one.
   integration numbers mean anything.
 - **Agreement is measured on the right variable.** Ladders get kappa plus an
   adjacent-agreement rate, conceptual elements get a derived binary presence, and
-  open label lists get set overlap.
+  open label lists get set overlap over vocabulary-normalized labels, with
+  relations and integration claims compared as edges rather than as single labels.
+- **The ontology is measured, not assumed.** Every extracted item reports whether
+  it anchored to the project vocabularies, so the run says how much of what this
+  literature names the ontology can currently hold.
 - **Nothing is fabricated to fill a gap.** A response that is not a coding of the
   given paper is rejected and retried; caps are ceilings and never targets, so an
   empty list is a coding rather than a hole.

@@ -8,7 +8,9 @@ consistency between the prompt, the schema, and the reliability configuration.
 
 from __future__ import annotations
 
+import importlib.util
 import json
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -20,15 +22,29 @@ from bps_review.fulltext.coding.condense import build_coding_text, paragraph_sco
 from bps_review.fulltext.coding.derive import (
     assert_usable_payload,
     derive,
+    item_rows,
     normalize_choice,
     record_from_row,
     repair_payload,
     serialize_row,
 )
-from bps_review.fulltext.coding.prompt import CONTROLLED_VALUES, build_prompt, build_schema_spec
-from bps_review.fulltext.coding.schema import FullTextCodingRecord
+from bps_review.fulltext.coding.prompt import (
+    CONTROLLED_VALUES,
+    FIELD_INSTRUCTIONS,
+    build_prompt,
+    build_schema_spec,
+)
+from bps_review.fulltext.coding.schema import (
+    FullTextCodingRecord,
+    ITEM_MODELS,
+    ITEM_QUOTE_KEY,
+    OPEN_LIST_FIELDS,
+)
+from bps_review.fulltext.coding.vocabulary import is_controlled, normalize_label
 from bps_review.fulltext.config import (
+    ITEM_CAPS,
     LIST_FIELDS,
+    LIST_LABEL_KEY,
     PRESENCE_FIELDS,
     RELIABILITY_FIELDS,
 )
@@ -95,9 +111,37 @@ def _raw_payload(record_id: str = "F001_1") -> dict:
         "record_id": record_id,
         "review_track": "musculoskeletal",
         "source_type": "systematic review",
+        "icd11_pain_category": "chronic secondary musculoskeletal pain",
+        "population": "adult",
+        "care_setting": "primary care",
+        "primary_discipline": "physiotherapy or rehabilitation",
+        "pain_condition_detail": "chronic low back pain",
+        "pain_conditions": ["chronic low back pain", "CLBP"],
+        "quality_assessment_reported": "yes",
+        "quality_assessment_tools": ["AMSTAR-2"],
+        "bps_label_used": "explicit_bps_term",
+        "bps_primary_function": "explanatory framework",
+        "bps_functions_present": ["explanatory framework", "intervention rationale"],
+        "bps_definition_status": "formally_defined",
+        "bps_model_variants": ["biopsychosocial model", "bio-psycho-social framework"],
+        "bps_usage_instances": [
+            {"usage_verbatim": "the biopsychosocial model explains persistent disability",
+             "bps_function": "explanatory framework", "is_definitional": "no",
+             "attributed_source": "Engel 1977", "section_located": "introduction"},
+            {"usage_verbatim": "a biopsychosocial approach supports multidisciplinary care",
+             "bps_function": "intervention rationale", "section_located": "discussion"},
+        ],
+        "bps_definitions": [
+            {"definition_verbatim": "the model holds that biological psychological and social factors interact",
+             "definition_type": "explicit_formal", "attributed_source": "Engel",
+             "elements_named": ["biological", "psychological", "social"],
+             "section_located": "introduction"},
+        ],
         "domain_coverage_bio": "elaborated",
         "domain_coverage_psych": "elaborated",
         "domain_coverage_social": "mentioned",
+        "coverage_lifestyle": "minimal",
+        "coverage_spiritual_existential": "absent",
         "integration_bio_psych": "mechanistic",
         "integration_psych_social": "descriptive",
         "integration_bio_social": "none",
@@ -107,6 +151,8 @@ def _raw_payload(record_id: str = "F001_1") -> dict:
         "concept_definitions_present": "partial",
         "integration_claims": [
             {"domains_linked": "bio_psych", "integration_level": "mechanistic",
+             "source_factor_label": "catastrophizing", "target_factor_label": "central sensitization",
+             "direction": "unidirectional", "mediator_or_moderator": "descending modulation",
              "claim_verbatim": "central sensitization is amplified by catastrophizing",
              "mechanism_note": "via descending modulation", "section_located": "discussion",
              "evidence_basis": "theorized"},
@@ -116,22 +162,63 @@ def _raw_payload(record_id: str = "F001_1") -> dict:
         ],
         "domain_evidence": [
             {"domain": "biological", "coverage_level": "elaborated",
-             "constructs_named": ["central sensitization"], "evidence_verbatim": "a passage about nociception",
+             "constructs_named": ["central sensitization"],
+             "subdomains_named": ["central sensitisation"],
+             "evidence_verbatim": "a passage about nociception",
              "section_located": "introduction"},
         ],
+        "biological_factors": [
+            {"factor_label": "central sensitisation", "subdomain_label": "central sensitization",
+             "mechanism_level": "spinal or central nervous system",
+             "factor_role": "mediator", "factor_verbatim": "central sensitisation was widely reported",
+             "section_located": "results"},
+            {"factor_label": "paraspinal muscle fatigue", "subdomain_label": "",
+             "factor_role": "correlate", "factor_verbatim": "paraspinal muscle fatigue was noted"},
+        ],
+        "social_factors": [
+            {"factor_label": "workplace support", "subdomain_label": "social support",
+             "social_level": "workplace", "factor_role": "protective factor",
+             "factor_verbatim": "supportive supervisors predicted return to work"},
+        ],
+        "other_domain_factors": [
+            {"factor_label": "sleep hygiene", "domain": "lifestyle", "factor_role": "treatment target",
+             "factor_verbatim": "sleep hygiene advice was part of the programme"},
+        ],
         "psychological_concepts": [
-            {"concept_label": "pain catastrophizing", "definitional_status": "formally_defined",
+            {"concept_label": "pain catastrophizing", "concept_family": "catastrophizing",
+             "definitional_status": "formally_defined", "definition_source": "cited from other work",
+             "measure_named": "PCS", "factor_role": "mediator",
              "definition_verbatim": "catastrophizing is defined as an exaggerated negative orientation"},
             {"concept_label": "self-efficacy", "definitional_status": "named_only"},
         ],
+        "concept_relations": [
+            {"source_concept": "kinesiophobia", "target_concept": "pain-related fear",
+             "relation_type": "is_a_subtype_of", "explicitly_stated": "yes",
+             "relation_verbatim": "kinesiophobia is a specific form of pain-related fear"},
+            {"source_concept": "catastrophizing", "target_concept": "worry",
+             "relation_type": "conflated_without_comment", "explicitly_stated": "no",
+             "relation_verbatim": "the terms are used interchangeably throughout"},
+        ],
         "theoretical_frameworks": [
             {"framework_label": "fear-avoidance model", "role": "organizing framework",
+             "domains_covered": ["biological", "psychological"],
              "framework_verbatim": "we use the fear-avoidance model"},
         ],
+        "instruments": [
+            {"instrument_label": "Pain Catastrophizing Scale", "abbreviation": "PCS",
+             "domain_measured": "psychological", "role": "predictor or covariate",
+             "construct_measured_as_stated": "catastrophic thinking about pain",
+             "instrument_verbatim": "catastrophizing was measured with the PCS"},
+        ],
         "conceptual_problems": [
-            {"problem_type": "missing_social", "problem_verbatim": "social factors were not examined"},
+            {"problem_type": "missing_social", "problem_scope": "scope or coverage",
+             "affected_labels": ["social support"], "named_by_authors": "no",
+             "problem_verbatim": "social factors were not examined"},
         ],
         "key_quotes": [],
+        "emergent_labels": ["paraspinal muscle fatigue", "flare-up literacy"],
+        "conceptual_tensions": ["the model is invoked but never tested"],
+        "additional_observations": ["the social domain appears only in the limitations"],
         "coding_rationale": "clear three-domain account",
     }
 
@@ -150,6 +237,10 @@ def test_repair_and_validate_roundtrip():
     assert coded.integration_bio_psych == "mechanistic"
     assert len(coded.integration_claims) == 2
     assert len(coded.psychological_concepts) == 2
+    assert len(coded.biological_factors) == 2
+    assert len(coded.concept_relations) == 2
+    assert coded.bps_primary_function == "explanatory framework"
+    assert coded.bps_functions_present == ["explanatory framework", "intervention rationale"]
 
 
 def test_repair_drops_items_without_a_label_or_a_quote():
@@ -157,6 +248,39 @@ def test_repair_drops_items_without_a_label_or_a_quote():
     payload["theoretical_frameworks"].append({"role": "unclear"})
     coded = FullTextCodingRecord.model_validate(repair_payload({"record_id": "F001_1"}, payload))
     assert len(coded.theoretical_frameworks) == 1
+
+
+def test_spine_pointers_are_mapped_while_free_text_labels_survive():
+    """A mapped label must never cost us the review's own wording."""
+    coded = FullTextCodingRecord.model_validate(repair_payload({"record_id": "F001_1"}, _raw_payload()))
+    mapped = coded.biological_factors[0]
+    assert mapped.subdomain_label == "Central Sensitization and Neuroplasticity"
+    assert mapped.factor_label == "central sensitisation"        # exactly as written
+    off_spine = coded.biological_factors[1]
+    assert off_spine.subdomain_label == ""                       # nothing forced onto the spine
+    assert off_spine.factor_label == "paraspinal muscle fatigue"
+    # the framework label is never rewritten in place
+    assert coded.theoretical_frameworks[0].framework_label == "fear-avoidance model"
+    # and the free-text catch-all list is preserved verbatim
+    assert "flare-up literacy" in coded.emergent_labels
+
+
+def test_item_rows_carry_both_readings_of_a_label():
+    coded = FullTextCodingRecord.model_validate(repair_payload({"record_id": "F001_1"}, _raw_payload()))
+    rows = {(row["extraction_field"], row["item_index"]): row
+            for row in item_rows(coded, model_id="test/model", model_label="M")}
+    concept = rows[("psychological_concepts", 0)]
+    assert concept["label_raw"] == "pain catastrophizing"
+    assert concept["label_normalized"] == "pain catastrophizing"
+    assert concept["label_controlled"] == "yes"
+    assert concept["anchor_label"] == "catastrophizing and negative cognitive appraisal"
+    unusual = rows[("biological_factors", 1)]
+    assert unusual["label_normalized"] == "paraspinal muscle fatigue"
+    assert unusual["anchor_label"] == ""
+    assert unusual["anchor_controlled"] == "no"
+    # an edge is identified by the pair it connects, not by a single label
+    edge = rows[("concept_relations", 0)]
+    assert edge["label_raw"] == "kinesiophobia | is_a_subtype_of | pain-related fear"
 
 
 def test_unusable_payloads_are_rejected_rather_than_repaired():
@@ -175,14 +299,36 @@ def test_derivations_are_computed_from_the_content():
     assert derived["present_integration_evidence"] == "yes"
     assert derived["present_triadic_claim"] == "yes"
     assert derived["present_defined_concepts"] == "yes"
+    assert derived["present_named_integration_edge"] == "yes"
+    assert derived["present_hierarchical_relation"] == "yes"
+    assert derived["present_biological_factors"] == "yes"
+    assert derived["present_social_factors"] == "yes"
     assert derived["domains_present"] == 3
     assert derived["fulltext_eligibility"] == "include"
     assert derived["derived_typology"] == "true_integrative"
     assert derived["typology_matches_derived"] == "yes"
-    # two integration claims, one domain-evidence passage, one concept definition,
-    # one framework passage, and one conceptual-problem passage
-    assert derived["n_evidence_quotes"] == 6
+    # one quote per extracted item that carries one: 2 usage passages, 1 model
+    # definition, 1 domain-evidence passage, 2 biological and 1 social factor,
+    # 1 lifestyle factor, 1 concept definition, 2 relations, 2 integration
+    # claims, 1 framework, 1 instrument, 1 conceptual problem
+    assert derived["n_evidence_quotes"] == 16
+    assert derived["n_named_integration_edges"] == 1
     assert 0.0 <= derived["integration_index"] <= 1.0
+
+
+def test_ontology_derivations_measure_breadth_and_spine_coverage():
+    coded = FullTextCodingRecord.model_validate(repair_payload({"record_id": "F001_1"}, _raw_payload()))
+    derived = derive(coded)
+    # one biological subdomain from the factor list and the same one from the
+    # domain-evidence item, one psychological family, one social subdomain
+    assert derived["n_subdomains_bio"] == 1
+    assert derived["n_subdomains_psych"] == 1
+    assert derived["n_subdomains_social"] == 1
+    assert derived["n_emergent_labels"] == 2
+    assert 0.0 < derived["controlled_label_share"] < 1.0
+    assert derived["bps_has_substantive_function"] == "yes"
+    assert "explanatory framework" in derived["bps_function_set"]
+    assert derived["n_open_list_entries"] >= 8
 
 
 def test_empty_coding_is_excluded_and_never_fabricated():
@@ -200,7 +346,24 @@ def test_row_roundtrip_preserves_the_coded_content():
     restored = record_from_row(row)
     assert restored.integration_triadic == coded.integration_triadic
     assert len(restored.psychological_concepts) == len(coded.psychological_concepts)
+    assert len(restored.concept_relations) == len(coded.concept_relations)
+    assert restored.emergent_labels == coded.emergent_labels
+    assert restored.bps_functions_present == coded.bps_functions_present
+
+
+def test_open_list_entries_survive_the_row_roundtrip_intact():
+    """The wide table joins open lists with a semicolon, so entries must not carry one."""
+    payload = _raw_payload()
+    payload["additional_observations"] = [
+        "the social domain appears only in the limitations; the authors do not notice",
+        "the model is credited to Engel but never quoted",
+    ]
+    coded = FullTextCodingRecord.model_validate(repair_payload({"record_id": "F001_1"}, payload))
+    assert len(coded.additional_observations) == 2
+    restored = record_from_row(serialize_row(coded, model_id="test/model"))
+    assert restored.additional_observations == coded.additional_observations
     assert derive(restored)["integration_index"] == derive(coded)["integration_index"]
+    assert derive(restored)["controlled_label_share"] == derive(coded)["controlled_label_share"]
 
 
 # --------------------------------------------------------------------------
@@ -252,8 +415,87 @@ def test_prompt_spec_covers_every_controlled_field():
     assert "mechanistic" in prompt
 
 
+def test_fulltext_prompt_names_every_schema_field():
+    """A field the prompt never names is a field the repair layer fills silently."""
+    named = {name for name, _ in FIELD_INSTRUCTIONS}
+    coded = set(FullTextCodingRecord.model_fields) - {"record_id"}
+    assert named == coded, (
+        "the prompt's field instructions and the validated schema must not drift apart: "
+        f"{sorted(coded - named)} unnamed, {sorted(named - coded)} unknown"
+    )
+
+
+def test_prompt_instructs_every_extraction_and_open_list():
+    """A list the prompt never names is a list the model will never return."""
+    spec = build_schema_spec()
+    missing = [name for name in ITEM_MODELS if name not in spec]
+    assert missing == [], f"extraction lists absent from the prompt: {missing}"
+    missing_open = [name for name in OPEN_LIST_FIELDS if name not in spec]
+    assert missing_open == [], f"open lists absent from the prompt: {missing_open}"
+    assert all(spec[name].get("max_items") == ITEM_CAPS[name] for name in ITEM_MODELS)
+
+
+def test_every_extraction_list_is_configured_end_to_end():
+    """Caps, quote keys, and identifying labels must exist for every list."""
+    assert set(ITEM_CAPS) == set(ITEM_MODELS)
+    assert set(ITEM_QUOTE_KEY) == set(ITEM_MODELS)
+    for name, model in ITEM_MODELS.items():
+        assert ITEM_QUOTE_KEY[name] in model.model_fields
+        assert LIST_LABEL_KEY.get(name, ()) or name not in LIST_FIELDS
+        for key in LIST_LABEL_KEY.get(name, ()):
+            assert key in model.model_fields
+
+
+def test_preferred_labels_map_variants_but_keep_unknown_terms():
+    assert normalize_label("central sensitisation", "bio_subdomain") == \
+        "Central Sensitization and Neuroplasticity"
+    assert normalize_label("catastrophising", "psych_concept") == "pain catastrophizing"
+    assert normalize_label("Vlaeyen and Linton", "framework") == "fear-avoidance model"
+    # a term the spine does not carry survives, cleaned but unchanged
+    unusual = normalize_label("Flare-up literacy", "psych_concept")
+    assert unusual == "flare-up literacy"
+    assert not is_controlled(unusual, "psych_concept")
+
+
 def test_abstract_reliability_and_list_fields_are_disjoint():
     assert not set(ABSTRACT_RELIABILITY_FIELDS) & set(ABSTRACT_LIST_FIELDS)
+
+
+# --------------------------------------------------------------------------
+# The expert-facing dossier must describe the scheme the pipeline runs
+# --------------------------------------------------------------------------
+def _dossier_content():
+    """Load the coding-scheme dossier source, which lives outside the package."""
+    root = Path(__file__).resolve().parents[3]
+    path = root / "src" / "02_coding_schemes" / "_build" / "content.py"
+    spec = importlib.util.spec_from_file_location("dossier_content", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_scheme_3_dossier_documents_every_coded_field():
+    """Experts evaluate the dossier, so the dossier has to be the scheme."""
+    dossier = _dossier_content()
+    documented = {f["name"] for sec in dossier.SCHEME_3["sections"]
+                  if sec["kind"] == "fields" for f in sec["fields"]}
+    coded = set(FullTextCodingRecord.model_fields) - {"record_id"}
+    assert not (coded - documented), f"coded fields absent from the dossier: {sorted(coded - documented)}"
+
+
+def test_scheme_3_dossier_documents_every_item_subfield():
+    dossier = _dossier_content()
+    by_name = {f["name"]: f for sec in dossier.SCHEME_3["sections"]
+               if sec["kind"] == "fields" for f in sec["fields"]}
+    for name, model in ITEM_MODELS.items():
+        assert name in by_name, f"extraction list absent from the dossier: {name}"
+        documented = {sf["name"] for sf in by_name[name]["subfields"]}
+        assert documented == set(model.model_fields), (
+            f"{name}: dossier subfields and schema fields differ "
+            f"({sorted(set(model.model_fields) - documented)} missing, "
+            f"{sorted(documented - set(model.model_fields))} extra)"
+        )
+        assert by_name[name]["cap"] == ITEM_CAPS[name]
 
 
 # --------------------------------------------------------------------------
@@ -288,17 +530,36 @@ def test_condenser_marks_what_it_dropped():
 
 def test_list_overlap_returns_one_row_per_open_list():
     payload = json.dumps([{"concept_label": "catastrophizing"}, {"concept_label": "self-efficacy"}])
-    other = json.dumps([{"concept_label": "catastrophizing"}])
+    other = json.dumps([{"concept_label": "catastrophising"}])   # the same label, spelled differently
+    empty = {field: "[]" for field in LIST_FIELDS}
     frame = pd.DataFrame([
-        {"record_id": "F1", "model_label": "DeepSeek-V4-Flash", "psychological_concepts": payload,
-         "theoretical_frameworks": "[]", "conceptual_problems": "[]"},
-        {"record_id": "F1", "model_label": "Nex-N2-Mini", "psychological_concepts": other,
-         "theoretical_frameworks": "[]", "conceptual_problems": "[]"},
-        {"record_id": "F1", "model_label": "Laguna-XS-2.1", "psychological_concepts": other,
-         "theoretical_frameworks": "[]", "conceptual_problems": "[]"},
+        {"record_id": "F1", "model_label": "DeepSeek-V4-Flash", **empty,
+         "psychological_concepts": payload},
+        {"record_id": "F1", "model_label": "Nex-N2-Mini", **empty, "psychological_concepts": other},
+        {"record_id": "F1", "model_label": "Laguna-XS-2.1", **empty, "psychological_concepts": other},
     ])
     overlap = compute_list_overlap(frame)
     assert len(overlap) == len(LIST_FIELDS)
     concepts = overlap[overlap["field"] == "psychological_concepts"].iloc[0]
-    # two pairs share one of two labels (0.5), one pair is identical (1.0)
+    # two pairs share one of two labels (0.5), one pair is identical (1.0);
+    # the two spellings count as one label because the vocabulary maps them
     assert concepts["mean_pairwise_jaccard"] == pytest.approx((0.5 + 0.5 + 1.0) / 3)
+
+
+def test_list_overlap_compares_relations_as_edges():
+    edge = json.dumps([{"source_concept": "kinesiophobia", "relation_type": "is_a_subtype_of",
+                        "target_concept": "pain-related fear"}])
+    different_target = json.dumps([{"source_concept": "kinesiophobia",
+                                    "relation_type": "is_a_subtype_of",
+                                    "target_concept": "anxiety"}])
+    empty = {field: "[]" for field in LIST_FIELDS}
+    frame = pd.DataFrame([
+        {"record_id": "F1", "model_label": "DeepSeek-V4-Flash", **empty, "concept_relations": edge},
+        {"record_id": "F1", "model_label": "Nex-N2-Mini", **empty, "concept_relations": edge},
+        {"record_id": "F1", "model_label": "Laguna-XS-2.1", **empty,
+         "concept_relations": different_target},
+    ])
+    relations = compute_list_overlap(frame)
+    row = relations[relations["field"] == "concept_relations"].iloc[0]
+    # identical edge on one pair, a different endpoint on the other two
+    assert row["mean_pairwise_jaccard"] == pytest.approx((1.0 + 0.0 + 0.0) / 3)

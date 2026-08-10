@@ -433,6 +433,10 @@ def index_html():
                 purpose = sec["body"][0]
                 break
         nfields = sum(len(sec.get("fields", [])) for sec in s["sections"] if sec["kind"] == "fields")
+        nsubfields = sum(
+            len(f.get("subfields", []))
+            for sec in s["sections"] if sec["kind"] == "fields" for f in sec["fields"]
+        )
         cards.append(f'''<div class="scard">
   <div class="snum">{s["num"]}</div>
   <span class="badge stage">{h(s["stage"])}</span>
@@ -440,6 +444,7 @@ def index_html():
   <p class="sp">{h(purpose[:220])}{"..." if len(purpose)>220 else ""}</p>
   <div class="chips" style="margin-bottom:10px">
     <span class="chip">{nfields} coded fields</span>
+    {f'<span class="chip">{nsubfields} item-level fields</span>' if nsubfields else ""}
     <span class="chip">{len(s["sources"])} sources</span>
   </div>
   <div class="sactions">
@@ -581,6 +586,18 @@ def latex_values(values, indent="  "):
     return "\n".join(lines)
 
 
+def latex_subfields(subfields, indent="  "):
+    lines = [indent + r"{\small\itshape Fields inside each item:}",
+             indent + r"\begin{itemize}[leftmargin=1.3em,itemsep=1pt,topsep=2pt]"]
+    for sf in subfields:
+        body = r"\textbf{" + tt(sf["name"]) + r"} " + lx(sf["desc"])
+        if sf.get("values"):
+            body += r" {\small \textit{Values:} " + lx(", ".join(sf["values"])) + "}"
+        lines.append(indent + r"\item " + body)
+    lines.append(indent + r"\end{itemize}")
+    return "\n".join(lines)
+
+
 def latex_section(sec):
     kind = sec["kind"]
     title = sec["title"]
@@ -614,11 +631,20 @@ def latex_section(sec):
         out.append(r"\begin{description}")
         for f in sec["fields"]:
             head = r"\item[" + tt(f["name"]) + r"] " + lx(f["construct"])
+            tags = []
+            if f.get("kind"):
+                tags.append(f["kind"])
+            if f.get("cap"):
+                tags.append("max %s items" % f["cap"])
             if f["free_text"]:
-                head += r" \textit{(free text)}"
+                tags.append("free text")
+            if tags:
+                head += r" \textit{(" + lx("; ".join(tags)) + r")}"
             out.append(head)
             if f["values"]:
                 out.append(latex_values(f["values"]))
+            if f.get("subfields"):
+                out.append(latex_subfields(f["subfields"]))
             if f["notes"]:
                 out.append(r"{\small " + lx(f["notes"]) + "}")
         out.append(r"\end{description}")
@@ -794,11 +820,19 @@ def scheme_readme(s):
             L.append(f"### {sec['title']}")
             L.append("")
             for f in sec["fields"]:
-                vals = ", ".join(v["value"] for v in f["values"]) if f["values"] else ("free text" if f["free_text"] else "")
+                vals = ", ".join(v["value"] for v in f["values"]) if f["values"] else ""
+                if not vals:
+                    tags = [tag for tag in (f.get("kind"), "free text" if f["free_text"] else "") if tag]
+                    if f.get("cap"):
+                        tags.append(f"max {f['cap']} items")
+                    vals = "; ".join(tags)
                 if vals:
                     L.append(f"- `{f['name']}` ({vals}): {f['construct']}")
                 else:
                     L.append(f"- `{f['name']}`: {f['construct']}")
+                for sf in f.get("subfields", []):
+                    values = f" [{', '.join(sf['values'])}]" if sf.get("values") else ""
+                    L.append(f"  - `{sf['name']}`: {sf['desc']}{values}")
             L.append("")
     if not any_fields:
         L.append("This scheme is specified through its prompts, seeds, and ontology rather than a single coded-field table. See the HTML or PDF for the full specification.")

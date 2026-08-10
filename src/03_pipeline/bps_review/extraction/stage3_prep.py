@@ -9,6 +9,7 @@ import pandas as pd
 import requests
 from requests import RequestException
 
+from bps_review.fulltext.coding.codebook import write_stage3_codebook
 from bps_review.search.pubmed import _request as pubmed_request
 from bps_review.utils.io import append_jsonl, write_csv, write_text
 from bps_review.utils.paths import project_path
@@ -134,6 +135,109 @@ def _relevance_signal(title: str, abstract: str, review_type: str) -> tuple[str,
     if flags:
         return "medium", " | ".join(flags)
     return "low", ""
+
+
+# --------------------------------------------------------------------------
+# The human Stage 3 coding surface.
+#
+# It mirrors the machine schema in
+# ``bps_review.fulltext.coding.schema`` field for field, flattened for a
+# spreadsheet: the single-value decisions get one column each, and every
+# structured extraction list gets one column in which the coder writes one item
+# per line, with the item's fields separated by a pipe. That keeps a human
+# coding and a model coding of the same article directly comparable, which is
+# what the registration's reliability checks and the AI-assist provision both
+# require.
+# --------------------------------------------------------------------------
+CARRIED_FROM_MANIFEST = [
+    "record_id",
+    "title",
+    "year",
+    "review_type",
+    "icd11_pain_category",
+    "provisional_typology",
+    "conceptual_problem_flags",
+    "psychological_concepts_detected",
+    "theoretical_frameworks_detected",
+    "stage3_priority",
+    "fulltext_status",
+    "cached_text_path",
+]
+
+# (column, guidance shown in the codebook; empty for a plain controlled field)
+FULLTEXT_TEMPLATE_COLUMNS: list[tuple[str, str]] = [
+    ("full_text_available", "yes; no; partial"),
+    # A. source, context, routing
+    ("review_track", "musculoskeletal; neuropathic; mixed_or_other; unclear"),
+    ("source_type_fulltext", "confirmed evidence-synthesis design"),
+    ("icd11_pain_category_fulltext", "ICD-11 category confirmed at full text"),
+    ("population", "adult; older adult; mixed ages; pediatric; unclear; not applicable"),
+    ("care_setting", "primary care; specialist; rehabilitation; occupational; community; mixed; not reported"),
+    ("primary_discipline", "disciplinary home of the paper"),
+    ("pain_condition_detail", "free text"),
+    ("pain_conditions", "one condition per line"),
+    ("context_note", "cultural or healthcare context, free text"),
+    ("quality_assessment_reported", "yes; no; unclear"),
+    ("quality_assessment_tools", "one tool per line"),
+    # B. what the BPS label does
+    ("bps_label_used", "explicit_bps_term; variant_term_only; domain_language_only; absent"),
+    ("bps_primary_function", "dominant function of the BPS label"),
+    ("bps_functions_present", "one function per line"),
+    ("bps_definition_status", "formally_defined; described_informally; cited_only; undefined"),
+    ("bps_model_variants", "one model label per line, verbatim"),
+    ("bps_usage_instances", "one per line: function | section | quote"),
+    ("bps_definitions", "one per line: type | attributed source | quote"),
+    ("bps_operationalization_summary", "free text, at most 90 words"),
+    # C. coverage
+    ("domain_coverage_bio", "elaborated; mentioned; minimal; absent"),
+    ("domain_coverage_psych", "elaborated; mentioned; minimal; absent"),
+    ("domain_coverage_social", "elaborated; mentioned; minimal; absent"),
+    ("coverage_lifestyle", "elaborated; mentioned; minimal; absent"),
+    ("coverage_spiritual_existential", "elaborated; mentioned; minimal; absent"),
+    ("domain_evidence", "one per line: domain | level | subdomains | quote"),
+    # D. the factor inventory
+    ("biological_factors", "one per line: label | subdomain | level | role | quote"),
+    ("social_factors", "one per line: label | subdomain | level | role | quote"),
+    ("other_domain_factors", "one per line: label | lifestyle or spiritual or environmental | role | quote"),
+    # E. integration
+    ("integration_bio_psych", "mechanistic; directional; descriptive; mentioned; none"),
+    ("integration_psych_social", "mechanistic; directional; descriptive; mentioned; none"),
+    ("integration_bio_social", "mechanistic; directional; descriptive; mentioned; none"),
+    ("integration_triadic", "mechanistic; descriptive; partial; none"),
+    ("integration_claims", "one per line: pair | level | source factor -> target factor | quote"),
+    ("integration_mechanism_summary", "free text, at most 90 words"),
+    # F. typology and balance
+    ("overall_balance", "balanced; psych-dominant; bio-dominant; social-dominant; dyadic; unclear"),
+    ("bps_typology", "true_integrative; multifactorial; pseudo_bps; rhetorical_bps; narrow_despite_label; unclear"),
+    # G. concepts, relations, frameworks, measures
+    ("concept_definitions_present", "yes; partial; no"),
+    ("psychological_concepts", "one per line: label | family | definitional status | measure | quote"),
+    ("concept_relations", "one per line: source concept | relation | target concept | quote"),
+    ("theoretical_frameworks", "one per line: label | role | domains covered | quote"),
+    ("instruments", "one per line: label | domain measured | role | what it is said to measure"),
+    # H. conceptual problems
+    ("conceptual_problems", "one per line: type | scope | named by authors | quote"),
+    # I. synthesis hooks
+    ("key_quotes", "one per line: claim type | section | quote"),
+    ("emergent_labels", "one term per line, verbatim, for terms the ontology does not carry"),
+    ("conceptual_tensions", "one tension per line"),
+    ("additional_observations", "one observation per line"),
+    ("synthesis_note", "free text, at most 90 words"),
+    ("coding_rationale", "free text, at most 40 words"),
+    # provenance and adjudication
+    ("coder_id", "initials of the coder"),
+    ("coder_notes", "free text"),
+    ("adjudication_status", "pending; agreed; adjudicated"),
+]
+
+
+def build_fulltext_coding_template(manifest_frame: pd.DataFrame) -> pd.DataFrame:
+    """The Stage 3 human coding form, one empty row per candidate review."""
+    carried = [column for column in CARRIED_FROM_MANIFEST if column in manifest_frame.columns]
+    template = manifest_frame[carried].copy()
+    for column, _ in FULLTEXT_TEMPLATE_COLUMNS:
+        template[column] = ""
+    return template
 
 
 def prepare_stage3_candidates(fetch_fulltext: bool = True) -> dict[str, int]:
@@ -314,43 +418,12 @@ def prepare_stage3_candidates(fetch_fulltext: bool = True) -> dict[str, int]:
     manual_relevance_form["adjudication_notes"] = ""
     write_csv(project_path("review_stages", "04_extraction", "forms", "stage3_manual_relevance_checklist.csv"), manual_relevance_form)
 
-    coding_template = manifest_frame[
-        [
-            "record_id",
-            "title",
-            "year",
-            "review_type",
-            "icd11_pain_category",
-            "provisional_typology",
-            "conceptual_problem_flags",
-            "psychological_concepts_detected",
-            "theoretical_frameworks_detected",
-            "stage3_priority",
-            "fulltext_status",
-            "cached_text_path",
-        ]
-    ].copy()
-    coding_template["full_text_available"] = ""
-    coding_template["pain_condition_detail"] = ""
-    coding_template["domain_coverage_bio"] = ""
-    coding_template["domain_coverage_psych"] = ""
-    coding_template["domain_coverage_social"] = ""
-    coding_template["integration_bio_psych"] = ""
-    coding_template["integration_psych_social"] = ""
-    coding_template["integration_bio_social"] = ""
-    coding_template["integration_triadic"] = ""
-    coding_template["integration_mechanism_summary"] = ""
-    coding_template["overall_balance"] = ""
-    coding_template["bps_typology"] = ""
-    coding_template["concept_definitions_present"] = ""
-    coding_template["psychological_concepts_fulltext"] = ""
-    coding_template["theoretical_frameworks_fulltext"] = ""
-    coding_template["conceptual_problems_fulltext"] = ""
-    coding_template["integration_quotes_or_evidence"] = ""
-    coding_template["coder_id"] = ""
-    coding_template["coder_notes"] = ""
-    coding_template["adjudication_status"] = ""
+    coding_template = build_fulltext_coding_template(manifest_frame)
     write_csv(project_path("review_stages", "04_extraction", "forms", "stage3_fulltext_coding_template.csv"), coding_template)
+
+    # The operational codebook is rendered from the schema the pipeline runs, so
+    # the form, the coder's instructions, and the codebook cannot drift apart.
+    write_stage3_codebook()
 
     summary = {
         "stage3_candidates": len(manifest_frame),
