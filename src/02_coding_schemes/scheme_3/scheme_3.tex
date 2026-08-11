@@ -37,7 +37,7 @@
 \section*{Purpose}
 This scheme is the full-text deep coding framework for Stage 3 candidate reviews. It is applied as one uniform instrument to both planned reviews: the musculoskeletal chronic pain review and the neuropathic chronic pain review. The pain-condition family is the varying input that decides which records each review reads; the coding fields, value vocabularies, and anchors are identical across both tracks so the two reviews stay directly comparable.
 
-It does two things at once. It grades: how deeply each domain is treated, and how each pair of domains and the triad are integrated, on explicit ladders with a quoted passage behind every rung. And it extracts: the specific things a review names. That second half is the larger one, and it is what changed in this revision. Where the earlier generation recorded that a domain was present, this one records which biological, psychological, social, lifestyle, and existential factors carry it, what role each plays, and on the strength of which sentence.
+It does two things at once. It grades: how deeply each domain is treated, and how each pair of domains and the triad are integrated, on explicit ladders with a quoted passage behind every rung. And it extracts: the specific things a review names. The extraction half is the larger one. Recording that a domain is present is not a coding; recording which biological, psychological, social, lifestyle, and existential factors carry it, what role each plays, and on the strength of which sentence, is.
 
 Resolution is the point. A single article routinely yields between thirty and seventy extracted items: passages where the biopsychosocial label does work, factors per domain, psychological constructs with their definitional status, relations drawn between constructs, frameworks, instruments, conceptual problems, and quotable claims. Those items are the nodes and edges of the biopsychosocial ontology the synthesis builds, so they have to be nameable, countable, and traceable to a passage.
 
@@ -178,7 +178,7 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
   \item \textbf{\texttt{operational definition}} 
   \item \textbf{\texttt{unclear}} 
   \end{itemize}
-{\small This is the field that answers RQ1 as a distribution rather than as a single label. Collapsing a paper's usage into one function is exactly the flattening this revision removes.}
+{\small This is the field that answers RQ1 as a distribution rather than as a single label. A paper's usage collapsed into one function loses the pattern the review is looking for.}
 \item[\texttt{bps\_definition\_status}] How the paper handles the meaning of the model itself.
   \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]
   \item \textbf{\texttt{formally\_defined}} The paper states what the model means.
@@ -262,7 +262,7 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
 \end{description}
 
 \section*{D. Which Factors Carry Each Domain (the Ontology Nodes)}
-{\small\itshape The heart of the revision. A coverage grade says how much of a domain a review carries; these lists say what it carries. Each item holds the review's own label, an anchor onto the project ontology where one fits, the role the factor plays in the paper's account, and the passage behind it. Psychological constructs are recorded in section G instead, which carries the extra definitional fields RQ3 needs, so no factor is ever written twice.}\par\smallskip
+{\small\itshape The core of the extraction layer. A coverage grade says how much of a domain a review carries; these lists say what it carries. Each item holds the review's own label, an anchor onto the project ontology where one fits, the role the factor plays in the paper's account, and the passage behind it. Psychological constructs are recorded in section G instead, which carries the extra definitional fields RQ3 needs, so no factor is ever written twice.}\par\smallskip
 \begin{description}
 \item[\texttt{biological\_factors}] Every biological factor the paper names. \textit{(extraction list; max 12 items)}
   {\small\itshape Fields inside each item:}
@@ -347,7 +347,7 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
   \item \textbf{\texttt{section\_located}} Where the passage appears. {\small \textit{Values:} abstract, introduction, methods, results, discussion, conclusion, table or figure, other, unclear}
   \item \textbf{\texttt{evidence\_basis}} What the claim rests on. {\small \textit{Values:} asserted, theorized, empirically\_supported, empirically\_contested, cited\_from\_other\_work, clinical\_observation, other, unclear}
   \end{itemize}
-{\small Naming both ends of the link is the single largest gain in this revision. It lets the synthesis ask which specific factors this literature connects, rather than only how often it connects domains, and it makes two coders' integration claims comparable as edges rather than as counts.}
+{\small Naming both ends of the link is what makes these items usable as an ontology. It lets the synthesis ask which specific factors this literature connects, rather than only how often it connects domains, and it makes two coders' integration claims comparable as edges rather than as counts.}
 \item[\texttt{integration\_mechanism\_summary}] At most 90 words, in the coder's words: the cross-domain pathways this paper actually proposes. Written as none proposed when the paper proposes none. \textit{(free text)}
 \end{description}
 
@@ -376,7 +376,7 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
 \end{description}
 
 \section*{G. Psychological Concepts, Their Relations, Frameworks, and Measures (RQ3)}
-{\small\itshape The registration asks for concept names, whether definitions are provided and their text, the theoretical frameworks invoked, and the hierarchical and semantic relationships between concepts. All four are coded here as named items rather than as delimited strings, and the relations list is new in this revision.}\par\smallskip
+{\small\itshape The registration asks for concept names, whether definitions are provided and their text, the theoretical frameworks invoked, and the hierarchical and semantic relationships between concepts. All four are coded here as named items rather than as delimited strings, so a concept, its definition, and its relations to other concepts stay attached to one another.}\par\smallskip
 \begin{description}
 \item[\texttt{concept\_definitions\_present}] Whether the review defines the psychological constructs it uses.
   \begin{itemize}[leftmargin=1.3em,itemsep=2pt,topsep=2pt]

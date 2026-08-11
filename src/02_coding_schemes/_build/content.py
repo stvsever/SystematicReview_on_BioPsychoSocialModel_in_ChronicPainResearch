@@ -910,11 +910,11 @@ SCHEME_3 = {
                 "treated, and how each pair of domains and the triad are "
                 "integrated, on explicit ladders with a quoted passage behind "
                 "every rung. And it extracts: the specific things a review names. "
-                "That second half is the larger one, and it is what changed in "
-                "this revision. Where the earlier generation recorded that a "
-                "domain was present, this one records which biological, "
+                "The extraction half is the larger one. Recording that a domain is "
+                "present is not a coding; recording which biological, "
                 "psychological, social, lifestyle, and existential factors carry "
-                "it, what role each plays, and on the strength of which sentence.",
+                "it, what role each plays, and on the strength of which sentence, "
+                "is.",
                 "Resolution is the point. A single article routinely yields "
                 "between thirty and seventy extracted items: passages where the "
                 "biopsychosocial label does work, factors per domain, "
@@ -1184,9 +1184,9 @@ SCHEME_3 = {
                       values=[v(value, "") for value in BPS_FUNCTION_VALUES],
                       kind="multi-label list", cap=6,
                       notes="This is the field that answers RQ1 as a distribution "
-                            "rather than as a single label. Collapsing a paper's "
-                            "usage into one function is exactly the flattening "
-                            "this revision removes."),
+                            "rather than as a single label. A paper's usage "
+                            "collapsed into one function loses the pattern the "
+                            "review is looking for."),
                 field("bps_definition_status",
                       "How the paper handles the meaning of the model itself.",
                       values=[
@@ -1320,8 +1320,9 @@ SCHEME_3 = {
             "title": "D. Which Factors Carry Each Domain (the Ontology Nodes)",
             "feedback": True,
             "field_feedback": True,
-            "intro": "The heart of the revision. A coverage grade says how much of "
-                     "a domain a review carries; these lists say what it carries. "
+            "intro": "The core of the extraction layer. A coverage grade says how "
+                     "much of a domain a review carries; these lists say what it "
+                     "carries. "
                      "Each item holds the review's own label, an anchor onto the "
                      "project ontology where one fits, the role the factor plays "
                      "in the paper's account, and the passage behind it. "
@@ -1460,8 +1461,8 @@ SCHEME_3 = {
                           sub("evidence_basis", "What the claim rests on.",
                               values=EVIDENCE_BASIS_VALUES),
                       ],
-                      notes="Naming both ends of the link is the single largest "
-                            "gain in this revision. It lets the synthesis ask "
+                      notes="Naming both ends of the link is what makes these items "
+                            "usable as an ontology. It lets the synthesis ask "
                             "which specific factors this literature connects, "
                             "rather than only how often it connects domains, and "
                             "it makes two coders' integration claims comparable as "
@@ -1530,8 +1531,8 @@ SCHEME_3 = {
                      "are provided and their text, the theoretical frameworks "
                      "invoked, and the hierarchical and semantic relationships "
                      "between concepts. All four are coded here as named items "
-                     "rather than as delimited strings, and the relations list is "
-                     "new in this revision.",
+                     "rather than as delimited strings, so a concept, its definition, and "
+                     "its relations to other concepts stay attached to one another.",
             "fields": [
                 field("concept_definitions_present",
                       "Whether the review defines the psychological constructs it "
