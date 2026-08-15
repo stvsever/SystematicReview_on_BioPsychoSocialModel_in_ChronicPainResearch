@@ -60,7 +60,12 @@ from bps_review.fulltext.config import (
     RELIABILITY_FIELDS,
     SPACE_BY_NAME,
 )
-from bps_review.graph.builder import FIELD_GROUPS, graph_payload
+from bps_review.graph.builder import (
+    BPS_ENTITY_SUBGROUPS,
+    FIELD_GROUPS,
+    FieldView,
+    graph_payload,
+)
 from bps_review.pilot.analysis.metrics import (
     cohen_kappa,
     fleiss_kappa,
@@ -736,9 +741,85 @@ def test_graph_payload_is_a_connected_tree_down_to_the_extracted_item():
     assert concept_items[0]["detail"]["Normalized label"] == "catastrophizing"
 
 
+def _grouped_columns() -> set[str]:
+    columns: set[str] = set()
+    for spec in FIELD_GROUPS.values():
+        branches = spec.values() if isinstance(spec, dict) else [spec]
+        for views in branches:
+            for view in views:
+                columns.add(view.column if isinstance(view, FieldView) else view)
+    return columns
+
+
 def test_graph_groups_only_name_fields_the_scheme_produces():
     """Grouping must not drift away from the schema it lays out."""
     row = serialize_row(FullTextCodingRecord.model_validate(_raw_payload()), "vendor/model-x")
     produced = set(row) | {"model_order", "model_label", "provider", "model_id"}
-    grouped = {field for fields in FIELD_GROUPS.values() for field in fields}
+    grouped = _grouped_columns()
     assert grouped <= produced, f"grouped but never produced: {sorted(grouped - produced)}"
+
+
+def test_the_entity_layer_covers_the_triad_and_what_lies_beyond_it():
+    """Five entities: the three domains, plus the two the registration adds."""
+    assert list(BPS_ENTITY_SUBGROUPS) == [
+        "Biological factors",
+        "Psychological factors",
+        "Social factors",
+        "Lifestyle factors",
+        "Spiritual and existential factors",
+    ]
+    # Each entity owns at least one field, and every view reads a real column.
+    row = serialize_row(FullTextCodingRecord.model_validate(_raw_payload()), "vendor/model-x")
+    for entity, views in BPS_ENTITY_SUBGROUPS.items():
+        assert views, f"{entity} has no coding fields"
+        for view in views:
+            assert view.column in row, f"{entity} reads {view.column}, which the scheme never writes"
+
+
+def test_a_list_holding_several_entities_is_split_into_one_node_each():
+    """The domain evidence is one column carrying all three domains at once.
+
+    Read as a single node it would put the biological evidence, the psychological
+    evidence, and the social evidence in one undifferentiated list, which is the
+    distinction this review exists to make.
+    """
+    corpus_df, long_df, items_df = _graph_frames()
+    evidence = json.dumps([
+        {"domain": "biological", "constructs_named": ["central sensitization"],
+         "evidence_verbatim": "a bio passage"},
+        {"domain": "social", "constructs_named": ["work support"],
+         "evidence_verbatim": "a social passage"},
+    ])
+    long_df = long_df.assign(domain_evidence=evidence)
+    payload = graph_payload(corpus_df, long_df, items_df)
+    by_type = lambda kind: [node for node in payload["nodes"] if node["type"] == kind]  # noqa: E731
+
+    entities = {node["label"] for node in by_type("subgroup")}
+    assert {"Biological factors", "Social factors", "Psychological factors"} <= entities
+
+    fields = {node["field"] for node in by_type("field")}
+    assert "domain_evidence__biological" in fields and "domain_evidence__social" in fields
+    # nothing was coded as psychological evidence, so that slice is dropped rather
+    # than rendered as an empty node
+    assert "domain_evidence__psychological" not in fields
+    assert "domain_evidence" not in fields
+
+    for slice_key, domain in (("domain_evidence__biological", "biological"),
+                              ("domain_evidence__social", "social")):
+        items = [node for node in by_type("item") if node["field"] == slice_key]
+        assert items, f"{slice_key} carries no items"
+        assert {node["detail"]["domain"] for node in items} == {domain}
+
+
+def test_every_node_below_an_entity_hangs_off_that_entity():
+    corpus_df, long_df, items_df = _graph_frames()
+    payload = graph_payload(corpus_df, long_df, items_df)
+    by_id = {node["id"]: node for node in payload["nodes"]}
+    parent = {edge["target"]: edge["source"] for edge in payload["edges"]}
+    for node in payload["nodes"]:
+        if node["type"] != "field" or not node.get("field_subgroup"):
+            continue
+        holder = by_id[parent[node["id"]]]
+        assert holder["type"] == "subgroup"
+        assert holder["label"] == node["field_subgroup"]
+        assert by_id[parent[holder["id"]]]["type"] == "group"

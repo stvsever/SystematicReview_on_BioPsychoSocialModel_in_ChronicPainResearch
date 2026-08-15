@@ -7,22 +7,35 @@ table, the item table, and the quote-verification table into one browsable
 hierarchy, so a reviewer can walk from the scheme itself down to the sentence a
 judgement rests on.
 
-The hierarchy has six levels.
+The hierarchy is
 
-    run -> field group -> coding field -> provider -> article coding -> item
+    run -> field group -> [entity] -> coding field -> provider -> article -> item
 
-The first view shows only the scheme: the field groups and every canonical
-coding field of scheme 3. Providers, articles, and extracted items are complete
-descendants of that overview, expanded on demand, so the opening picture stays a
-picture of the coding scheme rather than of a few hundred coded cells.
+where the entity level appears only under "Biopsychosocial entities". That group
+is the one place where the coded fields are not siblings: the biological, the
+psychological, the social, the lifestyle, and the spiritual or existential
+entities are five different kinds of thing, and each carries several fields, so
+each gets a node of its own and the fields hang beneath it.
+
+Two of the scheme's lists hold more than one entity at a time. The domain
+evidence is a single list covering all three domains, and the beyond-the-triad
+factors are a single list covering lifestyle, existential, and environmental
+factors together. Both are therefore split into item-filtered views, so the
+biological evidence appears under the biological entity rather than in one
+undifferentiated list. See ``FieldView``.
+
+The first view shows only the scheme: the field groups, the entities, and every
+canonical coding field of scheme 3. Providers, articles, and extracted items are
+complete descendants of that overview, expanded on demand, so the opening picture
+stays a picture of the coding scheme rather than of a few hundred coded cells.
 
 Grouping is the one part of this module that is specific to scheme 3. Fields are
 laid out along the review's own questions (how the biopsychosocial label is used,
-how deep each domain goes, which factors carry it, how the domains are linked,
-which concepts are defined and how, what is measured, what is wrong with it),
-and any field the table carries that this file does not name still appears, under
-"Other coded fields". That keeps the surface correct across scheme revisions:
-a new coded field shows up without a code change, and a retired one disappears.
+how deep each domain goes, what the model is made of, how the domains are linked,
+what is measured, what is conceptually wrong with it), and any column the table
+carries that this file does not name still appears, under "Other coded fields".
+That keeps the surface correct across scheme revisions: a new coded field shows
+up without a code change, and a retired one disappears.
 """
 
 import colorsys
@@ -31,6 +44,7 @@ import json
 import math
 import shutil
 from collections import OrderedDict
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -43,7 +57,109 @@ from bps_review.fulltext.config import FIELD_LABELS
 from bps_review.utils.io import ensure_parent
 
 
-FIELD_GROUPS: OrderedDict[str, list[str]] = OrderedDict(
+@dataclass(frozen=True)
+class FieldView:
+    """One coding-field node: a column, optionally restricted to some of its items.
+
+    Most field nodes are a whole column. A few are a slice of one: the domain
+    evidence is a single list carrying all three domains, and the beyond-the-triad
+    factors are a single list carrying lifestyle, existential, and environmental
+    factors together. Reading those as one node each would hide exactly the
+    distinction this review is about, so a view can carry a filter and appear as
+    its own node under the entity it belongs to.
+    """
+
+    column: str
+    label: str = ""
+    key: str = ""
+    filter_key: str = ""
+    filter_values: tuple[str, ...] = ()
+
+    def resolved_key(self) -> str:
+        return self.key or self.column
+
+    def resolved_label(self) -> str:
+        return self.label or FIELD_LABELS.get(self.column, self.column.replace("_", " ").capitalize())
+
+
+def _domain_slice(domain: str, label: str) -> FieldView:
+    """The domain-evidence items for one domain: the passage and the constructs named."""
+    return FieldView(
+        column="domain_evidence",
+        label=label,
+        key=f"domain_evidence__{domain.replace(' ', '_')}",
+        filter_key="domain",
+        filter_values=(domain,),
+    )
+
+
+def _beyond_triad_slice(domain: str, label: str) -> FieldView:
+    """Factors of one kind, out of the single list that holds everything beyond the triad."""
+    return FieldView(
+        column="other_domain_factors",
+        label=label,
+        key=f"other_domain_factors__{domain.replace(' ', '_')}",
+        filter_key="domain",
+        filter_values=(domain,),
+    )
+
+
+# The entity layer: what the review says the biopsychosocial model is made of.
+#
+# This is the one group that carries a level of its own between the group and the
+# coding field, because it is the one place where the coded fields are not
+# siblings. The psychological constructs, the biological factors, the social
+# factors, and the two domains the registration names beyond the triad are five
+# different kinds of entity, and each carries several fields: the things named,
+# what the review says they mean, how deeply that domain is treated, and the
+# passage carrying it. Flattening them into one ring would put a concept
+# definition next to a social factor and imply they are the same kind of thing.
+BPS_ENTITY_SUBGROUPS: OrderedDict[str, list[FieldView]] = OrderedDict(
+    [
+        (
+            "Biological factors",
+            [
+                FieldView("biological_factors"),
+                _domain_slice("biological", "Biological evidence and constructs"),
+            ],
+        ),
+        (
+            "Psychological factors",
+            [
+                FieldView("psychological_concepts"),
+                FieldView("concept_definitions_present"),
+                FieldView("concept_relations"),
+                _domain_slice("psychological", "Psychological evidence and constructs"),
+            ],
+        ),
+        (
+            "Social factors",
+            [
+                FieldView("social_factors"),
+                _domain_slice("social", "Social evidence and constructs"),
+            ],
+        ),
+        (
+            "Lifestyle factors",
+            [
+                _beyond_triad_slice("lifestyle", "Lifestyle factors named"),
+                FieldView("coverage_lifestyle"),
+            ],
+        ),
+        (
+            "Spiritual and existential factors",
+            [
+                _beyond_triad_slice("spiritual or existential", "Existential factors named"),
+                FieldView("coverage_spiritual_existential"),
+                _beyond_triad_slice("environmental", "Environmental factors named"),
+            ],
+        ),
+    ]
+)
+
+
+# group -> either a flat list of columns, or an ordered map of subgroups.
+FIELD_GROUPS: OrderedDict[str, Any] = OrderedDict(
     [
         (
             "Article context",
@@ -79,19 +195,9 @@ FIELD_GROUPS: OrderedDict[str, list[str]] = OrderedDict(
         ),
         (
             "Domain coverage",
-            [
-                "domain_coverage_bio",
-                "domain_coverage_psych",
-                "domain_coverage_social",
-                "coverage_lifestyle",
-                "coverage_spiritual_existential",
-                "domain_evidence",
-            ],
+            ["domain_coverage_bio", "domain_coverage_psych", "domain_coverage_social"],
         ),
-        (
-            "Named factors",
-            ["biological_factors", "social_factors", "other_domain_factors"],
-        ),
+        ("Biopsychosocial entities", BPS_ENTITY_SUBGROUPS),
         (
             "Integration",
             [
@@ -106,10 +212,6 @@ FIELD_GROUPS: OrderedDict[str, list[str]] = OrderedDict(
         (
             "Typology and balance",
             ["overall_balance", "bps_typology", "derived_typology", "typology_matches_derived"],
-        ),
-        (
-            "Psychological concepts",
-            ["concept_definitions_present", "psychological_concepts", "concept_relations"],
         ),
         (
             "Frameworks and instruments",
@@ -210,14 +312,14 @@ FIELD_GROUPS: OrderedDict[str, list[str]] = OrderedDict(
     ]
 )
 
+
 GROUP_COLORS = {
     "Article context": "#5ca6c9",
     "Biopsychosocial label": "#9677d6",
     "Domain coverage": "#6daee8",
-    "Named factors": "#42c1a1",
+    "Biopsychosocial entities": "#42c1a1",
     "Integration": "#ee9b5c",
     "Typology and balance": "#e27ba6",
-    "Psychological concepts": "#8f95e8",
     "Frameworks and instruments": "#d8bb55",
     "Conceptual problems": "#eb6f75",
     "Synthesis hooks": "#58b6b2",
@@ -225,6 +327,16 @@ GROUP_COLORS = {
     "Eligibility and yield": "#cf8f6a",
     "Counts and provenance": "#8793a6",
     "Other coded fields": "#9aa5b1",
+}
+
+# One colour per entity, so a biological factor reads as biological wherever it
+# appears. These are the domain colours the static figures already use.
+SUBGROUP_COLORS = {
+    "Biological factors": "#0e8f80",
+    "Psychological factors": "#6d5ae0",
+    "Social factors": "#d98016",
+    "Lifestyle factors": "#7fae4a",
+    "Spiritual and existential factors": "#a8809f",
 }
 
 ARTICLE_COLORS = [
@@ -295,23 +407,64 @@ def _field_label(field: str) -> str:
     return FIELD_LABELS.get(field, field.replace("_", " ").capitalize())
 
 
-def _group_lookup(columns: list[str]) -> tuple[dict[str, str], OrderedDict[str, list[str]]]:
-    lookup: dict[str, str] = {}
-    groups: OrderedDict[str, list[str]] = OrderedDict()
-    for group, fields in FIELD_GROUPS.items():
-        present = []
-        for field in fields:
-            if field in columns and field not in lookup:
-                lookup[field] = group
-                present.append(field)
-        if present:
-            groups[group] = present
-    remaining = [field for field in columns if field not in IDENTITY_COLUMNS and field not in lookup]
+def _view_has_items(view: FieldView, rows: list[dict[str, Any]]) -> bool:
+    """Whether a filtered view matches anything at all in this run.
+
+    An unfiltered column always earns its node: a field nobody filled is itself a
+    finding. A filtered slice with no matching item is not a finding, it is an
+    empty subdivision of a list, so it is dropped.
+    """
+    if not view.filter_key:
+        return True
+    return any(
+        _filtered_items(_parse_structured(row.get(view.column, "")), view)
+        for row in rows
+    )
+
+
+def _resolve_groups(
+    columns: list[str], rows: list[dict[str, Any]]
+) -> "OrderedDict[str, list[tuple[str, list[FieldView]]]]":
+    """The grouping this run actually supports, as group -> [(subgroup, views)].
+
+    A subgroup name of "" means the views hang directly off the group, which is
+    the shape of every group except the entity layer. Columns the table carries
+    and no group names still reach the reviewer, under "Other coded fields", so a
+    scheme revision can never silently drop a field from the review surface.
+    """
+    available = set(columns)
+    claimed: set[str] = set()
+    groups: "OrderedDict[str, list[tuple[str, list[FieldView]]]]" = OrderedDict()
+
+    def keep(views: list[FieldView]) -> list[FieldView]:
+        return [
+            view for view in views
+            if view.column in available and _view_has_items(view, rows)
+        ]
+
+    for group, spec in FIELD_GROUPS.items():
+        branches: list[tuple[str, list[FieldView]]] = []
+        if isinstance(spec, dict):
+            for subgroup, views in spec.items():
+                present = keep(views)
+                if present:
+                    branches.append((subgroup, present))
+                    claimed.update(view.column for view in present)
+        else:
+            present = keep([FieldView(column) for column in spec if column not in claimed])
+            if present:
+                branches.append(("", present))
+                claimed.update(view.column for view in present)
+        if branches:
+            groups[group] = branches
+
+    remaining = [
+        column for column in columns
+        if column not in IDENTITY_COLUMNS and column not in claimed
+    ]
     if remaining:
-        groups["Other coded fields"] = remaining
-        for field in remaining:
-            lookup[field] = "Other coded fields"
-    return lookup, groups
+        groups["Other coded fields"] = [("", [FieldView(column) for column in remaining])]
+    return groups
 
 
 def _parse_structured(value: Any) -> list[dict[str, Any]]:
@@ -325,6 +478,16 @@ def _parse_structured(value: Any) -> list[dict[str, Any]]:
     except json.JSONDecodeError:
         return []
     return [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
+
+
+def _filtered_items(items: list[dict[str, Any]], view: FieldView) -> list[dict[str, Any]]:
+    """The items of one cell that belong to this view."""
+    if not view.filter_key:
+        return items
+    return [
+        item for item in items
+        if str(item.get(view.filter_key, "") or "").strip() in view.filter_values
+    ]
 
 
 def _flat_items(value: Any) -> list[str]:
@@ -356,9 +519,14 @@ def _short(value: Any, limit: int = 76) -> str:
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "..."
 
 
-def _field_color(group: str, field: str) -> str:
+def _branch_color(group: str, subgroup: str) -> str:
+    """The palette a field varies within: its entity when it has one, else its group."""
+    return SUBGROUP_COLORS.get(subgroup) or GROUP_COLORS.get(group, GROUP_COLORS["Other coded fields"])
+
+
+def _field_color(group: str, field: str, subgroup: str = "") -> str:
     """Vary hue, saturation, and lightness within a stable field-group palette."""
-    base = GROUP_COLORS[group].lstrip("#")
+    base = _branch_color(group, subgroup).lstrip("#")
     red, green, blue = (int(base[index : index + 2], 16) / 255 for index in (0, 2, 4))
     hue, lightness, saturation = colorsys.rgb_to_hls(red, green, blue)
     digest = hashlib.sha1(field.encode("utf-8")).digest()
@@ -386,7 +554,8 @@ def graph_payload(
         raise ValueError(f"Coding table is missing required columns: {sorted(missing)}")
 
     columns = list(long_df.columns)
-    _, groups = _group_lookup(columns)
+    rows = long_df.sort_values(["record_id", "model_order"]).to_dict(orient="records")
+    groups = _resolve_groups(columns, rows)
     corpus = {
         str(row["record_id"]): {key: _json_value(value) for key, value in row.items()}
         for row in corpus_df.to_dict(orient="records")
@@ -459,8 +628,6 @@ def graph_payload(
     )
 
     article_ids = sorted(long_df["record_id"].astype(str).unique())
-    coding_columns = [column for column in columns if column not in IDENTITY_COLUMNS]
-    rows = long_df.sort_values(["record_id", "model_order"]).to_dict(orient="records")
     rows_by_provider = {
         str(provider["model_label"]): [
             row for row in rows if str(row.get("model_label", "")) == str(provider["model_label"])
@@ -479,30 +646,32 @@ def graph_payload(
     # The browser opens on one canonical overview of the scheme. Article and
     # provider-specific values remain complete descendants, but they do not
     # duplicate the visible field layer once per paper.
-    for group_index, (group, fields) in enumerate(groups.items()):
-        group_fields = [field for field in fields if field in coding_columns]
-        if not group_fields:
-            continue
+    for group_index, (group, branches) in enumerate(groups.items()):
+        group_views = [view for _, views in branches for view in views]
         recorded_cells = sum(
-            bool(str(row.get(field, "") or "").strip())
+            bool(str(row.get(view.column, "") or "").strip())
             for row in rows
-            for field in group_fields
+            for view in group_views
         )
+        has_subgroups = any(name for name, _ in branches)
         group_node = add_node(
             label=group,
             type="group",
             level=1,
             size=18,
-            color=GROUP_COLORS[group],
+            color=GROUP_COLORS.get(group, GROUP_COLORS["Other coded fields"]),
             article_id="",
             provider="",
             field="",
             field_group=group,
-            value=f"{len(group_fields)} coding fields",
+            field_subgroup="",
+            value=(f"{len(branches)} entities, {len(group_views)} coding fields"
+                   if has_subgroups else f"{len(group_views)} coding fields"),
             detail={
                 "Field group": group,
-                "Coding fields": [_field_label(field) for field in group_fields],
-                "Number of fields": len(group_fields),
+                **({"Entities": [name for name, _ in branches]} if has_subgroups else {}),
+                "Coding fields": [view.resolved_label() for view in group_views],
+                "Number of fields": len(group_views),
                 "Recorded coding cells": recorded_cells,
                 "Available article-provider codings": int(len(rows)),
             },
@@ -510,146 +679,212 @@ def graph_payload(
         )
         add_edge(root_id, group_node, "contains_group")
 
-        for field_index, field in enumerate(group_fields):
-            label = _field_label(field)
-            color = _field_color(group, field)
-            populated = sum(bool(str(row.get(field, "") or "").strip()) for row in rows)
-            extracted_count = 0
-            if field in STRUCTURED_FIELDS:
-                extracted_count = sum(len(_parse_structured(row.get(field, ""))) for row in rows)
-            elif field in FLAT_LIST_FIELDS:
-                extracted_count = sum(len(_flat_items(row.get(field, ""))) for row in rows)
-            field_node = add_node(
-                label=label,
-                type="field",
-                level=2,
-                size=9,
-                color=color,
-                article_id="",
-                provider="",
-                field=field,
-                field_group=group,
-                value=f"{populated} recorded values",
-                detail={
-                    "Coding field": label,
-                    "Field key": field,
-                    "Field group": group,
-                    "Article-provider codings": int(len(rows)),
-                    "Recorded values": populated,
-                    "Extracted entries": extracted_count,
-                    "Value type": "structured extraction list" if field in STRUCTURED_FIELDS
-                    else "open list" if field in FLAT_LIST_FIELDS else "coded value",
-                },
-                group_index=group_index,
-                field_index=field_index,
-                sibling_count=len(group_fields),
-            )
-            add_edge(group_node, field_node, "contains_field")
-
-            for provider_index, provider_info in enumerate(providers):
-                model_label = str(provider_info["model_label"])
-                provider = str(provider_info["provider"])
-                provider_rows = rows_by_provider[model_label]
-                provider_node = add_node(
-                    label=f"{model_label} | {provider}",
-                    type="provider",
-                    level=3,
-                    size=8.2,
-                    color=provider_colors[model_label],
+        field_index = 0
+        for branch_index, (subgroup, views) in enumerate(branches):
+            parent_id = group_node
+            if subgroup:
+                subgroup_cells = sum(
+                    bool(str(row.get(view.column, "") or "").strip())
+                    for row in rows
+                    for view in views
+                )
+                parent_id = add_node(
+                    label=subgroup,
+                    type="subgroup",
+                    level=2,
+                    size=12.5,
+                    color=_branch_color(group, subgroup),
                     article_id="",
-                    article_title="",
-                    provider=model_label,
-                    provider_name=provider,
+                    provider="",
+                    field="",
+                    field_group=group,
+                    field_subgroup=subgroup,
+                    value=f"{len(views)} coding fields",
+                    detail={
+                        "Entity": subgroup,
+                        "Field group": group,
+                        "Coding fields": [view.resolved_label() for view in views],
+                        "Number of fields": len(views),
+                        "Recorded coding cells": subgroup_cells,
+                        "Available article-provider codings": int(len(rows)),
+                    },
+                    group_index=group_index,
+                    branch_index=branch_index,
+                )
+                add_edge(group_node, parent_id, "contains_subgroup")
+
+            for view in views:
+                field = view.resolved_key()
+                column = view.column
+                label = view.resolved_label()
+                color = _field_color(group, field, subgroup)
+                structured_column = column in STRUCTURED_FIELDS
+                flat_column = column in FLAT_LIST_FIELDS
+
+                def items_of(row: dict[str, Any]) -> list[dict[str, Any]]:
+                    return _filtered_items(_parse_structured(row.get(column, "")), view)
+
+                if structured_column:
+                    populated = sum(1 for row in rows if items_of(row))
+                    extracted_count = sum(len(items_of(row)) for row in rows)
+                else:
+                    populated = sum(bool(str(row.get(column, "") or "").strip()) for row in rows)
+                    extracted_count = (sum(len(_flat_items(row.get(column, ""))) for row in rows)
+                                       if flat_column else 0)
+                restriction = (
+                    f"{view.filter_key} is {' or '.join(view.filter_values)}"
+                    if view.filter_key else ""
+                )
+                field_node = add_node(
+                    label=label,
+                    type="field",
+                    level=3 if subgroup else 2,
+                    size=9,
+                    color=color,
+                    article_id="",
+                    provider="",
                     field=field,
                     field_group=group,
-                    value=str(provider_info.get("model_id", "")),
+                    field_subgroup=subgroup,
+                    value=f"{populated} recorded values",
                     detail={
-                        "Provider": {
-                            "Model label": model_label,
-                            "Provider": provider,
-                            "Model ID": provider_info.get("model_id", ""),
-                        },
                         "Coding field": label,
+                        "Field key": field,
+                        "Coded column": column,
+                        **({"Restricted to items where": restriction} if restriction else {}),
                         "Field group": group,
-                        "Available article codings": len(provider_rows),
+                        **({"Entity": subgroup} if subgroup else {}),
+                        "Article-provider codings": int(len(rows)),
+                        "Recorded values": populated,
+                        "Extracted entries": extracted_count,
+                        "Value type": "structured extraction list" if structured_column
+                        else "open list" if flat_column else "coded value",
                     },
-                    provider_index=provider_index,
+                    group_index=group_index,
+                    branch_index=branch_index,
+                    field_index=field_index,
+                    sibling_count=len(views),
                 )
-                add_edge(field_node, provider_node, "provider_branch")
+                add_edge(parent_id, field_node, "contains_field")
+                field_index += 1
 
-                for article_index, row in enumerate(provider_rows):
-                    record_id = str(row.get("record_id", ""))
-                    article = corpus.get(record_id, {"record_id": record_id})
-                    title = str(article.get("title") or record_id)
-                    value = _json_value(row.get(field, ""))
-                    structured = _parse_structured(value) if field in STRUCTURED_FIELDS else []
-                    flat = _flat_items(value) if field in FLAT_LIST_FIELDS else []
-                    if structured:
-                        summary = f"{len(structured)} extracted entries"
-                        rendered_value: Any = structured
-                    elif flat:
-                        summary = " | ".join(flat)
-                        rendered_value = flat
-                    else:
-                        summary = str(value or "Not recorded")
-                        rendered_value = value
-                    article_node = add_node(
-                        label=f"{record_id} | {_short(title, 48)}: {_short(summary, 42)}",
-                        type="article",
-                        level=4,
-                        size=5.7,
-                        color=article_colors[record_id],
-                        article_id=record_id,
-                        article_title=title,
+                for provider_index, provider_info in enumerate(providers):
+                    model_label = str(provider_info["model_label"])
+                    provider = str(provider_info["provider"])
+                    provider_rows = rows_by_provider[model_label]
+                    provider_node = add_node(
+                        label=f"{model_label} | {provider}",
+                        type="provider",
+                        level=(4 if subgroup else 3),
+                        size=8.2,
+                        color=provider_colors[model_label],
+                        article_id="",
+                        article_title="",
                         provider=model_label,
                         provider_name=provider,
                         field=field,
                         field_group=group,
-                        value=value,
+                        field_subgroup=subgroup,
+                        value=str(provider_info.get("model_id", "")),
                         detail={
-                            "Article": {"Record ID": record_id, "Title": title},
                             "Provider": {
                                 "Model label": model_label,
                                 "Provider": provider,
-                                "Model ID": row.get("model_id", ""),
+                                "Model ID": provider_info.get("model_id", ""),
                             },
                             "Coding field": label,
                             "Field group": group,
-                            "Recorded value": rendered_value,
+                            **({"Entity": subgroup} if subgroup else {}),
+                            "Available article codings": len(provider_rows),
                         },
-                        article_index=article_index,
+                        provider_index=provider_index,
                     )
-                    add_edge(provider_node, article_node, "article_coding")
+                    add_edge(field_node, provider_node, "provider_branch")
 
-                    item_values: list[tuple[str, Any]] = []
-                    if structured:
-                        for index, item in enumerate(structured):
-                            detail = dict(item)
-                            detail.update(item_metadata.get((record_id, model_label, field, index), {}))
-                            quote_key = schema.ITEM_QUOTE_KEY.get(field, "")
-                            quote = str(item.get(quote_key, "")) if quote_key else ""
-                            detail.update(verification_metadata.get((record_id, model_label, field, quote), {}))
-                            item_values.append((_item_label(field, item, index), detail))
-                    elif flat:
-                        item_values = [(item, {"Value": item}) for item in flat]
-                    for item_index, (item_label, item_detail) in enumerate(item_values):
-                        item_node = add_node(
-                            label=_short(item_label, 88),
-                            type="item",
-                            level=5,
-                            size=3.8,
-                            color=color,
+                    for article_index, row in enumerate(provider_rows):
+                        record_id = str(row.get("record_id", ""))
+                        article = corpus.get(record_id, {"record_id": record_id})
+                        title = str(article.get("title") or record_id)
+                        value = _json_value(row.get(column, ""))
+                        structured = items_of(row) if structured_column else []
+                        flat = _flat_items(value) if flat_column else []
+                        if structured:
+                            summary = f"{len(structured)} extracted entries"
+                            rendered_value: Any = _json_value(structured)
+                        elif flat:
+                            summary = " | ".join(flat)
+                            rendered_value = flat
+                        elif structured_column:
+                            summary = "Not recorded"
+                            rendered_value = []
+                        else:
+                            summary = str(value or "Not recorded")
+                            rendered_value = value
+                        article_node = add_node(
+                            label=f"{record_id} | {_short(title, 48)}: {_short(summary, 42)}",
+                            type="article",
+                            level=(5 if subgroup else 4),
+                            size=5.7,
+                            color=article_colors[record_id],
                             article_id=record_id,
                             article_title=title,
                             provider=model_label,
                             provider_name=provider,
                             field=field,
                             field_group=group,
-                            value=item_label,
-                            detail=_json_value(item_detail),
-                            item_index=item_index,
+                            field_subgroup=subgroup,
+                            value=_json_value(rendered_value),
+                            detail={
+                                "Article": {"Record ID": record_id, "Title": title},
+                                "Provider": {
+                                    "Model label": model_label,
+                                    "Provider": provider,
+                                    "Model ID": row.get("model_id", ""),
+                                },
+                                "Coding field": label,
+                                "Field group": group,
+                                **({"Entity": subgroup} if subgroup else {}),
+                                "Recorded value": rendered_value,
+                            },
+                            article_index=article_index,
                         )
-                        add_edge(article_node, item_node, "extracts")
+                        add_edge(provider_node, article_node, "article_coding")
+
+                        item_values: list[tuple[str, Any]] = []
+                        if structured:
+                            all_items = _parse_structured(row.get(column, ""))
+                            for item in structured:
+                                # The item table is indexed by position in the
+                                # unfiltered list, so a slice has to look its
+                                # metadata up by that original index.
+                                index = all_items.index(item)
+                                detail = dict(item)
+                                detail.update(item_metadata.get((record_id, model_label, column, index), {}))
+                                quote_key = schema.ITEM_QUOTE_KEY.get(column, "")
+                                quote = str(item.get(quote_key, "")) if quote_key else ""
+                                detail.update(verification_metadata.get((record_id, model_label, column, quote), {}))
+                                item_values.append((_item_label(column, item, index), detail))
+                        elif flat:
+                            item_values = [(item, {"Value": item}) for item in flat]
+                        for item_index, (item_label, item_detail) in enumerate(item_values):
+                            item_node = add_node(
+                                label=_short(item_label, 88),
+                                type="item",
+                                level=(6 if subgroup else 5),
+                                size=3.8,
+                                color=color,
+                                article_id=record_id,
+                                article_title=title,
+                                provider=model_label,
+                                provider_name=provider,
+                                field=field,
+                                field_group=group,
+                                field_subgroup=subgroup,
+                                value=item_label,
+                                detail=_json_value(item_detail),
+                                item_index=item_index,
+                            )
+                            add_edge(article_node, item_node, "extracts")
 
     for node in nodes:
         searchable = [
@@ -672,6 +907,8 @@ def graph_payload(
             "n_codings": int(len(long_df)),
             "n_nodes": len(nodes),
             "n_edges": len(edges),
+            "n_field_groups": len(groups),
+            "n_coding_fields": sum(len(views) for branches in groups.values() for _, views in branches),
         },
         "nodes": nodes,
         "edges": edges,
@@ -694,20 +931,26 @@ def graph_payload(
                 }
                 for item in providers
             ],
+            # One panel section per branch. A group with an entity layer lists one
+            # section per entity, so the filter panel has the same shape as the
+            # graph and a reviewer can switch off "Social factors" as one thing.
             "field_groups": [
                 {
-                    "name": group,
-                    "color": GROUP_COLORS[group],
+                    "name": f"{group} \u00b7 {subgroup}" if subgroup else group,
+                    "group": group,
+                    "subgroup": subgroup,
+                    "color": _branch_color(group, subgroup),
                     "fields": [
                         {
-                            "id": field,
-                            "label": _field_label(field),
-                            "color": _field_color(group, field),
+                            "id": view.resolved_key(),
+                            "label": view.resolved_label(),
+                            "color": _field_color(group, view.resolved_key(), subgroup),
                         }
-                        for field in fields
+                        for view in views
                     ],
                 }
-                for group, fields in groups.items()
+                for group, branches in groups.items()
+                for subgroup, views in branches
             ],
         },
     }
@@ -754,7 +997,10 @@ def build_knowledge_graph(
         f"- Coding cells: {payload['meta']['n_codings']}\n"
         f"- Graph nodes: {payload['meta']['n_nodes']}\n"
         f"- Graph links: {payload['meta']['n_edges']}\n\n"
-        "The first view shows the field groups and all canonical scheme 3 coding fields. Double-click a "
+        "The first view shows the field groups, the biopsychosocial entities, and all canonical "
+        "scheme 3 coding fields. The entity level holds the biological, psychological, social, "
+        "lifestyle, and existential entities, each with its own coding fields, so the evidence for "
+        "one domain sits under that domain rather than in one undifferentiated list. Double-click a "
         "field or use its Explore button to reveal provider hubs with papers grouped beneath them, then "
         "expand an article coding to reveal extracted items. With one selected provider, papers connect "
         "directly to the field. Use Show all to render every selected layer. Use "

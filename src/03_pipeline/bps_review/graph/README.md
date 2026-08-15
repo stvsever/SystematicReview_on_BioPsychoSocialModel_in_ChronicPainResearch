@@ -32,14 +32,44 @@ works directly from `file://` in browsers that block local fetch requests.
 
 ## What the graph shows
 
-The hierarchy is run, field group, canonical coding field, provider, article
-coding, and extracted item. The initial radial overview shows only the scheme
-layer: the field groups of scheme 3 and every coding field inside them.
-Reviewers can expand a field to inspect provider hubs with their papers grouped
-beneath them, then expand an article coding to inspect its extracted items. With
-one selected provider, the redundant provider hub is omitted and its papers
-connect directly to the field. A separate Show all mode renders every selected
-layer at once.
+The hierarchy is
+
+```text
+run -> field group -> [entity] -> coding field -> provider -> article -> item
+```
+
+The initial radial overview shows only the scheme layer: the field groups of
+scheme 3, the entities, and every coding field inside them. Reviewers can expand
+a field to inspect provider hubs with their papers grouped beneath them, then
+expand an article coding to inspect its extracted items. With one selected
+provider, the redundant provider hub is omitted and its papers connect directly
+to the field. A separate Show all mode renders every selected layer at once.
+
+### The entity layer
+
+One group carries a level of its own, and it is the group the review is about.
+**Biopsychosocial entities** holds five entities, and each holds its own coding
+fields:
+
+| Entity | Coding fields |
+| --- | --- |
+| Biological factors | the named biological factors, and the biological evidence with the constructs carrying it |
+| Psychological factors | the psychological constructs, whether the review defines them, the relations drawn between them, and the psychological evidence |
+| Social factors | the named social factors, and the social evidence with its constructs |
+| Lifestyle factors | the lifestyle factors named beyond the triad, and how deeply lifestyle is covered |
+| Spiritual and existential factors | the existential and environmental factors named, and how deeply that domain is covered |
+
+That level exists because these fields are not siblings. A concept definition and
+a social factor are different kinds of thing, and one flat ring of coding fields
+says they are the same.
+
+Two of the scheme's lists hold more than one entity at a time. `domain_evidence`
+is a single list covering all three domains, and `other_domain_factors` a single
+list covering lifestyle, existential, and environmental factors together. Both
+are split into item-filtered views (`FieldView`), so the biological evidence
+appears as its own node under the biological entity rather than inside one
+undifferentiated list. A view whose filter matches nothing in a run is dropped
+rather than drawn as an empty node, so an older run shows exactly what it holds.
 
 Drill-downs retain the full scheme overview as a dimmed context, and selecting an
 extracted item highlights its uninterrupted path from the run root through group,
@@ -66,12 +96,14 @@ all clear manual node placement.
 ## Grouping is the only scheme-specific part
 
 `FIELD_GROUPS` in `builder.py` lays the coded fields out along the review's own
-questions: how the biopsychosocial label is used, how deep each domain goes,
-which factors carry it, how the domains are linked, which concepts are defined
-and how, what is measured, and what is conceptually wrong with it. Any column the
-coding table carries that the table does not name still appears, grouped under
-"Other coded fields", so a scheme revision never silently drops a field from the
-review surface.
+questions: how the biopsychosocial label is used, how deep each domain goes, what
+the model is made of, how the domains are linked, what is measured, and what is
+conceptually wrong with it. A group's value is either a flat list of columns or
+an ordered map of entities, which is what gives the entity layer its extra level.
+Any column the coding table carries that the table does not name still appears,
+grouped under "Other coded fields", so a scheme revision never silently drops a
+field from the review surface, and a test asserts the grouping can never name a
+field the scheme does not produce.
 
 ## Usage
 

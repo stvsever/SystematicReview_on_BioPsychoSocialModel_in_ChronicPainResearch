@@ -86,9 +86,13 @@ with no passage behind it is visible as such.
 
 `graph/` turns a coded run into a local, desktop-first knowledge graph: plain
 HTML, CSS, and JavaScript, no server and no network. The hierarchy is run, field
-group, coding field, provider, article coding, extracted item, so a reviewer can
-walk from the scheme itself down to the sentence one judgement rests on. See
-[`graph/README.md`](graph/README.md).
+group, entity, coding field, provider, article coding, extracted item, so a
+reviewer can walk from the scheme itself down to the sentence one judgement rests
+on. The entity level is what the review is about: **Biopsychosocial entities**
+holds the biological, psychological, social, lifestyle, and existential entities,
+each with its own coding fields, and the two lists that carry several entities at
+once are split so the biological evidence sits under biology rather than in one
+undifferentiated list. See [`graph/README.md`](graph/README.md).
 
 ## Running it
 

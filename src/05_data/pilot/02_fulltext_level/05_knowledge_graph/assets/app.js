@@ -140,12 +140,34 @@
     if (!root) return;
     positionNode(root, 0, 0);
 
-    const groupNodes = (children.get(root.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
-    const totalFields = Math.max(1, groupNodes.reduce((total, group) => total + (children.get(group.id) || []).length, 0));
+    // A group holds coding fields directly, or holds entities that hold them. The
+    // sector each group gets is proportional to its coding fields however deep
+    // they sit, and an entity node is parked on the mean angle of its own fields,
+    // between the group ring and the field ring.
+    function branchesOf(node) {
+      return (children.get(node.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
+    }
+
+    function leafFieldsOf(group) {
+      const leaves = [];
+      branchesOf(group).forEach((branch) => {
+        if (branch.type === "subgroup") {
+          branchesOf(branch).forEach((field) => leaves.push({ field, subgroup: branch }));
+        } else {
+          leaves.push({ field: branch, subgroup: null });
+        }
+      });
+      return leaves;
+    }
+
+    const groupNodes = branchesOf(root);
+    const leavesByGroup = new Map(groupNodes.map((group) => [group.id, leafFieldsOf(group)]));
+    const totalFields = Math.max(1, groupNodes.reduce(
+      (total, group) => total + leavesByGroup.get(group.id).length, 0));
     let angleCursor = -Math.PI / 2;
     groupNodes.forEach((group) => {
-      const fieldNodes = (children.get(group.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
-      const sector = Math.PI * 2 * fieldNodes.length / totalFields;
+      const leaves = leavesByGroup.get(group.id);
+      const sector = Math.PI * 2 * leaves.length / totalFields;
       const centerAngle = angleCursor + sector / 2;
       group.layoutAngle = centerAngle;
       const groupRadius = state.showAll ? 1800 : 330;
@@ -153,15 +175,21 @@
       const groupY = Math.sin(centerAngle) * groupRadius;
       positionNode(group, groupX, groupY);
       const padding = Math.min(0.06, sector * 0.12);
+      const subgroupAngles = new Map();
 
-      fieldNodes.forEach((field, fieldIndex) => {
-        const ratio = (fieldIndex + 0.5) / Math.max(1, fieldNodes.length);
+      leaves.forEach(({ field, subgroup }, fieldIndex) => {
+        const ratio = (fieldIndex + 0.5) / Math.max(1, leaves.length);
         const angle = angleCursor + padding + ratio * Math.max(0.01, sector - padding * 2);
         const radius = state.showAll ? 5000 : 760 + (fieldIndex % 2) * 86;
         field.layoutAngle = angle;
         const fieldX = Math.cos(angle) * radius;
         const fieldY = Math.sin(angle) * radius;
         positionNode(field, fieldX, fieldY);
+        if (subgroup) {
+          const seen = subgroupAngles.get(subgroup.id) || [];
+          seen.push(angle);
+          subgroupAngles.set(subgroup.id, seen);
+        }
 
         const providerNodes = (children.get(field.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
         const selectedProviderNodes = providerNodes.filter((provider) => state.selectedProviders.has(provider.provider));
@@ -209,6 +237,19 @@
             });
           });
         });
+      });
+
+      subgroupAngles.forEach((angles, subgroupId) => {
+        const subgroup = nodeById.get(subgroupId);
+        if (!subgroup) return;
+        const meanAngle = angles.reduce((total, value) => total + value, 0) / angles.length;
+        const subgroupRadius = state.showAll ? 3300 : 545;
+        subgroup.layoutAngle = meanAngle;
+        positionNode(
+          subgroup,
+          Math.cos(meanAngle) * subgroupRadius,
+          Math.sin(meanAngle) * subgroupRadius,
+        );
       });
       angleCursor += sector;
     });
@@ -303,11 +344,19 @@
     if (node.field && !state.selectedFields.has(node.field)) return false;
     if (["article", "item"].includes(node.type) && node.article_id && !state.selectedArticles.has(node.article_id)) return false;
     if (["provider", "article", "item"].includes(node.type) && node.provider && !state.selectedProviders.has(node.provider)) return false;
-    if (node.type === "group") {
-      return (children.get(node.id) || []).some((id) => {
-        const field = nodeById.get(id);
-        return field && state.selectedFields.has(field.field);
-      });
+    if (node.type === "group" || node.type === "subgroup") {
+      // A heading survives while any coding field beneath it, at any depth, is on.
+      const stack = [...(children.get(node.id) || [])];
+      while (stack.length) {
+        const child = nodeById.get(stack.pop());
+        if (!child) continue;
+        if (child.type === "field") {
+          if (state.selectedFields.has(child.field)) return true;
+        } else if (child.type === "subgroup") {
+          stack.push(...(children.get(child.id) || []));
+        }
+      }
+      return false;
     }
     return true;
   }
@@ -316,7 +365,7 @@
     if (node.type === "run") return true;
     if (node.type === "provider" && state.selectedProviders.size === 1) return false;
     if (state.showAll) return true;
-    if (node.type === "group" || node.type === "field") return true;
+    if (node.type === "group" || node.type === "subgroup" || node.type === "field") return true;
     if (!state.activeField) return false;
     const field = nodeById.get(state.activeField);
     if (!field) return false;
@@ -505,7 +554,7 @@
     visibleNodes.forEach((node) => {
       if (node.fx !== null) return;
       const activeLeaf = node.type === "item" && parents.get(node.id) === state.activeArticle;
-      const strength = node.type === "run" ? 0.12 : node.type === "group" ? 0.045 : node.type === "field" ? 0.06 : activeLeaf ? 0.075 : 0.026;
+      const strength = node.type === "run" ? 0.12 : node.type === "group" ? 0.045 : node.type === "subgroup" ? 0.05 : node.type === "field" ? 0.06 : activeLeaf ? 0.075 : 0.026;
       node.vx += (node.targetX - node.x) * strength * step;
       node.vy += (node.targetY - node.y) * strength * step;
     });
@@ -547,7 +596,7 @@
               dy = Math.sin(angle);
               distance = 1;
             }
-            const minimum = node.size + other.size + (node.level <= 2 || other.level <= 2 ? 20 : 13);
+            const minimum = node.size + other.size + (isSchemeOverviewNode(node) || isSchemeOverviewNode(other) ? 20 : 13);
             const influence = minimum * 2.7;
             if (distance >= influence) return;
             const push = Math.max(0, (influence - distance) / influence) * (distance < minimum ? 0.48 : 0.08) * step;
@@ -625,8 +674,11 @@
     return node.type === "run" ? "CODING SCHEME" : node.label;
   }
 
+  const OVERVIEW_TYPES = new Set(["run", "group", "subgroup", "field"]);
+  const HEADING_TYPES = new Set(["run", "group", "subgroup"]);
+
   function isSchemeOverviewNode(node) {
-    return node.level <= 2;
+    return OVERVIEW_TYPES.has(node.type);
   }
 
   function drawLabels(palette, focusSet) {
@@ -650,7 +702,7 @@
           const distance = focusNode ? Math.hypot(node.x - focusNode.x, node.y - focusNode.y) : 0;
           return 80 - Math.min(24, distance / 18);
         }
-        return node.type === "run" ? 70 : node.type === "group" ? 65 : node.type === "provider" ? 60 : 30;
+        return node.type === "run" ? 70 : node.type === "group" ? 65 : node.type === "subgroup" ? 62 : node.type === "provider" ? 60 : 30;
       };
       return priority(b) - priority(a);
     });
@@ -662,10 +714,10 @@
       if (detailCandidate && detailLabelsShown >= detailLabelBudget) return;
       const point = worldToScreen(node.x, node.y);
       const radius = Math.max(2, node.size * Math.pow(state.scale, 0.68));
-      const fontSize = node.type === "run" ? 12.5 : node.type === "group" ? 10.5 : node.type === "field" ? 9.2 : node.type === "article" ? 8.8 : node.type === "item" ? 7.8 : 8.3;
-      const weight = node.level <= 1 ? 680 : 560;
+      const fontSize = node.type === "run" ? 12.5 : node.type === "group" ? 10.5 : node.type === "subgroup" ? 9.8 : node.type === "field" ? 9.2 : node.type === "article" ? 8.8 : node.type === "item" ? 7.8 : 8.3;
+      const weight = HEADING_TYPES.has(node.type) ? 680 : 560;
       context.font = `${weight} ${fontSize}px Inter, ui-sans-serif, sans-serif`;
-      const maxWidth = node.type === "run" ? 320 : node.type === "group" ? 190 : node.type === "field" ? 148 : node.type === "item" ? 240 : 210;
+      const maxWidth = node.type === "run" ? 320 : node.type === "group" ? 190 : node.type === "subgroup" ? 168 : node.type === "field" ? 148 : node.type === "item" ? 240 : 210;
       const text = truncateLabel(graphDisplayLabel(node), maxWidth);
       const textWidth = context.measureText(text).width;
       const dimmed = focusSet.size > 0 && !focusSet.has(node.id);
@@ -715,7 +767,7 @@
       if (detailCandidate) detailLabelsShown += 1;
       context.fillStyle = palette.labelBackground;
       context.fillRect(box.left, box.top, box.right - box.left, box.bottom - box.top);
-      context.fillStyle = dimmed ? palette.labelMuted : node.searchMatch || node.level <= 1 ? palette.label : palette.labelMuted;
+      context.fillStyle = dimmed ? palette.labelMuted : node.searchMatch || HEADING_TYPES.has(node.type) ? palette.label : palette.labelMuted;
       context.textBaseline = "middle";
       context.textAlign = align;
       context.fillText(text, textX, textY);
@@ -752,7 +804,7 @@
       const hovered = state.hoveredNode === node;
       const focused = focusSet.has(node.id);
       const dimmed = hasFocus && !focused;
-      const alpha = dimmed ? 0.32 : node.level >= 3 ? 0.88 : 0.98;
+      const alpha = dimmed ? 0.32 : isSchemeOverviewNode(node) ? 0.98 : 0.88;
       if (selected || hovered) {
         context.beginPath();
         context.arc(point.x, point.y, radius + 6, 0, Math.PI * 2);
@@ -762,11 +814,11 @@
       context.beginPath();
       context.arc(point.x, point.y, radius, 0, Math.PI * 2);
       context.fillStyle = rgba(node.color, alpha);
-      context.shadowColor = rgba(node.color, selected ? 0.9 : node.level <= 1 ? 0.42 : 0.2);
-      context.shadowBlur = selected ? 17 : node.level <= 1 ? 9 : 4;
+      context.shadowColor = rgba(node.color, selected ? 0.9 : HEADING_TYPES.has(node.type) ? 0.42 : 0.2);
+      context.shadowBlur = selected ? 17 : HEADING_TYPES.has(node.type) ? 9 : 4;
       context.fill();
       context.shadowBlur = 0;
-      if (node.type === "group" || node.type === "run") {
+      if (node.type === "group" || node.type === "subgroup" || node.type === "run") {
         context.beginPath();
         context.arc(point.x, point.y, radius + 3, 0, Math.PI * 2);
         context.strokeStyle = rgba(node.color, dimmed ? 0.18 : 0.48);
@@ -1093,7 +1145,7 @@
 
   function expansionAction(node) {
     if (state.showAll) return null;
-    if (node.type === "group" && state.activeField) {
+    if ((node.type === "group" || node.type === "subgroup") && state.activeField) {
       return { label: "Back to scheme overview", expanded: true };
     }
     if (node.type === "field") {
@@ -1306,7 +1358,7 @@
   function toggleExpansion(node) {
     if (state.showAll) return;
     const collapsingField = node.type === "field" && state.activeField === node.id;
-    if (node.type === "group") {
+    if (node.type === "group" || node.type === "subgroup") {
       state.activeField = null;
       state.activeArticle = null;
       state.activeProvider = null;
@@ -1332,7 +1384,7 @@
     searchInput.value = "";
     initializePositions();
     updateVisibility();
-    if (collapsingField || node.type === "group") {
+    if (collapsingField || node.type === "group" || node.type === "subgroup") {
       clearDetail();
     } else {
       state.selectedNode = node;
@@ -1354,7 +1406,7 @@
     } else if (node.type === "article") {
       state.activeArticle = null;
       state.activeProvider = parent.type === "provider" ? parent.id : null;
-    } else if (node.type === "field" || node.type === "group") {
+    } else if (node.type === "field" || node.type === "group" || node.type === "subgroup") {
       state.activeField = null;
       state.activeArticle = null;
       state.activeProvider = null;
