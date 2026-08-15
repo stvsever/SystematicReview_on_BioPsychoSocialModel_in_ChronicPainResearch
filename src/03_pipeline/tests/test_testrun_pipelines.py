@@ -18,7 +18,12 @@ import pytest
 
 from bps_review.extraction.llm_stage2 import FIELD_SPECIFICATION, Stage2StructuredRecord, _batch_prompt
 from bps_review.fulltext.analysis.integrity import integration_evidence_discipline, verify_quote
-from bps_review.fulltext.analysis.reliability import adjacent_agreement, compute_list_overlap
+from bps_review.fulltext.analysis.integrity import extraction_yield
+from bps_review.fulltext.analysis.reliability import (
+    adjacent_agreement,
+    build_reliability,
+    compute_list_overlap,
+)
 from bps_review.fulltext.analysis.semantic import (
     SEMANTIC_SPACES,
     greedy_match,
@@ -52,6 +57,7 @@ from bps_review.fulltext.coding.schema import (
 from bps_review.fulltext.coding.vocabulary import is_controlled, normalize_label
 from bps_review.fulltext.config import (
     EXTRACTION_SPACES,
+    FULLTEXT_MODELS,
     ITEM_CAPS,
     LIST_FIELDS,
     LIST_LABEL_KEY,
@@ -60,6 +66,7 @@ from bps_review.fulltext.config import (
     RELIABILITY_FIELDS,
     SPACE_BY_NAME,
 )
+from bps_review.fulltext.visualization.figures import EXTRACTION_YIELD_ORDER
 from bps_review.graph.builder import (
     BPS_ENTITY_SUBGROUPS,
     FIELD_GROUPS,
@@ -848,3 +855,81 @@ def test_a_field_hangs_off_the_headings_that_name_it():
             cursor = by_id[parent[cursor["id"]]]
         assert cursor["type"] == "group"
         assert list(reversed(walked)) == node["field_path"]
+
+
+# --------------------------------------------------------------------------
+# A complete current-scheme run, end to end
+# --------------------------------------------------------------------------
+def _full_scheme_frame(n_papers: int = 3) -> pd.DataFrame:
+    """A coding table with every extraction list of the scheme filled.
+
+    The run currently on disk was coded before the extraction layer existed, so
+    it exercises only part of the analysis. This fixture stands in for the next
+    run: it is built from the validated schema itself, which is exactly the shape
+    the coders return once they answer the current prompt.
+    """
+    quotes = [{"claim_verbatim": "a quoted claim", "claim_type": "integrative",
+               "section_located": "discussion", "why_it_matters": "it is central"}]
+    # One evidence item per domain, because the evidence list is read as three
+    # separate spaces and a fixture carrying only biology would not exercise them.
+    evidence = [
+        {"domain": domain, "coverage_level": "mentioned",
+         "constructs_named": [construct], "subdomains_named": [construct],
+         "evidence_verbatim": f"a passage about {construct}", "section_located": "results"}
+        for domain, construct in (("biological", "central sensitization"),
+                                  ("psychological", "pain catastrophizing"),
+                                  ("social", "work support"))
+    ]
+    rows = []
+    for paper in range(1, n_papers + 1):
+        record_id = f"F{paper:03d}_1"
+        for order, model in enumerate(FULLTEXT_MODELS, start=1):
+            payload = _raw_payload(record_id)
+            payload["key_quotes"] = quotes
+            payload["domain_evidence"] = evidence
+            # one problem the authors name themselves, one they only display
+            payload["conceptual_problems"] = payload["conceptual_problems"] + [
+                {"problem_type": "vague_definition", "problem_scope": "terminology",
+                 "affected_labels": ["biopsychosocial"], "named_by_authors": "yes",
+                 "problem_verbatim": "the authors call the term vague"}]
+            # a little variation, so agreement is not degenerate
+            payload["domain_coverage_social"] = ["elaborated", "mentioned", "absent"][order % 3]
+            record = FullTextCodingRecord.model_validate(payload)
+            row = serialize_row(record, model.openrouter_id)
+            row.update({"model_order": order, "model_label": model.label,
+                        "provider": model.provider, "model_id": model.openrouter_id})
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def test_a_full_scheme_run_exercises_every_extraction_list():
+    """Nothing the scheme extracts may fall outside the analysis on the next run."""
+    long_df = _full_scheme_frame()
+    for field in LIST_FIELDS:
+        assert field in long_df.columns, f"{field} never reaches the coding table"
+    overlap = compute_list_overlap(long_df)
+    assert len(overlap) == len(LIST_FIELDS)
+    assert set(overlap["field"]) == set(ITEM_MODELS)
+
+
+def test_a_full_scheme_run_supports_every_comparison_space():
+    """Every space the scheme declares must be answerable by a run that fills it."""
+    long_df = _full_scheme_frame()
+    available = {space.name for space in present_spaces(long_df)}
+    declared = {space.name for space in EXTRACTION_SPACES}
+    assert available == declared, f"unanswerable on a complete run: {sorted(declared - available)}"
+
+
+def test_the_extraction_volume_panel_can_read_every_list():
+    """The figure names lists by column; a rename would silently empty the panel."""
+    yields = extraction_yield(_full_scheme_frame())
+    for name in EXTRACTION_YIELD_ORDER:
+        assert f"mean_{name}" in yields.columns, f"the yield table has no mean_{name}"
+    assert set(EXTRACTION_YIELD_ORDER) == set(ITEM_MODELS)
+
+
+def test_reliability_runs_over_a_full_scheme_table():
+    """Every reliability field has to be present, or the whole stage raises."""
+    results = build_reliability(_full_scheme_frame(), write=False)
+    assert len(results["field_reliability"]) == len(RELIABILITY_FIELDS)
+    assert results["summary"]["n_papers"] == 3

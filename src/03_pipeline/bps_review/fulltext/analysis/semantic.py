@@ -32,7 +32,7 @@ Embeddings are cached on disk and keyed by the label text, so a rerun of the
 analysis costs nothing and the numbers are reproducible without a network.
 
 Writes, next to the lexical tables under ``03_reliability``:
-``14_semantic_extraction_overlap.csv`` and ``semantic_overlap_summary.json``.
+``16_semantic_extraction_overlap.csv`` and ``semantic_overlap_summary.json``.
 """
 
 import itertools
@@ -515,7 +515,7 @@ def build_semantic_overlap(
 
     if write:
         out = Path(out_dir) if out_dir is not None else reliability_dir()
-        write_csv(out / "14_semantic_extraction_overlap.csv", overlap)
+        write_csv(out / "16_semantic_extraction_overlap.csv", overlap)
         write_json(out / "semantic_overlap_summary.json", summary)
 
     return {"overlap": overlap, "summary": summary, "store": store}

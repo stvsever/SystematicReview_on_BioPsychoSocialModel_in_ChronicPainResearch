@@ -13,10 +13,13 @@ a title above them all would only repeat the caption.
 * ``03_integration_profile.png``    - the coverage and integration ladders per
   model, and the corpus-level integration index;
 * ``04_evidence_and_yield.png``     - extraction volume, quote verification,
-  evidence discipline, and the open-list overlap;
-* ``05_semantic_overlap.png``       - the same extraction lists measured
-  lexically and semantically, and how far the label vocabulary collapses once
-  wording variants are merged. Written only when the semantic layer ran.
+  evidence discipline, and item-identity overlap. Both the volume panel and the
+  overlap panel cover every extraction list the scheme defines, and skip the ones
+  a given run does not carry, so neither goes stale when the scheme grows;
+* ``05_semantic_overlap.png``       - every comparable vocabulary of the scheme
+  measured lexically and semantically, and how far each label vocabulary
+  collapses once wording variants are merged. Written only when the semantic
+  layer ran.
 """
 
 from pathlib import Path
@@ -72,6 +75,59 @@ KAPPA_BAND_COLORS = [
 ]
 # The integration ladder, dark for a real mechanism down to pale for nothing.
 LADDER_COLORS = ["#1f3d63", "#2f4b7c", "#5f7bb0", "#9fb0cf", "#dfe3e8"]
+
+# Every extraction list of the scheme, in the order the extraction-volume panel
+# reads best, with labels short enough for a legend. A list a run does not carry
+# is skipped at plot time rather than left out here, so the panel keeps up with
+# the scheme on its own.
+EXTRACTION_YIELD_ORDER = [
+    "biological_factors",
+    "psychological_concepts",
+    "social_factors",
+    "other_domain_factors",
+    "domain_evidence",
+    "integration_claims",
+    "concept_relations",
+    "theoretical_frameworks",
+    "instruments",
+    "conceptual_problems",
+    "bps_usage_instances",
+    "bps_definitions",
+    "key_quotes",
+]
+# One colour per extraction list, so a list keeps its colour between runs and no
+# two series in the legend look alike. Cycling a six-colour palette over thirteen
+# lists made "bio factors" and "concept relations" the same blue.
+EXTRACTION_COLORS = {
+    "biological_factors": "#0e8f80",
+    "psychological_concepts": "#6d5ae0",
+    "social_factors": "#d98016",
+    "other_domain_factors": "#7fae4a",
+    "domain_evidence": "#2f4b7c",
+    "integration_claims": "#d1495b",
+    "concept_relations": "#a8809f",
+    "theoretical_frameworks": "#e0a33a",
+    "instruments": "#4fb0a3",
+    "conceptual_problems": "#b0424f",
+    "bps_usage_instances": "#5f7bb0",
+    "bps_definitions": "#8a94a6",
+    "key_quotes": "#3f79b0",
+}
+EXTRACTION_SHORT_LABELS = {
+    "biological_factors": "bio factors",
+    "psychological_concepts": "concepts",
+    "social_factors": "social factors",
+    "other_domain_factors": "beyond-triad factors",
+    "domain_evidence": "domain evidence",
+    "integration_claims": "integration claims",
+    "concept_relations": "concept relations",
+    "theoretical_frameworks": "frameworks",
+    "instruments": "instruments",
+    "conceptual_problems": "problems",
+    "bps_usage_instances": "BPS usages",
+    "bps_definitions": "BPS definitions",
+    "key_quotes": "key quotes",
+}
 
 
 def _apply_style() -> None:
@@ -371,31 +427,29 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
                  discipline_by_model: pd.DataFrame, overlap: pd.DataFrame, out_path: Path) -> None:
     fig, axes = plt.subplots(2, 2, figsize=(12.5, 9.5))
 
-    # Panel A: extraction volume per model.
+    # Panel A: extraction volume per model, over every list the scheme defines.
+    # The columns a run does not carry are skipped, so an older run shows what it
+    # holds rather than an empty slot.
     ax = axes[0, 0]
-    categories = [("mean_integration_claims", "integration claims"),
-                  ("mean_biological_factors", "bio factors"),
-                  ("mean_social_factors", "social factors"),
-                  ("mean_psychological_concepts", "concepts"),
-                  ("mean_concept_relations", "relations"),
-                  ("mean_theoretical_frameworks", "frameworks"),
-                  ("mean_conceptual_problems", "problems")]
-    available = [(column, label) for column, label in categories if column in yield_table.columns]
+    categories = [(f"mean_{name}", EXTRACTION_SHORT_LABELS.get(name, name.replace("_", " ")))
+                  for name in EXTRACTION_YIELD_ORDER]
+    available = [(column, label) for column, label in categories
+                 if column in yield_table.columns and float(yield_table[column].sum()) > 0]
     x = np.arange(len(yield_table))
-    width = 0.8 / max(1, len(available))
-    colors = [PALETTE["primary"], PALETTE["teal"], PALETTE["amber"], PALETTE["violet"],
-              PALETTE["primary"], PALETTE["teal"], PALETTE["amber"]]
+    width = 0.86 / max(1, len(available))
     for index, (column, label) in enumerate(available):
         ax.bar(x + (index - (len(available) - 1) / 2) * width, yield_table[column].values, width,
-               color=colors[index % len(colors)], edgecolor="white", label=label)
+               color=EXTRACTION_COLORS.get(column[len("mean_"):], PALETTE["slate"]),
+               edgecolor="white", linewidth=0.4, label=label)
     ax.set_xticks(x)
     ax.set_xticklabels(yield_table["model_label"], fontsize=8.5)
     ax.set_ylabel("Mean items per paper")
-    ax.set_title("Extraction volume")
+    ax.set_title(f"Extraction volume ({len(available)} lists)")
     _despine(ax)
     ax.yaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=4, frameon=False, fontsize=6.8)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.13),
+              ncol=min(4, max(1, len(available))), frameon=False, fontsize=6.4)
     _panel_label(ax, "A")
 
     # Panel B: quote verification per model.
@@ -443,24 +497,34 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
     ax.set_axisbelow(True)
     _panel_label(ax, "C")
 
-    # Panel D: open-list overlap.
+    # Panel D: every extraction list the run carries, by item identity. The lists
+    # identified by a value off a closed vocabulary are drawn in a muted colour,
+    # because "did two coders pick the same menu entry" is a different question
+    # from "did two coders write the same label".
     ax = axes[1, 1]
     order = overlap.sort_values("mean_pairwise_jaccard", ascending=False)
+    kinds = (order["label_kind"] if "label_kind" in order.columns
+             else pd.Series(["free text"] * len(order), index=order.index))
     y = list(range(len(order)))
-    bars = ax.barh(y, order["mean_pairwise_jaccard"].values, color=PALETTE["amber"],
-                   edgecolor="white", height=0.6)
+    height = 0.82 if len(order) > 8 else 0.6
+    bars = ax.barh(y, order["mean_pairwise_jaccard"].values,
+                   color=[PALETTE["amber"] if kind == "free text" else "#c7ccd4" for kind in kinds],
+                   edgecolor="white", height=height)
     ax.set_yticks(y)
-    ax.set_yticklabels([FIELD_LABELS.get(field, field) for field in order["field"]])
+    ax.set_yticklabels(
+        [f"{FIELD_LABELS.get(field, field)}{'' if kind == 'free text' else ' (controlled)'}"
+         for field, kind in zip(order["field"], kinds)],
+        fontsize=7.6 if len(order) > 8 else 8.5)
     ax.invert_yaxis()
     ax.set_xlim(0, 1)
     ax.set_xlabel("Mean pairwise Jaccard overlap")
-    ax.set_title("Open extraction lists (set overlap, not kappa)")
+    ax.set_title(f"Extraction lists by item identity ({len(order)} lists)")
     _despine(ax)
     ax.xaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
     for bar, value in zip(bars, order["mean_pairwise_jaccard"].values):
         ax.text(bar.get_width() + 0.012, bar.get_y() + bar.get_height() / 2, f"{value:.2f}",
-                va="center", ha="left", fontsize=8, color=INK)
+                va="center", ha="left", fontsize=7.4, color=INK)
     _panel_label(ax, "D")
 
     fig.tight_layout()

@@ -29,6 +29,6 @@ semantic_space/
 ```
 
 Not to be confused with the semantic overlap of the full-text run
-(`03_reliability/14_semantic_extraction_overlap.csv`). That one embeds extraction
+(`03_reliability/16_semantic_extraction_overlap.csv`). That one embeds extraction
 *labels* to ask whether two providers named the same thing. This one embeds
 *records* to ask where a paper sits in the domain space.

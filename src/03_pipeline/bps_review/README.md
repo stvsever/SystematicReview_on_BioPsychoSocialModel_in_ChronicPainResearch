@@ -52,6 +52,11 @@ passage where the biopsychosocial label does work.
 | `04_figures/` | the static review figures |
 | `05_knowledge_graph/` | the self-contained interactive knowledge graph, opened by `index.html` |
 
+The numbered files in `03_reliability/` are owned by one module each, so two
+builders can never claim the same number: **01 to 08** by `analysis/reliability.py`,
+**09 to 15** by `analysis/integrity.py`, and **16** onward by
+`analysis/semantic.py`. A run that predates a table simply does not have it.
+
 ## How agreement is quantified
 
 Three kinds of variable, kept apart because they answer different questions.

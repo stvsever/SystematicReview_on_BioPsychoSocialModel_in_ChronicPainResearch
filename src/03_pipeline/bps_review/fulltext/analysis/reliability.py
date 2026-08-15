@@ -26,6 +26,7 @@ Produces, and persists under ``src/05_data/pilot/02_fulltext_level/03_reliabilit
 
 import itertools
 from collections import Counter
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -362,7 +363,8 @@ def _clean_for_json(value):
     return value
 
 
-def build_reliability(long_df: pd.DataFrame, write: bool = True) -> dict[str, object]:
+def build_reliability(long_df: pd.DataFrame, write: bool = True,
+                      out_dir: Path | None = None) -> dict[str, object]:
     field_rel = compute_field_reliability(long_df)
     agreement, kappa = compute_pairwise_matrices(long_df)
     behavior = per_model_behavior(long_df)
@@ -371,8 +373,8 @@ def build_reliability(long_df: pd.DataFrame, write: bool = True) -> dict[str, ob
     overlap = compute_list_overlap(long_df)
     concordance = typology_concordance(long_df)
 
+    out = Path(out_dir) if out_dir is not None else reliability_dir()
     if write:
-        out = reliability_dir()
         write_csv(out / "01_field_reliability.csv", field_rel)
         write_csv(out / "02_pairwise_percent_agreement.csv", agreement.reset_index(names="model_label"))
         write_csv(out / "03_pairwise_cohen_kappa.csv", kappa.reset_index(names="model_label"))
@@ -433,7 +435,7 @@ def build_reliability(long_df: pd.DataFrame, write: bool = True) -> dict[str, ob
             (long_df["typology_matches_derived"].astype(str) == "yes").mean()),
     }
     if write:
-        write_json(reliability_dir() / "reliability_summary.json", summary)
+        write_json(out / "reliability_summary.json", summary)
 
     return {
         "field_reliability": field_rel,

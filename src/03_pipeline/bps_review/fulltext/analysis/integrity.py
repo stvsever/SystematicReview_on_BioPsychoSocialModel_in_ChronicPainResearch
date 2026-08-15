@@ -25,6 +25,7 @@ Three checks are implemented.
 
 import json
 import re
+from pathlib import Path
 
 import pandas as pd
 
@@ -329,7 +330,7 @@ def corpus_extraction_totals(long_df: pd.DataFrame, items_df: pd.DataFrame) -> d
 
 
 def build_integrity(long_df: pd.DataFrame, items_df: pd.DataFrame, records: list[dict],
-                    write: bool = True) -> dict[str, object]:
+                    write: bool = True, out_dir: Path | None = None) -> dict[str, object]:
     completeness = completeness_report(long_df, n_expected_papers=len(records))
     verification = verify_all_quotes(items_df, records)
     per_model_quotes = quote_verification_summary(verification)
@@ -369,7 +370,7 @@ def build_integrity(long_df: pd.DataFrame, items_df: pd.DataFrame, records: list
     }
 
     if write:
-        out = reliability_dir()
+        out = Path(out_dir) if out_dir is not None else reliability_dir()
         write_csv(out / "09_extraction_yield.csv", yield_table)
         if not per_model_quotes.empty:
             write_csv(out / "10_quote_verification_by_model.csv", per_model_quotes)
