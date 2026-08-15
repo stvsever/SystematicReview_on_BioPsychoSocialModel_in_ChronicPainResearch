@@ -1,4 +1,7 @@
-field,field_label,mean_pairwise_jaccard,n_comparable_pairs,distinct_labels_total,papers_with_a_shared_label,mean_items_DeepSeek-V4-Flash,mean_items_Nex-N2-Mini,mean_items_Laguna-XS-2.1
-psychological_concepts,Psychological concepts,0.36917696001215017,141,494,45,7.11,13.36,7.21
-theoretical_frameworks,Theoretical frameworks,0.3044801012192316,138,269,26,2.45,5.32,2.15
-conceptual_problems,Conceptual problems,0.29609929078014185,141,9,27,2.21,4.19,3.02
+field,field_label,label_kind,mean_pairwise_jaccard,n_comparable_pairs,distinct_labels_total,papers_with_a_shared_label,mean_items_DeepSeek-V4-Flash,mean_items_Nex-N2-Mini,mean_items_Laguna-XS-2.1
+domain_evidence,Domain evidence,controlled,0.8782505910165486,141,3,47,2.83,3.0,2.47
+psychological_concepts,Psychological concepts,free text,0.4141680903430788,141,424,45,6.98,13.06,7.11
+integration_claims,Integration claims,free text,0.5845238095238096,140,4,37,2.23,3.57,2.17
+theoretical_frameworks,Theoretical frameworks,free text,0.34137336093857834,138,245,34,2.45,5.3,2.15
+conceptual_problems,Conceptual problems,controlled,0.29609929078014185,141,9,27,2.21,4.19,3.02
+key_quotes,Key quotes,controlled,0.43252279635258356,141,7,41,2.4,3.64,3.87

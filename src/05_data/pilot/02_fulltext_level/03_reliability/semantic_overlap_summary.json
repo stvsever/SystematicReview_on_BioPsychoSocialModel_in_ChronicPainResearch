@@ -2,52 +2,176 @@
   "embedding_model": "openai/text-embedding-3-large",
   "embedding_dimensions": 3072,
   "similarity_threshold": 0.65,
-  "n_labels_embedded": 666,
+  "n_spaces_declared": 33,
+  "n_spaces_measured": 13,
+  "spaces_by_layer": {
+    "identity": 6,
+    "vocabulary": 4,
+    "filtered": 3
+  },
+  "n_labels_embedded": 1574,
   "n_labels_new_this_run": 0,
   "embedding_usage": {},
   "match_similarity_distribution": {
-    "n_label_comparisons": 2091,
+    "n_label_comparisons": 8759,
     "median_best_match": 1.0,
-    "share_above_threshold": 0.593
+    "share_above_threshold": 0.621
   },
-  "mean_semantic_jaccard": 0.3981,
-  "mean_lexical_jaccard": 0.3505,
+  "mean_semantic_jaccard": 0.4358,
+  "mean_lexical_jaccard": 0.3949,
+  "mean_semantic_jaccard_free_text": 0.4059,
   "threshold_sensitivity": {
     "0.60": {
-      "mean": 0.401,
+      "mean": 0.441,
+      "mean_free_text_spaces": 0.412,
       "psychological_concepts": 0.469
     },
     "0.65": {
-      "mean": 0.398,
+      "mean": 0.436,
+      "mean_free_text_spaces": 0.406,
       "psychological_concepts": 0.463
     },
     "0.70": {
-      "mean": 0.393,
+      "mean": 0.43,
+      "mean_free_text_spaces": 0.398,
       "psychological_concepts": 0.456
     },
     "0.75": {
-      "mean": 0.382,
+      "mean": 0.421,
+      "mean_free_text_spaces": 0.386,
       "psychological_concepts": 0.449
     }
   },
-  "per_field": {
+  "per_space": {
+    "domain_evidence": {
+      "label": "Domain evidence",
+      "layer": "identity",
+      "label_kind": "controlled",
+      "lexical": 0.878,
+      "semantic": 0.878,
+      "label_entries": 390,
+      "distinct_labels": 3,
+      "semantic_concepts": 3
+    },
     "psychological_concepts": {
+      "label": "Psychological concepts",
+      "layer": "identity",
+      "label_kind": "free text",
       "lexical": 0.414,
       "semantic": 0.463,
+      "label_entries": 1276,
       "distinct_labels": 424,
       "semantic_concepts": 281
     },
+    "integration_claims": {
+      "label": "Integration claims",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.585,
+      "semantic": 0.585,
+      "label_entries": 375,
+      "distinct_labels": 4,
+      "semantic_concepts": 3
+    },
     "theoretical_frameworks": {
+      "label": "Theoretical frameworks",
+      "layer": "identity",
+      "label_kind": "free text",
       "lexical": 0.341,
       "semantic": 0.436,
+      "label_entries": 465,
       "distinct_labels": 245,
       "semantic_concepts": 170
     },
     "conceptual_problems": {
+      "label": "Conceptual problems",
+      "layer": "identity",
+      "label_kind": "controlled",
       "lexical": 0.296,
       "semantic": 0.296,
+      "label_entries": 443,
       "distinct_labels": 9,
       "semantic_concepts": 9
+    },
+    "key_quotes": {
+      "label": "Key quotes",
+      "layer": "identity",
+      "label_kind": "controlled",
+      "lexical": 0.433,
+      "semantic": 0.433,
+      "label_entries": 466,
+      "distinct_labels": 7,
+      "semantic_concepts": 7
+    },
+    "domain_evidence_constructs": {
+      "label": "Constructs carrying a domain",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.307,
+      "semantic": 0.383,
+      "label_entries": 2522,
+      "distinct_labels": 1139,
+      "semantic_concepts": 727
+    },
+    "domain_evidence_constructs_bio": {
+      "label": "Constructs carrying biology",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.255,
+      "semantic": 0.357,
+      "label_entries": 936,
+      "distinct_labels": 507,
+      "semantic_concepts": 332
+    },
+    "domain_evidence_constructs_psych": {
+      "label": "Constructs carrying psychology",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.406,
+      "semantic": 0.467,
+      "label_entries": 984,
+      "distinct_labels": 324,
+      "semantic_concepts": 218
+    },
+    "domain_evidence_constructs_social": {
+      "label": "Constructs carrying the social",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.237,
+      "semantic": 0.285,
+      "label_entries": 606,
+      "distinct_labels": 333,
+      "semantic_concepts": 222
+    },
+    "defined_concepts": {
+      "label": "Concepts the review defines",
+      "layer": "filtered",
+      "label_kind": "free text",
+      "lexical": 0.272,
+      "semantic": 0.289,
+      "label_entries": 310,
+      "distinct_labels": 144,
+      "semantic_concepts": 122
+    },
+    "substantive_frameworks": {
+      "label": "Frameworks doing real work",
+      "layer": "filtered",
+      "label_kind": "free text",
+      "lexical": 0.28,
+      "semantic": 0.349,
+      "label_entries": 306,
+      "distinct_labels": 165,
+      "semantic_concepts": 124
+    },
+    "mechanistic_integration_claims": {
+      "label": "Mechanistic integration claims",
+      "layer": "filtered",
+      "label_kind": "free text",
+      "lexical": 0.43,
+      "semantic": 0.446,
+      "label_entries": 230,
+      "distinct_labels": 4,
+      "semantic_concepts": 3
     }
   },
   "duplicate_pair_overlap": {}

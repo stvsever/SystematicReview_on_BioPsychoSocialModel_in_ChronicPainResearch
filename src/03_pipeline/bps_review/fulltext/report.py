@@ -140,33 +140,65 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
     lines.append("")
     if semantic is not None and not semantic["overlap"].empty:
         semantic_summary = semantic["summary"]
-        lines.append("## The same lists, measured by meaning")
+        overlap_frame = semantic["overlap"]
+        lines.append("## The same extraction, measured by meaning")
         lines.append("")
         lines.append(
-            "The Jaccard above asks whether two providers wrote the same string. That is the wrong "
-            "question for an open list: 'pain catastrophising' and 'catastrophic thinking about pain' "
-            "are one construct, and a string comparison scores them as a disagreement. Every label is "
-            f"therefore embedded once with `{semantic_summary['embedding_model']}` and two labels count "
-            f"as the same concept at a cosine of {semantic_summary['similarity_threshold']:.2f}, which "
-            "turns the overlap into a soft Jaccard on the same 0 to 1 scale."
+            "The Jaccard above asks whether two providers wrote the same string, and it asks it "
+            "only of the item identities. Both halves of that are too narrow. A scheme 3 item is "
+            "not a label but a small record, and several of its fields are open vocabularies in "
+            "their own right: which constructs a coder says carry the biological domain, which "
+            "measure a construct is tied to, which components a definition of the model lists, "
+            "which constructs a conceptual problem concerns. Each is a place where two coders can "
+            "read a paper the same way and write different words."
         )
         lines.append("")
-        lines.append("| List | Lexical | Semantic | Gain | Distinct labels | Distinct concepts |")
-        lines.append("| --- | --- | --- | --- | --- | --- |")
-        for _, row in semantic["overlap"].iterrows():
+        lines.append(
+            f"Every one of those vocabularies is compared here. The scheme declares "
+            f"{semantic_summary['n_spaces_declared']} comparison spaces and this run supports "
+            f"{semantic_summary['n_spaces_measured']} of them; the rest belong to extraction "
+            f"lists this run does not carry. Every label is embedded once with "
+            f"`{semantic_summary['embedding_model']}`, and two labels count as the same concept "
+            f"at a cosine of {semantic_summary['similarity_threshold']:.2f}, which turns the "
+            "overlap into a soft Jaccard on the same 0 to 1 scale. Both columns are computed in "
+            "the same pass over the same label sets, so reading one against the other compares "
+            "two ways of measuring one thing rather than two instruments."
+        )
+        lines.append("")
+        lines.append("| Comparison space | Layer | Read from | Lexical | Semantic | Labels | Concepts |")
+        lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+        for _, row in overlap_frame.iterrows():
+            kind = " (controlled)" if row["label_kind"] == "controlled" else ""
             lines.append(
-                f"| {row['field_label']} | {_num(row['mean_pairwise_jaccard'])} | "
-                f"{_num(row['mean_pairwise_semantic_jaccard'])} | {_num(row['semantic_gain'])} | "
+                f"| {row['space_label']}{kind} | {row['layer']} | "
+                f"`{row['source_field']}.{row['read_from']}` | "
+                f"{_num(row['mean_pairwise_jaccard'])} | "
+                f"{_num(row['mean_pairwise_semantic_jaccard'])} | "
                 f"{int(row['n_distinct_labels'])} | {int(row['n_semantic_concepts'])} |"
             )
         lines.append("")
+        free_text = overlap_frame[overlap_frame["label_kind"] == "free text"]
         lines.append(
-            f"Mean over the lists: {_num(semantic_summary['mean_lexical_jaccard'])} lexical against "
-            f"{_num(semantic_summary['mean_semantic_jaccard'])} semantic, over "
-            f"{semantic_summary['n_labels_embedded']} embedded labels. The distance between those two "
-            "numbers is the part of the apparent disagreement that was only ever wording. Sensitivity to "
-            "the threshold is reported in `semantic_overlap_summary.json`, so no conclusion rests on "
-            "where exactly the line is drawn."
+            f"Mean over all spaces: {_num(semantic_summary['mean_lexical_jaccard'])} lexical "
+            f"against {_num(semantic_summary['mean_semantic_jaccard'])} semantic, over "
+            f"{semantic_summary['n_labels_embedded']} embedded labels. Over the "
+            f"{len(free_text)} free-text spaces alone, where the semantic layer has something to "
+            f"merge, the mean is {_num(semantic_summary['mean_semantic_jaccard_free_text'])}. The "
+            "distance between the two columns is the part of the apparent disagreement that was "
+            "only ever wording."
+        )
+        lines.append("")
+        lines.append(
+            "The controlled spaces are the control condition rather than a result. Where an item "
+            "is identified by a value from a closed list, the two coders picked from the same "
+            "menu, the semantic layer has nothing to merge, and the two columns are identical by "
+            "construction. That they come out identical is the check that the method is not "
+            "manufacturing agreement wherever it is applied."
+        )
+        lines.append("")
+        lines.append(
+            "Sensitivity to the threshold is in `03_reliability/semantic_overlap_summary.json`, "
+            "so no reading here depends on where exactly the line is drawn."
         )
         lines.append("")
     spine = integrity.get("spine_coverage")

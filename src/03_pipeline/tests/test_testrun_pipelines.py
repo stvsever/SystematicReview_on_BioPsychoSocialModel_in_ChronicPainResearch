@@ -20,10 +20,12 @@ from bps_review.extraction.llm_stage2 import FIELD_SPECIFICATION, Stage2Structur
 from bps_review.fulltext.analysis.integrity import integration_evidence_discipline, verify_quote
 from bps_review.fulltext.analysis.reliability import adjacent_agreement, compute_list_overlap
 from bps_review.fulltext.analysis.semantic import (
-    SEMANTIC_LIST_FIELDS,
+    SEMANTIC_SPACES,
     greedy_match,
+    present_spaces,
     semantic_jaccard,
 )
+from bps_review.fulltext.analysis.spaces import space_labels
 from bps_review.fulltext.coding.condense import build_coding_text, paragraph_score
 from bps_review.fulltext.coding.derive import (
     assert_usable_payload,
@@ -42,17 +44,21 @@ from bps_review.fulltext.coding.prompt import (
 )
 from bps_review.fulltext.coding.schema import (
     FullTextCodingRecord,
+    ITEM_LABEL_KEY,
     ITEM_MODELS,
     ITEM_QUOTE_KEY,
     OPEN_LIST_FIELDS,
 )
 from bps_review.fulltext.coding.vocabulary import is_controlled, normalize_label
 from bps_review.fulltext.config import (
+    EXTRACTION_SPACES,
     ITEM_CAPS,
     LIST_FIELDS,
     LIST_LABEL_KEY,
+    LIST_LABEL_KIND,
     PRESENCE_FIELDS,
     RELIABILITY_FIELDS,
+    SPACE_BY_NAME,
 )
 from bps_review.graph.builder import FIELD_GROUPS, graph_payload
 from bps_review.pilot.analysis.metrics import (
@@ -610,9 +616,74 @@ def test_semantic_jaccard_reduces_to_the_lexical_one_at_full_similarity():
     assert semantic_jaccard(["a"], ["a-prime"], store, 0.9) == pytest.approx(1.0)
 
 
-def test_semantic_lists_are_the_lexically_compared_lists():
-    """The two overlap metrics must describe the same lists, or they cannot be read together."""
-    assert SEMANTIC_LIST_FIELDS == LIST_FIELDS
+def test_every_extraction_list_is_compared(): 
+    """A list left out of the overlap metrics is extraction nobody ever checks."""
+    assert set(LIST_FIELDS) == set(ITEM_MODELS)
+    assert set(LIST_LABEL_KIND) == set(ITEM_MODELS)
+
+
+def test_list_identity_keys_do_not_drift_from_the_schema():
+    """config spells the identity keys out, because the schema package imports it back."""
+    assert LIST_LABEL_KEY == dict(ITEM_LABEL_KEY)
+
+
+def test_every_extraction_list_has_an_identity_space():
+    identity = {space.name for space in EXTRACTION_SPACES if space.layer == "identity"}
+    assert identity == set(LIST_FIELDS)
+
+
+def test_every_space_reads_a_real_field_of_a_real_item():
+    """A space pointing at a field the scheme does not have would silently measure nothing."""
+    for space in EXTRACTION_SPACES:
+        model = ITEM_MODELS.get(space.field)
+        assert model is not None, f"{space.name} reads an unknown extraction list {space.field}"
+        fields = set(model.model_fields)
+        for key in (*space.keys, space.sublist, space.filter_key):
+            if key:
+                assert key in fields, f"{space.name} reads {space.field}.{key}, which does not exist"
+
+
+def test_spaces_are_uniquely_named():
+    names = [space.name for space in EXTRACTION_SPACES]
+    assert len(names) == len(set(names)) == len(SPACE_BY_NAME)
+
+
+def test_a_space_reads_only_the_items_its_filter_allows():
+    """A filtered space is a different question, not a smaller sample of the same one."""
+    payload = json.dumps([
+        {"concept_label": "catastrophizing", "definitional_status": "formally_defined"},
+        {"concept_label": "self-efficacy", "definitional_status": "named_only"},
+    ])
+    # both labels are mapped onto their canonical vocabulary entry
+    assert space_labels(payload, SPACE_BY_NAME["psychological_concepts"]) == {
+        "pain catastrophizing", "pain self-efficacy"}
+    assert space_labels(payload, SPACE_BY_NAME["defined_concepts"]) == {"pain catastrophizing"}
+
+
+def test_a_vocabulary_space_reads_the_sublist_inside_the_items():
+    """The constructs carrying a domain are invisible to any item-identity metric."""
+    payload = json.dumps([
+        {"domain": "biological", "constructs_named": ["central sensitization", "inflammation"]},
+        {"domain": "social", "constructs_named": ["work support"]},
+    ])
+    assert space_labels(payload, SPACE_BY_NAME["domain_evidence"]) == {"biological", "social"}
+    assert space_labels(payload, SPACE_BY_NAME["domain_evidence_constructs"]) == {
+        "central sensitization", "inflammation", "work support"}
+    assert space_labels(payload, SPACE_BY_NAME["domain_evidence_constructs_bio"]) == {
+        "central sensitization", "inflammation"}
+
+
+def test_spaces_a_run_cannot_answer_are_dropped_not_reported_empty():
+    empty = {field: "[]" for field in LIST_FIELDS}
+    frame = pd.DataFrame([
+        {"record_id": "F1", "model_label": model, **empty,
+         "psychological_concepts": json.dumps([{"concept_label": "catastrophizing"}])}
+        for model in ("DeepSeek-V4-Flash", "Nex-N2-Mini", "Laguna-XS-2.1")
+    ])
+    available = {space.name for space in present_spaces(frame)}
+    assert "psychological_concepts" in available
+    assert "domain_evidence_constructs" not in available
+    assert available < {space.name for space in SEMANTIC_SPACES}
 
 
 # --------------------------------------------------------------------------

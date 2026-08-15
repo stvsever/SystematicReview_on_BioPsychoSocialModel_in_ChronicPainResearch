@@ -473,62 +473,80 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
 # Figure 5: lexical against semantic overlap
 # --------------------------------------------------------------------------
 def fig_semantic_overlap(semantic_overlap: pd.DataFrame, summary: dict, out_path: Path) -> None:
-    """Lexical against semantic overlap, and how far the label vocabulary collapses."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.6))
+    """Every comparable vocabulary of the scheme, measured lexically and by meaning.
+
+    One row per comparison space, not per extraction list. Comparing lists by item
+    identity is one question out of several the extraction supports, and the rows
+    below the identity layer are the ones that carry the resolution: which
+    constructs a coder says carry a domain, which measure a construct is tied to,
+    which constructs a conceptual problem concerns.
+    """
+    frame = semantic_overlap.dropna(subset=["mean_pairwise_semantic_jaccard"]).copy()
+    n_rows = max(len(frame), 1)
+    height = max(5.4, 0.42 * n_rows + 2.2)
+    fig, axes = plt.subplots(1, 2, figsize=(14.5, height))
     threshold = summary.get("similarity_threshold")
     n_models = len(MODEL_LABELS)
 
-    # Panel A: the same lists measured twice.
+    def tick_labels(subset: pd.DataFrame) -> list[str]:
+        return [
+            f"{row.space_label} (controlled)" if row.label_kind == "controlled" else row.space_label
+            for row in subset.itertuples()
+        ]
+
+    # Panel A: the same label sets, measured twice.
     ax = axes[0]
-    order = semantic_overlap.dropna(subset=["mean_pairwise_semantic_jaccard"]).sort_values(
-        "mean_pairwise_semantic_jaccard", ascending=False)
+    order = frame.sort_values("mean_pairwise_semantic_jaccard", ascending=False)
     y = np.arange(len(order))
-    height = 0.38
-    ax.barh(y - height / 2, order["mean_pairwise_semantic_jaccard"], height=height,
+    bar = 0.38
+    ax.barh(y - bar / 2, order["mean_pairwise_semantic_jaccard"], height=bar,
             color=PALETTE["teal"], edgecolor="white", label="semantic (embeddings)")
-    ax.barh(y + height / 2, order["mean_pairwise_jaccard"], height=height,
+    ax.barh(y + bar / 2, order["mean_pairwise_jaccard"], height=bar,
             color=PALETTE["violet"], edgecolor="white", label="lexical (exact string)")
     ax.set_yticks(y)
-    ax.set_yticklabels([FIELD_LABELS.get(field, field) for field in order["field"]], fontsize=8.5)
+    ax.set_yticklabels(tick_labels(order), fontsize=8)
     ax.invert_yaxis()
     upper = float(order["mean_pairwise_semantic_jaccard"].max()) if len(order) else 0.6
-    ax.set_xlim(0, max(0.7, upper + 0.14))
+    ax.set_xlim(0, min(1.0, max(0.7, upper + 0.16)))
     rule = f"same concept at cosine >= {threshold:.2f}" if threshold is not None else "same concept"
     ax.set_xlabel(f"Mean pairwise overlap between provider pairs ({rule}, "
                   f"{summary.get('embedding_model', '')})")
     ax.set_title("Do the providers extract the same things?")
-    for position, (_, row) in zip(y, order.iterrows()):
-        ax.text(float(row["mean_pairwise_semantic_jaccard"]) + 0.008, position - height / 2,
-                f"{row['mean_pairwise_semantic_jaccard']:.2f}", va="center", ha="left",
-                fontsize=7.4, color=INK)
-        ax.text(float(row["mean_pairwise_jaccard"]) + 0.008, position + height / 2,
-                f"{row['mean_pairwise_jaccard']:.2f}", va="center", ha="left",
-                fontsize=7.4, color=MUTED)
+    for position, row in zip(y, order.itertuples()):
+        ax.text(row.mean_pairwise_semantic_jaccard + 0.008, position - bar / 2,
+                f"{row.mean_pairwise_semantic_jaccard:.2f}", va="center", ha="left",
+                fontsize=7, color=INK)
+        ax.text(row.mean_pairwise_jaccard + 0.008, position + bar / 2,
+                f"{row.mean_pairwise_jaccard:.2f}", va="center", ha="left",
+                fontsize=7, color=MUTED)
     ax.legend(loc="lower right", frameon=False, fontsize=8.5)
     _despine(ax)
     ax.xaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
     _panel_label(ax, "A")
 
-    # Panel B: distinct labels against distinct concepts.
+    # Panel B: how much of each vocabulary is wording rather than concept.
+    # A share rather than two counts, because the spaces differ by two orders of
+    # magnitude in size and raw bars would render the small ones invisible.
     ax = axes[1]
-    collapse = semantic_overlap.sort_values("n_distinct_labels", ascending=False)
+    collapse = frame.copy()
+    collapse["wording_share"] = 1 - (collapse["n_semantic_concepts"] / collapse["n_distinct_labels"])
+    collapse = collapse.sort_values("wording_share", ascending=False)
     y = np.arange(len(collapse))
-    ax.barh(y, collapse["n_distinct_labels"], height=0.62, color="#c7ccd4", edgecolor="white",
-            label="distinct labels written")
-    ax.barh(y, collapse["n_semantic_concepts"], height=0.62, color=PALETTE["teal"],
-            edgecolor="white", label="distinct concepts after merging")
+    ax.barh(y, collapse["wording_share"], height=0.62,
+            color=[PALETTE["teal"] if kind == "free text" else "#c7ccd4"
+                   for kind in collapse["label_kind"]], edgecolor="white")
     ax.set_yticks(y)
-    ax.set_yticklabels([FIELD_LABELS.get(field, field) for field in collapse["field"]], fontsize=8.5)
+    ax.set_yticklabels(tick_labels(collapse), fontsize=8)
     ax.invert_yaxis()
-    ax.set_xlabel(f"Labels over all {n_models} providers and all papers")
+    ax.set_xlim(0, max(0.45, float(collapse["wording_share"].max()) * 1.35) if len(collapse) else 1)
+    ax.set_xlabel(f"Share of distinct labels that are another wording of a label already there\n"
+                  f"(all {n_models} providers, all papers)")
     ax.set_title("How much of the vocabulary is wording rather than concept")
-    for position, (_, row) in zip(y, collapse.iterrows()):
-        ax.text(float(row["n_distinct_labels"]) + 2, position,
-                f"{int(row['n_distinct_labels'])} to {int(row['n_semantic_concepts'])}",
-                va="center", ha="left", fontsize=7.4, color=INK)
-    ax.set_xlim(0, float(collapse["n_distinct_labels"].max()) * 1.22 if len(collapse) else 1)
-    ax.legend(loc="lower right", frameon=False, fontsize=8.5)
+    for position, row in zip(y, collapse.itertuples()):
+        ax.text(row.wording_share + 0.006, position,
+                f"{int(row.n_distinct_labels)} to {int(row.n_semantic_concepts)}",
+                va="center", ha="left", fontsize=7, color=INK)
     _despine(ax)
     ax.xaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)

@@ -42,11 +42,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from bps_review.fulltext.analysis.reliability import labels_of
+from bps_review.fulltext.analysis.spaces import space_labels
 from bps_review.fulltext.config import (
-    FIELD_LABELS,
-    LIST_FIELDS,
+    EXTRACTION_SPACES,
     MODEL_LABELS,
+    ExtractionSpace,
     reliability_dir,
 )
 from bps_review.llm.openrouter import SEMANTIC_EMBEDDING_MODEL, embed_texts_concurrent
@@ -67,17 +67,29 @@ SIMILARITY_THRESHOLD = 0.65
 # on where exactly the line is drawn.
 SENSITIVITY_THRESHOLDS = (0.60, 0.65, 0.70, 0.75)
 
-# The list whose sensitivity is reported field by field. The psychological
-# concepts are the richest open list of the scheme and the one RQ3 rests on, so
-# it is the field where a threshold choice would do the most damage.
-SENSITIVITY_ANCHOR_FIELD = "psychological_concepts"
+# The space whose sensitivity is reported alongside the mean. The psychological
+# concepts are the richest open vocabulary of the scheme and the one RQ3 rests on,
+# so it is where a threshold choice would do the most damage.
+SENSITIVITY_ANCHOR_SPACE = "psychological_concepts"
 
-# The extraction lists whose items are named things rather than sentences. Every
-# list in ``LIST_FIELDS`` qualifies: each is identified by a label or by a pair of
-# labels joined by a relation, so a set comparison over them is defined. The
-# record-level free-text lists (conceptual tensions, additional observations) are
-# written for a human reader and are deliberately never compared in either metric.
-SEMANTIC_LIST_FIELDS: list[str] = list(LIST_FIELDS)
+# Every comparable vocabulary of the scheme, not only the thirteen extraction
+# lists: see ``config.EXTRACTION_SPACES``. Comparing lists by item identity asks
+# whether two coders found the same things, and that is one question out of
+# several the extraction supports. The constructs a coder says carry the
+# biological domain, the measure a construct is operationalized with, the elements
+# read into a definition of the model, the constructs a conceptual problem
+# concerns: each is its own open vocabulary, and each is a place where two coders
+# can read a paper the same way and write different words.
+#
+# The record-level free-text lists (conceptual tensions, additional observations)
+# stay out of both metrics on purpose. They are sentences written for a human
+# reader rather than labels, so a set comparison over them is not defined.
+SEMANTIC_SPACES: list[ExtractionSpace] = list(EXTRACTION_SPACES)
+
+# Kept as a name because it reads well in the summary and the notebook.
+SEMANTIC_LIST_FIELDS: list[str] = [
+    space.field for space in SEMANTIC_SPACES if space.layer == "identity"
+]
 
 
 def embedding_store_dir() -> Path:
@@ -261,18 +273,32 @@ def cluster_labels(labels: list[str], store: LabelEmbeddingStore, threshold: flo
 
 
 # --------------------------------------------------------------------------
-# Per-field computation
+# Per-space computation
 # --------------------------------------------------------------------------
-def _present_fields(long_df: pd.DataFrame) -> list[str]:
-    return [field for field in SEMANTIC_LIST_FIELDS if field in long_df.columns]
+def present_spaces(long_df: pd.DataFrame,
+                   spaces: list[ExtractionSpace] | None = None) -> list[ExtractionSpace]:
+    """The spaces this run can actually answer: source list present and non-empty.
+
+    A space whose extraction list the run does not carry, or which no coder ever
+    filled, is dropped rather than reported as an empty row. An older run then
+    describes exactly what it holds, while the registry keeps describing the whole
+    scheme.
+    """
+    available = []
+    for space in spaces if spaces is not None else SEMANTIC_SPACES:
+        if space.field not in long_df.columns:
+            continue
+        if any(space_labels(value, space) for value in long_df[space.field].tolist()):
+            available.append(space)
+    return available
 
 
-def _label_lists(long_df: pd.DataFrame, field: str) -> tuple[dict[str, list[list[str]]], list[str]]:
-    pivot = long_df.pivot(index="record_id", columns="model_label", values=field).reindex(
-        columns=MODEL_LABELS
-    )
+def _label_lists(long_df: pd.DataFrame,
+                 space: ExtractionSpace) -> tuple[dict[str, list[list[str]]], list[str]]:
+    pivot = long_df.pivot(index="record_id", columns="model_label",
+                          values=space.field).reindex(columns=MODEL_LABELS)
     return {
-        model: [sorted(labels_of(value, field)) for value in pivot[model].tolist()]
+        model: [sorted(space_labels(value, space)) for value in pivot[model].tolist()]
         for model in MODEL_LABELS
     }, list(pivot.index)
 
@@ -281,19 +307,18 @@ def compute_semantic_overlap(
     long_df: pd.DataFrame,
     store: LabelEmbeddingStore,
     threshold: float = SIMILARITY_THRESHOLD,
-    lexical_overlap: pd.DataFrame | None = None,
+    spaces: list[ExtractionSpace] | None = None,
 ) -> tuple[pd.DataFrame, list[float]]:
-    """Per extraction list: soft Jaccard over embedded labels, next to the lexical one."""
-    lexical_by_field = {}
-    if lexical_overlap is not None and not lexical_overlap.empty:
-        lexical_by_field = dict(
-            zip(lexical_overlap["field"], lexical_overlap["mean_pairwise_jaccard"])
-        )
+    """Per comparison space: soft Jaccard over embedded labels, next to the lexical one.
 
+    Both columns are computed here, from the same label sets, by the same pass.
+    Reading a semantic score against a lexical one produced elsewhere would
+    compare two instruments rather than two ways of measuring one thing.
+    """
     rows = []
     best_matches: list[float] = []
-    for field in _present_fields(long_df):
-        per_model, record_ids = _label_lists(long_df, field)
+    for space in present_spaces(long_df, spaces):
+        per_model, record_ids = _label_lists(long_df, space)
         semantic_scores: list[float] = []
         lexical_scores: list[float] = []
         for first, second in itertools.combinations(MODEL_LABELS, 2):
@@ -319,15 +344,21 @@ def compute_semantic_overlap(
         )
         all_labels = [label for model in MODEL_LABELS for labels in per_model[model]
                       for label in labels]
+        per_paper = [len(per_model[model][index]) for model in MODEL_LABELS
+                     for index in range(len(record_ids))]
         n_distinct = len(set(all_labels))
         n_concepts = cluster_labels(all_labels, store, threshold)
-        lexical_mean = lexical_by_field.get(
-            field, float(np.mean(lexical_scores)) if lexical_scores else float("nan"))
+        lexical_mean = float(np.mean(lexical_scores)) if lexical_scores else float("nan")
         semantic_mean = float(np.mean(semantic_scores)) if semantic_scores else float("nan")
         rows.append(
             {
-                "field": field,
-                "field_label": FIELD_LABELS.get(field, field),
+                "space": space.name,
+                "space_label": space.label,
+                "layer": space.layer,
+                "label_kind": space.kind,
+                "source_field": space.field,
+                "read_from": space.sublist or " + ".join(space.keys),
+                "question": space.question,
                 "mean_pairwise_jaccard": lexical_mean,
                 "mean_pairwise_semantic_jaccard": semantic_mean,
                 "median_pairwise_semantic_jaccard": float(np.median(semantic_scores))
@@ -335,6 +366,9 @@ def compute_semantic_overlap(
                 "semantic_gain": semantic_mean - lexical_mean,
                 "share_papers_with_shared_concept": shared / len(record_ids)
                 if record_ids else float("nan"),
+                "n_comparable_pairs": len(semantic_scores),
+                "mean_labels_per_coding": round(float(np.mean(per_paper)), 2) if per_paper else 0.0,
+                "n_label_entries": len(all_labels),
                 "n_distinct_labels": n_distinct,
                 "n_semantic_concepts": n_concepts,
                 "label_inflation": (n_distinct / n_concepts) if n_concepts else float("nan"),
@@ -364,26 +398,26 @@ def duplicate_pair_overlap(
     ]
     if not pairs:
         return {}
-    per_field: dict[str, list[float]] = {}
+    per_space: dict[str, list[float]] = {}
     for original, copy in pairs:
-        for field in _present_fields(long_df):
+        for space in present_spaces(long_df):
             for model in MODEL_LABELS:
                 left = long_df[(long_df.record_id == original) & (long_df.model_label == model)]
                 right = long_df[(long_df.record_id == copy) & (long_df.model_label == model)]
                 if left.empty or right.empty:
                     continue
-                a = sorted(labels_of(left[field].iloc[0], field))
-                b = sorted(labels_of(right[field].iloc[0], field))
+                a = sorted(space_labels(left[space.field].iloc[0], space))
+                b = sorted(space_labels(right[space.field].iloc[0], space))
                 score = semantic_jaccard(a, b, store, threshold)
                 if not np.isnan(score):
-                    per_field.setdefault(field, []).append(score)
-    if not per_field:
+                    per_space.setdefault(space.name, []).append(score)
+    if not per_space:
         return {}
     return {
         "pairs": [{"original": original, "duplicate": copy} for original, copy in pairs],
-        "per_field": {field: round(float(np.mean(scores)), 3) for field, scores in per_field.items()},
-        "mean_over_fields": round(
-            float(np.mean([np.mean(scores) for scores in per_field.values()])), 3),
+        "per_space": {name: round(float(np.mean(scores)), 3) for name, scores in per_space.items()},
+        "mean_over_spaces": round(
+            float(np.mean([np.mean(scores) for scores in per_space.values()])), 3),
     }
 
 
@@ -391,31 +425,33 @@ def build_semantic_overlap(
     long_df: pd.DataFrame,
     corpus_df: pd.DataFrame | None = None,
     threshold: float = SIMILARITY_THRESHOLD,
-    lexical_overlap: pd.DataFrame | None = None,
+    spaces: list[ExtractionSpace] | None = None,
     write: bool = True,
     out_dir: Path | None = None,
     store_dir: Path | None = None,
     verbose: bool = True,
 ) -> dict:
-    """Embed the label vocabulary of a run and quantify semantic list overlap."""
+    """Embed the label vocabulary of a run and quantify overlap in every space."""
     store = LabelEmbeddingStore(store_dir)
+    available = present_spaces(long_df, spaces)
     vocabulary = sorted(
         {
             label
-            for field in _present_fields(long_df)
-            for value in long_df[field].tolist()
-            for label in labels_of(value, field)
+            for space in available
+            for value in long_df[space.field].tolist()
+            for label in space_labels(value, space)
         }
     )
     cached = len(store.known(vocabulary))
     if verbose:
+        print(f"  spaces: {len(available)} of {len(spaces or SEMANTIC_SPACES)} the scheme declares")
         print(f"  labels: {len(vocabulary)} ({cached} cached, {len(vocabulary) - cached} new)")
     usage = store.ensure(vocabulary)
     if verbose and usage:
         print(f"  embedded in {usage.get('requests', 0)} requests, "
               f"{usage.get('total_tokens', 0)} tokens, ${usage.get('cost_usd', 0):.4f}")
 
-    overlap, best_matches = compute_semantic_overlap(long_df, store, threshold, lexical_overlap)
+    overlap, best_matches = compute_semantic_overlap(long_df, store, threshold, available)
     duplicates = (
         duplicate_pair_overlap(long_df, corpus_df, store, threshold)
         if corpus_df is not None else {}
@@ -423,18 +459,26 @@ def build_semantic_overlap(
 
     sensitivity = {}
     for candidate in SENSITIVITY_THRESHOLDS:
-        frame, _ = compute_semantic_overlap(long_df, store, candidate, lexical_overlap)
-        anchor = frame.loc[frame["field"] == SENSITIVITY_ANCHOR_FIELD,
+        frame, _ = compute_semantic_overlap(long_df, store, candidate, available)
+        anchor = frame.loc[frame["space"] == SENSITIVITY_ANCHOR_SPACE,
                            "mean_pairwise_semantic_jaccard"]
+        free_text = frame[frame["label_kind"] == "free text"]
         sensitivity[f"{candidate:.2f}"] = {
             "mean": round(float(frame["mean_pairwise_semantic_jaccard"].mean()), 3),
-            SENSITIVITY_ANCHOR_FIELD: round(float(anchor.iloc[0]), 3) if len(anchor) else None,
+            "mean_free_text_spaces": round(
+                float(free_text["mean_pairwise_semantic_jaccard"].mean()), 3) if len(free_text) else None,
+            SENSITIVITY_ANCHOR_SPACE: round(float(anchor.iloc[0]), 3) if len(anchor) else None,
         }
 
     summary = {
         "embedding_model": store.model,
         "embedding_dimensions": int(store.matrix.shape[1]) if store.matrix.size else 0,
         "similarity_threshold": threshold,
+        "n_spaces_declared": len(spaces or SEMANTIC_SPACES),
+        "n_spaces_measured": len(available),
+        "spaces_by_layer": {
+            layer: int((overlap["layer"] == layer).sum()) for layer in ("identity", "vocabulary", "filtered")
+        } if not overlap.empty else {},
         "n_labels_embedded": len(vocabulary),
         "n_labels_new_this_run": len(vocabulary) - cached,
         "embedding_usage": usage,
@@ -449,11 +493,18 @@ def build_semantic_overlap(
             float(overlap["mean_pairwise_semantic_jaccard"].mean()), 4) if not overlap.empty else None,
         "mean_lexical_jaccard": round(
             float(overlap["mean_pairwise_jaccard"].mean()), 4) if not overlap.empty else None,
+        "mean_semantic_jaccard_free_text": round(
+            float(overlap.loc[overlap["label_kind"] == "free text",
+                              "mean_pairwise_semantic_jaccard"].mean()), 4) if not overlap.empty else None,
         "threshold_sensitivity": sensitivity,
-        "per_field": {
-            row["field"]: {
+        "per_space": {
+            row["space"]: {
+                "label": row["space_label"],
+                "layer": row["layer"],
+                "label_kind": row["label_kind"],
                 "lexical": round(float(row["mean_pairwise_jaccard"]), 3),
                 "semantic": round(float(row["mean_pairwise_semantic_jaccard"]), 3),
+                "label_entries": int(row["n_label_entries"]),
                 "distinct_labels": int(row["n_distinct_labels"]),
                 "semantic_concepts": int(row["n_semantic_concepts"]),
             }

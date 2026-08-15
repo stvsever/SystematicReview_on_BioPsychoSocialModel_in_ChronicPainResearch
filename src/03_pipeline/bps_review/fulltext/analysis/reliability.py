@@ -25,14 +25,12 @@ Produces, and persists under ``src/05_data/pilot/02_fulltext_level/03_reliabilit
 """
 
 import itertools
-import json
-import re
 from collections import Counter
 
 import numpy as np
 import pandas as pd
 
-from bps_review.fulltext.coding.vocabulary import normalize_label
+from bps_review.fulltext.analysis.spaces import labels_of
 from bps_review.fulltext.config import (
     AUXILIARY_COVERAGE_FIELDS,
     BALANCE_ORDER,
@@ -46,8 +44,7 @@ from bps_review.fulltext.config import (
     FIELD_LABELS,
     INTEGRATION_FIELDS,
     LIST_FIELDS,
-    LIST_LABEL_KEY,
-    LIST_LABEL_VOCAB,
+    LIST_LABEL_KIND,
     MODEL_LABELS,
     NOMINAL_FIELDS,
     PAIRWISE_ORDER,
@@ -195,43 +192,6 @@ def compute_pairwise_matrices(long_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.D
 # --------------------------------------------------------------------------
 # Set overlap on the open extraction lists
 # --------------------------------------------------------------------------
-def _normalize_label(value: str) -> str:
-    cleaned = " ".join(str(value or "").strip().lower().split())
-    return re.sub(r"[^a-z0-9 \-]+", "", cleaned)
-
-
-def labels_of(value: object, field: str) -> set[str]:
-    """Normalized label set from one JSON-serialized extraction list cell.
-
-    An item is identified by one key or by several joined together, because a
-    concept relation and an integration claim are edges rather than labels. The
-    first key is additionally mapped onto the project vocabulary when one applies,
-    so two coders who wrote the same thing in different words are counted as
-    agreeing, and a label the vocabulary does not carry survives as written.
-    """
-    keys = LIST_LABEL_KEY.get(field, ())
-    kind = LIST_LABEL_VOCAB.get(field, "")
-    labels: set[str] = set()
-    try:
-        items = json.loads(value) if isinstance(value, str) and value.strip() else []
-    except json.JSONDecodeError:
-        return labels
-    if not isinstance(items, list):
-        return labels
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        parts = []
-        for index, key in enumerate(keys):
-            raw = item.get(key, "")
-            if index == 0 and kind:
-                raw = normalize_label(raw, kind)
-            part = _normalize_label(raw)
-            if part:
-                parts.append(part)
-        if parts:
-            labels.add(" | ".join(parts))
-    return labels
 
 
 def _jaccard(first: set[str], second: set[str]) -> float:
@@ -242,9 +202,15 @@ def _jaccard(first: set[str], second: set[str]) -> float:
 
 
 def compute_list_overlap(long_df: pd.DataFrame) -> pd.DataFrame:
-    """Per open list: mean pairwise Jaccard overlap and how much each model returned."""
+    """Per extraction list: mean pairwise Jaccard overlap and how much each model returned.
+
+    A list the run does not carry is skipped rather than raising, so this table
+    describes the whole scheme while an older run reports only what it holds.
+    """
     rows = []
     for field in LIST_FIELDS:
+        if field not in long_df.columns:
+            continue
         columns, _ = aligned_columns(long_df, field)
         as_sets = [[labels_of(value, field) for value in column] for column in columns]
         scores: list[float] = []
@@ -263,6 +229,7 @@ def compute_list_overlap(long_df: pd.DataFrame) -> pd.DataFrame:
             {
                 "field": field,
                 "field_label": FIELD_LABELS.get(field, field),
+                "label_kind": LIST_LABEL_KIND.get(field, "free text"),
                 "mean_pairwise_jaccard": float(np.mean(scores)) if scores else float("nan"),
                 "n_comparable_pairs": len(scores),
                 "distinct_labels_total": len(distinct),
@@ -354,6 +321,7 @@ def _majority(labels: list[str], order: list[str] | None = None) -> tuple[str, i
 def consensus_codings(long_df: pd.DataFrame) -> pd.DataFrame:
     record_ids = sorted(long_df["record_id"].unique())
     rows = []
+    present_lists = [field for field in LIST_FIELDS if field in long_df.columns]
     for record_id in record_ids:
         subset = long_df[long_df["record_id"] == record_id].sort_values("model_order")
         row: dict[str, object] = {"record_id": record_id}
@@ -369,7 +337,7 @@ def consensus_codings(long_df: pd.DataFrame) -> pd.DataFrame:
             pd.to_numeric(subset["integration_index"], errors="coerce").mean())
         row["mean_extracted_items"] = float(
             pd.to_numeric(subset["n_extracted_items"], errors="coerce").mean())
-        for field in LIST_FIELDS:
+        for field in present_lists:
             union: set[str] = set()
             for value in subset[field].tolist():
                 union |= labels_of(value, field)

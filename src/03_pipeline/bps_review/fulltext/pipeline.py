@@ -79,7 +79,6 @@ def run_fulltext_testrun_pipeline(
             semantic = build_semantic_overlap(
                 long_df,
                 corpus_df=corpus,
-                lexical_overlap=results["list_overlap"],
                 write=True,
                 out_dir=reliability_dir(),
                 verbose=verbose,

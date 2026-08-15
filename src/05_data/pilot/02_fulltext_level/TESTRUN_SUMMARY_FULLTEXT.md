@@ -72,25 +72,49 @@ Of the 356 domain links graded above 'mentioned', 95.2% carry a quoted claim for
 
 ## Open extraction lists
 
+Every extraction list the run carries is compared, by the identity of its items.
+Recomputed from the stored codings by the current code: the project vocabularies
+have been extended since this run was coded, so more spellings now normalize onto
+one label than when the run was first analysed.
+
 | List | Mean pairwise Jaccard | Distinct labels | Papers with a shared label |
 | --- | --- | --- | --- |
-| Psychological concepts | 0.369 | 494 | 45 |
-| Theoretical frameworks | 0.304 | 269 | 26 |
-| Conceptual problems | 0.296 | 9 | 27 |
+| Domain evidence (controlled) | 0.878 | 3 | 47 |
+| Psychological concepts | 0.414 | 424 | 45 |
+| Integration claims | 0.585 | 4 | 37 |
+| Theoretical frameworks | 0.341 | 245 | 34 |
+| Conceptual problems (controlled) | 0.296 | 9 | 27 |
+| Key quotes (controlled) | 0.433 | 7 | 41 |
 
-## The same lists, measured by meaning
+## The same extraction, measured by meaning
 
-The Jaccard above asks whether two providers wrote the same string. That is the wrong question for an open list: `pain catastrophising` and `catastrophic thinking about pain` are one construct, and a string comparison scores them as a disagreement. Every extracted label was therefore embedded once with `openai/text-embedding-3-large`, and two labels count as the same concept at a cosine of 0.65, which turns the overlap into a soft Jaccard on the same 0 to 1 scale.
+The Jaccard above asks whether two providers wrote the same string, and it asks it only of the item identities. Both halves of that are too narrow. A scheme 3 item is not a label but a small record, and several of its fields are open vocabularies in their own right: which constructs a coder says carry the biological domain, which measure a construct is tied to, which components a definition of the model lists, which constructs a conceptual problem concerns. Each is a place where two coders can read a paper the same way and write different words.
 
-Both columns below are recomputed from the stored codings by the current code, which is why the lexical column and the label counts differ from the table above: the project vocabularies have been extended since this run was coded, so more spellings now normalize onto one label. Reading the two columns against each other therefore compares a metric with itself, not with an older instrument.
+Every one of those vocabularies is compared here. The scheme declares 33 comparison spaces and this run supports 13 of them (6 item identities, 4 vocabularies read from inside the items, 3 restricted to the items that carry weight). The rest belong to extraction lists this run does not carry, because it was coded on the previous generation of scheme 3. Every label is embedded once with `openai/text-embedding-3-large`, and two labels count as the same concept at a cosine of 0.65, which turns the overlap into a soft Jaccard on the same 0 to 1 scale. Both columns are computed in one pass over the same label sets, so reading one against the other compares two ways of measuring one thing rather than two instruments.
 
-| List | Lexical | Semantic | Distinct labels | Distinct concepts |
-| --- | --- | --- | --- | --- |
-| Psychological concepts | 0.414 | 0.463 | 424 | 281 |
-| Theoretical frameworks | 0.341 | 0.436 | 245 | 170 |
-| Conceptual problems | 0.296 | 0.296 | 9 | 9 |
+| Comparison space | Layer | Read from | Lexical | Semantic | Labels | Concepts |
+| --- | --- | --- | --- | --- | --- | --- |
+| Domain evidence (controlled) | identity | `domain_evidence.domain` | 0.878 | 0.878 | 3 | 3 |
+| Psychological concepts | identity | `psychological_concepts.concept_label` | 0.414 | 0.463 | 424 | 281 |
+| Integration claims | identity | `integration_claims.source_factor_label + domains_linked + target_factor_label` | 0.585 | 0.585 | 4 | 3 |
+| Theoretical frameworks | identity | `theoretical_frameworks.framework_label` | 0.341 | 0.436 | 245 | 170 |
+| Conceptual problems (controlled) | identity | `conceptual_problems.problem_type` | 0.296 | 0.296 | 9 | 9 |
+| Key quotes (controlled) | identity | `key_quotes.claim_type` | 0.433 | 0.433 | 7 | 7 |
+| Constructs carrying a domain | vocabulary | `domain_evidence.constructs_named` | 0.307 | 0.383 | 1139 | 727 |
+| Constructs carrying biology | vocabulary | `domain_evidence.constructs_named` | 0.255 | 0.357 | 507 | 332 |
+| Constructs carrying psychology | vocabulary | `domain_evidence.constructs_named` | 0.406 | 0.467 | 324 | 218 |
+| Constructs carrying the social | vocabulary | `domain_evidence.constructs_named` | 0.237 | 0.285 | 333 | 222 |
+| Concepts the review defines | filtered | `psychological_concepts.concept_label` | 0.272 | 0.289 | 144 | 122 |
+| Frameworks doing real work | filtered | `theoretical_frameworks.framework_label` | 0.280 | 0.349 | 165 | 124 |
+| Mechanistic integration claims | filtered | `integration_claims.source_factor_label + domains_linked + target_factor_label` | 0.430 | 0.446 | 4 | 3 |
 
-Mean over the lists: 0.350 lexical against 0.398 semantic, over 666 embedded labels. The distance between those two numbers is the part of the apparent disagreement that was only ever wording. The conceptual problems are unchanged because that list is identified by a controlled `problem_type`, where a string comparison is already the right one. Sensitivity to the threshold is in `03_reliability/semantic_overlap_summary.json`: the mean moves by 0.02 across cosine 0.60 to 0.75, so no reading here depends on where exactly the line is drawn.
+Mean over all spaces: 0.395 lexical against 0.436 semantic, over 1574 embedded labels. Over the 10 free-text spaces alone, where the semantic layer has something to merge, the mean is 0.406. The distance between the two columns is the part of the apparent disagreement that was only ever wording.
+
+The largest single vocabulary in the run was invisible to every metric until now. `domain_evidence.constructs_named` carries 2,522 named constructs, more than the psychological-concept list itself, and it is where the coders say what actually carries each domain. Split by domain, the three providers converge least on the social (0.285) and most on the psychological (0.467), which is the same asymmetry the coverage ladder shows, now measured on the content rather than on the grade.
+
+The controlled spaces are the control condition rather than a result. Where an item is identified by a value from a closed list, the two coders picked from the same menu, the semantic layer has nothing to merge, and the two columns are identical by construction. That they come out identical is the check that the method is not manufacturing agreement wherever it is applied.
+
+Sensitivity to the threshold is in `03_reliability/semantic_overlap_summary.json`: the mean moves by 0.02 across cosine 0.60 to 0.75, so no reading here depends on where exactly the line is drawn.
 
 ## Review surfaces
 

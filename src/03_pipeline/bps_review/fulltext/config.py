@@ -27,6 +27,8 @@ abstract-level run, so the two stages are directly comparable and swapping in
 state-of-the-art models stays a one-line change.
 """
 
+from dataclasses import dataclass
+
 from bps_review.pilot.config import TESTRUN_MODELS, TestRunModel
 from bps_review.utils.paths import project_path
 
@@ -210,17 +212,24 @@ CATEGORICAL_FIELDS: list[str] = (
 # Every field on which agreement is quantified, in a readable order.
 RELIABILITY_FIELDS: list[str] = CATEGORICAL_FIELDS + PRESENCE_FIELDS
 
-# The open lists compared across models with set overlap. Two coders can both be
-# right and still write different strings, so these are never scored with kappa.
+# The extraction lists compared across models with set overlap. Two coders can
+# both be right and still write different strings, so these are never scored with
+# kappa. Every list of the scheme is compared, not a chosen few: a list left out
+# of the overlap metrics is a part of the extraction nobody ever checks.
 LIST_FIELDS: list[str] = [
+    "bps_usage_instances",
+    "bps_definitions",
+    "domain_evidence",
     "biological_factors",
     "social_factors",
     "psychological_concepts",
     "other_domain_factors",
     "concept_relations",
+    "integration_claims",
     "theoretical_frameworks",
     "instruments",
     "conceptual_problems",
+    "key_quotes",
 ]
 
 # The extraction lists whose items carry a verbatim quote from the source text.
@@ -242,15 +251,24 @@ QUOTED_ITEM_FIELDS: list[str] = [
 
 # What identifies an item for the overlap metrics: one key, or several joined,
 # because a relation and an integration claim are edges rather than labels.
+#
+# This mirrors ``schema.ITEM_LABEL_KEY`` and is written out rather than imported,
+# because this module is the leaf that the schema package itself imports. A test
+# asserts the two tables are identical, so they cannot drift apart in silence.
 LIST_LABEL_KEY: dict[str, tuple[str, ...]] = {
+    "bps_usage_instances": ("bps_function",),
+    "bps_definitions": ("attributed_source",),
+    "domain_evidence": ("domain",),
     "biological_factors": ("factor_label",),
     "social_factors": ("factor_label",),
     "psychological_concepts": ("concept_label",),
     "other_domain_factors": ("factor_label",),
     "concept_relations": ("source_concept", "relation_type", "target_concept"),
+    "integration_claims": ("source_factor_label", "domains_linked", "target_factor_label"),
     "theoretical_frameworks": ("framework_label",),
     "instruments": ("instrument_label",),
     "conceptual_problems": ("problem_type",),
+    "key_quotes": ("claim_type",),
 }
 
 # Which project vocabulary the identifying label is normalized against before two
@@ -261,7 +279,313 @@ LIST_LABEL_VOCAB: dict[str, str] = {
     "psychological_concepts": "psych_concept",
     "theoretical_frameworks": "framework",
     "instruments": "instrument",
+    "bps_definitions": "bps_source",
 }
+
+# Whether an item's identity is the coder's own wording or a value from a closed
+# list. The distinction decides how a number should be read, not whether it is
+# computed: on a controlled identity the two coders picked from the same menu, so
+# the semantic layer has nothing to merge and a gap over the lexical score would
+# be an artifact. Reporting both side by side makes that visible instead of
+# hiding it.
+LIST_LABEL_KIND: dict[str, str] = {
+    "bps_usage_instances": "controlled",
+    "bps_definitions": "free text",
+    "domain_evidence": "controlled",
+    "biological_factors": "free text",
+    "social_factors": "free text",
+    "psychological_concepts": "free text",
+    "other_domain_factors": "free text",
+    "concept_relations": "free text",
+    "integration_claims": "free text",
+    "theoretical_frameworks": "free text",
+    "instruments": "free text",
+    "conceptual_problems": "controlled",
+    "key_quotes": "controlled",
+}
+
+# --------------------------------------------------------------------------
+# Comparison spaces: every vocabulary two coders could have written differently.
+#
+# Comparing extraction lists by item identity answers one question, "did the two
+# coders find the same things", and it is the question the lexical table answers.
+# It is not the only question the extraction supports, and on its own it wastes
+# most of the resolution the scheme was built for.
+#
+# A scheme 3 item is not a label. It is a small record, and several of its fields
+# are themselves open vocabularies: which constructs a coder says carry the
+# biological domain, which measure a construct is operationalized with, which
+# elements a definition of the model lists, which constructs a conceptual problem
+# concerns, who the model is attributed to. Each of those is a place where two
+# coders can read a paper identically and still write different words, which is
+# exactly what the semantic layer exists to separate from real disagreement.
+#
+# A space is therefore any set of labels that can be pulled out of one extraction
+# list and compared across coders. Three kinds are declared below.
+#
+# * **Identity spaces**, one per extraction list: what was extracted.
+# * **Vocabulary spaces**, reading one field or one sublist inside the items: what
+#   the coder called it, and where it was anchored.
+# * **Filtered spaces**, restricting a list to the items that carry weight, so a
+#   construct the review actually defines is not averaged together with one it
+#   merely names, and a framework the review is built on is not averaged together
+#   with one mentioned in passing.
+#
+# Spaces whose source list a run does not carry are skipped, so this table can
+# describe the whole scheme while an older run reports only what it holds.
+# --------------------------------------------------------------------------
+@dataclass(frozen=True)
+class ExtractionSpace:
+    """One comparable vocabulary, read out of one extraction list."""
+
+    name: str                            # stable identifier, used as the row key
+    label: str                           # how the space is named in a table or a figure
+    question: str                        # what comparing it answers, in one line
+    field: str                           # the extraction list it is read from
+    keys: tuple[str, ...] = ()           # item keys joined into one label
+    sublist: str = ""                    # item key holding a list of labels
+    vocabulary: str = ""                 # project vocabulary used to normalize, if any
+    kind: str = "free text"              # "free text" or "controlled"
+    layer: str = "identity"              # "identity", "vocabulary", or "filtered"
+    filter_key: str = ""                 # restrict to items whose ...
+    filter_values: tuple[str, ...] = ()  # ... value for filter_key is one of these
+
+
+# The psychological constructs a review states a meaning for, as opposed to the
+# ones it only names. RQ3 turns on the difference.
+DEFINED_CONCEPT_STATUSES = ("formally_defined", "operationalized_only")
+
+# A framework the review is organized around, tests, revises, or rejects, as
+# opposed to one cited in passing.
+SUBSTANTIVE_FRAMEWORK_ROLES = (
+    "organizing framework",
+    "tested or modelled",
+    "extended or revised",
+    "critiqued or rejected",
+    "compared with another model",
+)
+
+
+def _identity_spaces() -> list[ExtractionSpace]:
+    """One space per extraction list, in the order the scheme declares them."""
+    questions = {
+        "bps_usage_instances": "Do the coders find the label doing the same work",
+        "bps_definitions": "Do the coders credit the model to the same sources",
+        "domain_evidence": "Do the coders carry evidence for the same domains",
+        "biological_factors": "Do the coders name the same biological factors",
+        "social_factors": "Do the coders name the same social factors",
+        "psychological_concepts": "Do the coders name the same psychological constructs",
+        "other_domain_factors": "Do the coders reach beyond the triad in the same places",
+        "concept_relations": "Do the coders draw the same edges between constructs",
+        "integration_claims": "Do the coders draw the same links between domains",
+        "theoretical_frameworks": "Do the coders find the same frameworks",
+        "instruments": "Do the coders find the same instruments",
+        "conceptual_problems": "Do the coders see the same conceptual problems",
+        "key_quotes": "Do the coders quote the same kinds of claim",
+    }
+    return [
+        ExtractionSpace(
+            name=field,
+            label=FIELD_LABELS.get(field, field.replace("_", " ").capitalize()),
+            question=questions.get(field, f"Do the coders agree on {field.replace('_', ' ')}"),
+            field=field,
+            keys=LIST_LABEL_KEY.get(field, ()),
+            vocabulary=LIST_LABEL_VOCAB.get(field, ""),
+            kind=LIST_LABEL_KIND.get(field, "free text"),
+            layer="identity",
+        )
+        for field in LIST_FIELDS
+    ]
+
+
+VOCABULARY_SPACES: list[ExtractionSpace] = [
+    ExtractionSpace(
+        name="domain_evidence_constructs",
+        label="Constructs carrying a domain",
+        question="Do the coders name the same constructs as carrying the domains",
+        field="domain_evidence",
+        sublist="constructs_named",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="domain_evidence_constructs_bio",
+        label="Constructs carrying biology",
+        question="Do the coders name the same biological content",
+        field="domain_evidence",
+        sublist="constructs_named",
+        layer="vocabulary",
+        filter_key="domain",
+        filter_values=("biological",),
+    ),
+    ExtractionSpace(
+        name="domain_evidence_constructs_psych",
+        label="Constructs carrying psychology",
+        question="Do the coders name the same psychological content",
+        field="domain_evidence",
+        sublist="constructs_named",
+        layer="vocabulary",
+        filter_key="domain",
+        filter_values=("psychological",),
+    ),
+    ExtractionSpace(
+        name="domain_evidence_constructs_social",
+        label="Constructs carrying the social",
+        question="Do the coders name the same social content",
+        field="domain_evidence",
+        sublist="constructs_named",
+        layer="vocabulary",
+        filter_key="domain",
+        filter_values=("social",),
+    ),
+    ExtractionSpace(
+        name="domain_evidence_subdomains",
+        label="Subdomains touched",
+        question="Do the coders anchor a domain to the same ontology subdomains",
+        field="domain_evidence",
+        sublist="subdomains_named",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="bio_subdomain_anchors",
+        label="Biological subdomain anchors",
+        question="Do the coders place biological factors on the same ontology spine",
+        field="biological_factors",
+        keys=("subdomain_label",),
+        vocabulary="bio_subdomain",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="social_subdomain_anchors",
+        label="Social subdomain anchors",
+        question="Do the coders place social factors on the same ontology spine",
+        field="social_factors",
+        keys=("subdomain_label",),
+        vocabulary="social_subdomain",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="concept_families",
+        label="Concept families",
+        question="Do the coders sort constructs into the same families",
+        field="psychological_concepts",
+        keys=("concept_family",),
+        vocabulary="concept_family",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="concept_measures",
+        label="Measures behind a construct",
+        question="Do the coders operationalize constructs with the same measures",
+        field="psychological_concepts",
+        keys=("measure_named",),
+        vocabulary="instrument",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="instrument_constructs",
+        label="What an instrument measures",
+        question="Do the coders say an instrument measures the same thing",
+        field="instruments",
+        keys=("construct_measured_as_stated",),
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="framework_domains",
+        label="Domains a framework spans",
+        question="Do the coders say a framework covers the same domains",
+        field="theoretical_frameworks",
+        sublist="domains_covered",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="bps_definition_elements",
+        label="Elements of a BPS definition",
+        question="Do the coders read the same components into the model",
+        field="bps_definitions",
+        sublist="elements_named",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="bps_attributions",
+        label="Who the model is credited to",
+        question="Do the coders attribute the model to the same sources",
+        field="bps_usage_instances",
+        keys=("attributed_source",),
+        vocabulary="bps_source",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="problem_affected_labels",
+        label="Constructs a problem concerns",
+        question="Do the coders attach a conceptual problem to the same constructs",
+        field="conceptual_problems",
+        sublist="affected_labels",
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="integration_mediators",
+        label="Named mediators and moderators",
+        question="Do the coders name the same intermediates between domains",
+        field="integration_claims",
+        keys=("mediator_or_moderator",),
+        layer="vocabulary",
+    ),
+    ExtractionSpace(
+        name="integration_endpoints",
+        label="Factors at the ends of a link",
+        question="Do the coders link the same named factors, not merely the same domains",
+        field="integration_claims",
+        keys=("source_factor_label", "target_factor_label"),
+        layer="vocabulary",
+    ),
+]
+
+FILTERED_SPACES: list[ExtractionSpace] = [
+    ExtractionSpace(
+        name="defined_concepts",
+        label="Concepts the review defines",
+        question="Do the coders agree on which constructs are actually given a meaning",
+        field="psychological_concepts",
+        keys=("concept_label",),
+        vocabulary="psych_concept",
+        layer="filtered",
+        filter_key="definitional_status",
+        filter_values=DEFINED_CONCEPT_STATUSES,
+    ),
+    ExtractionSpace(
+        name="substantive_frameworks",
+        label="Frameworks doing real work",
+        question="Do the coders agree on which frameworks the review is built on",
+        field="theoretical_frameworks",
+        keys=("framework_label",),
+        vocabulary="framework",
+        layer="filtered",
+        filter_key="role",
+        filter_values=SUBSTANTIVE_FRAMEWORK_ROLES,
+    ),
+    ExtractionSpace(
+        name="mechanistic_integration_claims",
+        label="Mechanistic integration claims",
+        question="Do the coders agree on where a real pathway is described",
+        field="integration_claims",
+        keys=("source_factor_label", "domains_linked", "target_factor_label"),
+        layer="filtered",
+        filter_key="integration_level",
+        filter_values=("mechanistic", "directional"),
+    ),
+    ExtractionSpace(
+        name="author_named_problems",
+        label="Problems the authors name themselves",
+        question="Do the coders agree on which problems the review notices about itself",
+        field="conceptual_problems",
+        keys=("problem_type",),
+        kind="controlled",
+        layer="filtered",
+        filter_key="named_by_authors",
+        filter_values=("yes",),
+    ),
+]
+
 
 COUNT_FIELDS: list[str] = [f"n_{name}" for name in (
     "bps_usage_instances",
@@ -339,6 +663,15 @@ FIELD_LABELS: dict[str, str] = {
     "domain_evidence": "Domain evidence",
     "key_quotes": "Key quotes",
 }
+
+# Every comparable vocabulary of the scheme, in reading order: what was extracted,
+# what it was called, and the subsets that carry the weight. Built after the label
+# table so a space is named the same way everywhere it appears.
+EXTRACTION_SPACES: list[ExtractionSpace] = (
+    _identity_spaces() + VOCABULARY_SPACES + FILTERED_SPACES
+)
+
+SPACE_BY_NAME: dict[str, ExtractionSpace] = {space.name: space for space in EXTRACTION_SPACES}
 
 # Ordered category vocabularies used for consensus resolution and stacked plots.
 COVERAGE_ORDER = ["elaborated", "mentioned", "minimal", "absent"]

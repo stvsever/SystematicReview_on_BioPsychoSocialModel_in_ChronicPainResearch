@@ -87,7 +87,8 @@ than as a fabricated one.
 | `coding/derive.py` | repair, deterministic derivations, presence flags, serialization |
 | `coding/runner.py` | one article per request, all models in parallel, with retries and usage accounting |
 | `analysis/reliability.py` | categorical agreement, adjacent agreement on the ladders, presence agreement, lexical list overlap |
-| `analysis/semantic.py` | the same lists compared by meaning: embedded labels, soft Jaccard, vocabulary collapse |
+| `analysis/spaces.py` | reads one comparison space out of one extraction list, for both overlap metrics |
+| `analysis/semantic.py` | every space compared by meaning: embedded labels, soft Jaccard, vocabulary collapse |
 | `analysis/integrity.py` | completeness, quote verification, evidence discipline, extraction yield |
 | `visualization/figures.py` | five multi-panel figures, none with a figure-level title |
 | `graph_export.py` | rebuild the knowledge graph from the cached tables, without re-deriving anything |
@@ -120,13 +121,24 @@ run rather than a part of scheme 3.
   adjacent-agreement rate, conceptual elements get a derived binary presence, and
   open label lists get set overlap over vocabulary-normalized labels, with
   relations and integration claims compared as edges rather than as single labels.
-- **Wording is not disagreement.** The open lists are measured twice: once
+- **Wording is not disagreement.** Every open vocabulary is measured twice: once
   lexically, and once over sentence embeddings, where two labels count as the same
   concept above a cosine threshold. `pain catastrophising` and `catastrophic
   thinking about pain` are one construct, and a metric that scores them as a
   disagreement is measuring the vocabulary rather than the reading. Both numbers
   are on the same 0 to 1 scale, the soft one reduces to the hard one at a
   threshold of 1.0, and the threshold sensitivity is written next to the result.
+  The spaces whose identity is a closed vocabulary are kept in the table as the
+  control: their two columns are identical by construction, which is how the
+  reader can see the method is not manufacturing agreement wherever it is pointed.
+- **The comparison is not limited to item identity.** An item of this scheme is a
+  record, not a label, and its own fields carry open vocabularies: the constructs
+  named as carrying a domain, the measure behind a construct, the elements read
+  into a definition of the model, the constructs a conceptual problem concerns.
+  `config.EXTRACTION_SPACES` declares each of those as a comparison space, on
+  three layers (identity, vocabulary, filtered), so the resolution the extraction
+  was built for is the resolution the reliability analysis reports. A space whose
+  extraction list a run does not carry is dropped rather than reported empty.
 - **The ontology is measured, not assumed.** Every extracted item reports whether
   it anchored to the project vocabularies, so the run says how much of what this
   literature names the ontology can currently hold.

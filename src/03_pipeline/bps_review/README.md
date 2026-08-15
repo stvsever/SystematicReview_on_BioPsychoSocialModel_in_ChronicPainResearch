@@ -63,13 +63,20 @@ Three kinds of variable, kept apart because they answer different questions.
 * **Binary presence**, derived from the coded content rather than asked of the
   coder. Whether two coders both found a theoretical framework in a paper has one
   answer.
-* **Open extraction lists**, measured twice. `analysis/reliability.py` computes
-  the lexical Jaccard over normalized labels; `analysis/semantic.py` embeds every
-  label once and counts two labels as the same concept above a cosine threshold,
-  which turns the overlap into a soft Jaccard on the same scale. The distance
-  between the two numbers is the part of the apparent disagreement that was only
-  ever wording. Vectors are cached on disk, so every rerun after the first is
-  free and needs no network.
+* **Open vocabularies**, measured twice, and there are far more of them than
+  there are extraction lists. An item of this scheme is a record whose own fields
+  carry open vocabularies, so `config.EXTRACTION_SPACES` declares 33 comparison
+  spaces on three layers: identity (what was extracted), vocabulary (what it was
+  called, read from a field or a sublist inside the items), and filtered (the
+  subset that carries weight, such as the constructs a review actually defines).
+  `analysis/spaces.py` reads a space; `analysis/reliability.py` scores the
+  identity layer lexically; `analysis/semantic.py` scores every space both ways,
+  embedding each label once and counting two labels as one concept above a cosine
+  threshold. The distance between the two numbers is the part of the apparent
+  disagreement that was only ever wording, and the spaces with a closed identity
+  vocabulary sit in the same table as the control, where the two numbers are
+  identical by construction. Vectors are cached on disk, so every rerun after the
+  first is free and needs no network.
 
 Quote verification (`analysis/integrity.py`) closes the loop: every verbatim
 quote is matched back against the article it came from, so a graded judgement
