@@ -2,7 +2,7 @@
   "n_papers": 47,
   "n_models": 3,
   "n_codings": 141,
-  "n_extracted_items": 4080,
+  "n_extracted_items": 9400,
   "models": [
     {
       "order": 1,
@@ -32,49 +32,50 @@
       "reasoning": {
         "enabled": false
       },
-      "max_output_tokens": 8000
+      "max_output_tokens": 16000
     },
     "Nex-N2-Mini": {
       "reasoning": {
         "effort": "low"
       },
-      "max_output_tokens": 32000
+      "max_output_tokens": 40000
     },
     "Laguna-XS-2.1": {
       "reasoning": {
         "enabled": false
       },
-      "max_output_tokens": 8000
+      "max_output_tokens": 16000
     }
   },
   "token_usage_by_model": {
     "Laguna-XS-2.1": {
-      "prompt_tokens": 616518,
-      "completion_tokens": 136670,
+      "prompt_tokens": 945095,
+      "completion_tokens": 326923,
       "reasoning_tokens": 0,
-      "total_tokens": 753188,
-      "cost_usd": 0.0482
+      "total_tokens": 1272018,
+      "cost_usd": 0.0817
     },
     "DeepSeek-V4-Flash": {
-      "prompt_tokens": 591586,
-      "completion_tokens": 97440,
+      "prompt_tokens": 920385,
+      "completion_tokens": 313432,
       "reasoning_tokens": 0,
-      "total_tokens": 689026,
-      "cost_usd": 0.09
+      "total_tokens": 1233817,
+      "cost_usd": 0.0849
     },
     "Nex-N2-Mini": {
-      "prompt_tokens": 608979,
-      "completion_tokens": 1104055,
-      "reasoning_tokens": 931058,
-      "total_tokens": 1713034,
-      "cost_usd": 0.1256
+      "prompt_tokens": 1160742,
+      "completion_tokens": 1467337,
+      "reasoning_tokens": 1006031,
+      "total_tokens": 2628079,
+      "cost_usd": 0.1684
     }
   },
   "token_usage_total": {
-    "prompt_tokens": 1817083,
-    "completion_tokens": 1338165,
-    "reasoning_tokens": 931058,
-    "total_tokens": 3155248,
-    "cost_usd": 0.2638
-  }
+    "prompt_tokens": 3026222,
+    "completion_tokens": 2107692,
+    "reasoning_tokens": 1006031,
+    "total_tokens": 5133914,
+    "cost_usd": 0.335
+  },
+  "repair_passes": 4
 }

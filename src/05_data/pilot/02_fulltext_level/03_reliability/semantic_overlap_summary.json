@@ -3,175 +3,375 @@
   "embedding_dimensions": 3072,
   "similarity_threshold": 0.65,
   "n_spaces_declared": 33,
-  "n_spaces_measured": 13,
+  "n_spaces_measured": 33,
   "spaces_by_layer": {
-    "identity": 6,
-    "vocabulary": 4,
-    "filtered": 3
+    "identity": 13,
+    "vocabulary": 16,
+    "filtered": 4
   },
-  "n_labels_embedded": 1574,
+  "n_labels_embedded": 6205,
   "n_labels_new_this_run": 0,
   "embedding_usage": {},
   "match_similarity_distribution": {
-    "n_label_comparisons": 8759,
-    "median_best_match": 1.0,
-    "share_above_threshold": 0.621
+    "n_label_comparisons": 19881,
+    "median_best_match": 0.789,
+    "share_above_threshold": 0.577
   },
-  "mean_semantic_jaccard": 0.4358,
-  "mean_lexical_jaccard": 0.3949,
-  "mean_semantic_jaccard_free_text": 0.4059,
+  "mean_semantic_jaccard": 0.3446,
+  "mean_lexical_jaccard": 0.2866,
+  "mean_semantic_jaccard_free_text": 0.3285,
   "threshold_sensitivity": {
     "0.60": {
-      "mean": 0.441,
-      "mean_free_text_spaces": 0.412,
-      "psychological_concepts": 0.469
+      "mean": 0.354,
+      "mean_free_text_spaces": 0.339,
+      "psychological_concepts": 0.457
     },
     "0.65": {
-      "mean": 0.436,
-      "mean_free_text_spaces": 0.406,
-      "psychological_concepts": 0.463
+      "mean": 0.345,
+      "mean_free_text_spaces": 0.328,
+      "psychological_concepts": 0.445
     },
     "0.70": {
-      "mean": 0.43,
-      "mean_free_text_spaces": 0.398,
-      "psychological_concepts": 0.456
+      "mean": 0.333,
+      "mean_free_text_spaces": 0.315,
+      "psychological_concepts": 0.436
     },
     "0.75": {
-      "mean": 0.421,
-      "mean_free_text_spaces": 0.386,
-      "psychological_concepts": 0.449
+      "mean": 0.322,
+      "mean_free_text_spaces": 0.302,
+      "psychological_concepts": 0.425
     }
   },
   "per_space": {
+    "bps_usage_instances": {
+      "label": "BPS usage instances",
+      "layer": "identity",
+      "label_kind": "controlled",
+      "lexical": 0.379,
+      "semantic": 0.379,
+      "label_entries": 433,
+      "distinct_labels": 10,
+      "semantic_concepts": 10
+    },
+    "bps_definitions": {
+      "label": "BPS definitions",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.185,
+      "semantic": 0.185,
+      "label_entries": 63,
+      "distinct_labels": 9,
+      "semantic_concepts": 9
+    },
     "domain_evidence": {
       "label": "Domain evidence",
       "layer": "identity",
       "label_kind": "controlled",
-      "lexical": 0.878,
-      "semantic": 0.878,
-      "label_entries": 390,
+      "lexical": 0.915,
+      "semantic": 0.915,
+      "label_entries": 400,
       "distinct_labels": 3,
       "semantic_concepts": 3
+    },
+    "biological_factors": {
+      "label": "Biological factors",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.234,
+      "semantic": 0.345,
+      "label_entries": 1110,
+      "distinct_labels": 604,
+      "semantic_concepts": 382
+    },
+    "social_factors": {
+      "label": "Social factors",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.228,
+      "semantic": 0.268,
+      "label_entries": 848,
+      "distinct_labels": 437,
+      "semantic_concepts": 315
     },
     "psychological_concepts": {
       "label": "Psychological concepts",
       "layer": "identity",
       "label_kind": "free text",
-      "lexical": 0.414,
-      "semantic": 0.463,
-      "label_entries": 1276,
-      "distinct_labels": 424,
-      "semantic_concepts": 281
+      "lexical": 0.399,
+      "semantic": 0.445,
+      "label_entries": 1504,
+      "distinct_labels": 477,
+      "semantic_concepts": 309
+    },
+    "other_domain_factors": {
+      "label": "Lifestyle and existential factors",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.167,
+      "semantic": 0.256,
+      "label_entries": 455,
+      "distinct_labels": 279,
+      "semantic_concepts": 205
+    },
+    "concept_relations": {
+      "label": "Concept relations",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.026,
+      "semantic": 0.284,
+      "label_entries": 1118,
+      "distinct_labels": 1052,
+      "semantic_concepts": 315
     },
     "integration_claims": {
       "label": "Integration claims",
       "layer": "identity",
       "label_kind": "free text",
-      "lexical": 0.585,
-      "semantic": 0.585,
-      "label_entries": 375,
-      "distinct_labels": 4,
-      "semantic_concepts": 3
+      "lexical": 0.02,
+      "semantic": 0.208,
+      "label_entries": 820,
+      "distinct_labels": 786,
+      "semantic_concepts": 255
     },
     "theoretical_frameworks": {
       "label": "Theoretical frameworks",
       "layer": "identity",
       "label_kind": "free text",
-      "lexical": 0.341,
-      "semantic": 0.436,
-      "label_entries": 465,
-      "distinct_labels": 245,
-      "semantic_concepts": 170
+      "lexical": 0.301,
+      "semantic": 0.336,
+      "label_entries": 507,
+      "distinct_labels": 252,
+      "semantic_concepts": 187
+    },
+    "instruments": {
+      "label": "Instruments",
+      "layer": "identity",
+      "label_kind": "free text",
+      "lexical": 0.267,
+      "semantic": 0.381,
+      "label_entries": 528,
+      "distinct_labels": 280,
+      "semantic_concepts": 190
     },
     "conceptual_problems": {
       "label": "Conceptual problems",
       "layer": "identity",
       "label_kind": "controlled",
-      "lexical": 0.296,
-      "semantic": 0.296,
-      "label_entries": 443,
-      "distinct_labels": 9,
-      "semantic_concepts": 9
+      "lexical": 0.292,
+      "semantic": 0.292,
+      "label_entries": 529,
+      "distinct_labels": 13,
+      "semantic_concepts": 13
     },
     "key_quotes": {
       "label": "Key quotes",
       "layer": "identity",
       "label_kind": "controlled",
-      "lexical": 0.433,
-      "semantic": 0.433,
-      "label_entries": 466,
-      "distinct_labels": 7,
-      "semantic_concepts": 7
+      "lexical": 0.46,
+      "semantic": 0.46,
+      "label_entries": 518,
+      "distinct_labels": 8,
+      "semantic_concepts": 8
     },
     "domain_evidence_constructs": {
       "label": "Constructs carrying a domain",
       "layer": "vocabulary",
       "label_kind": "free text",
-      "lexical": 0.307,
-      "semantic": 0.383,
-      "label_entries": 2522,
-      "distinct_labels": 1139,
-      "semantic_concepts": 727
+      "lexical": 0.327,
+      "semantic": 0.402,
+      "label_entries": 2092,
+      "distinct_labels": 937,
+      "semantic_concepts": 592
     },
     "domain_evidence_constructs_bio": {
       "label": "Constructs carrying biology",
       "layer": "vocabulary",
       "label_kind": "free text",
-      "lexical": 0.255,
-      "semantic": 0.357,
-      "label_entries": 936,
-      "distinct_labels": 507,
-      "semantic_concepts": 332
+      "lexical": 0.288,
+      "semantic": 0.374,
+      "label_entries": 728,
+      "distinct_labels": 397,
+      "semantic_concepts": 258
     },
     "domain_evidence_constructs_psych": {
       "label": "Constructs carrying psychology",
       "layer": "vocabulary",
       "label_kind": "free text",
-      "lexical": 0.406,
-      "semantic": 0.467,
-      "label_entries": 984,
-      "distinct_labels": 324,
-      "semantic_concepts": 218
+      "lexical": 0.454,
+      "semantic": 0.529,
+      "label_entries": 783,
+      "distinct_labels": 228,
+      "semantic_concepts": 149
     },
     "domain_evidence_constructs_social": {
       "label": "Constructs carrying the social",
       "layer": "vocabulary",
       "label_kind": "free text",
-      "lexical": 0.237,
-      "semantic": 0.285,
-      "label_entries": 606,
+      "lexical": 0.242,
+      "semantic": 0.305,
+      "label_entries": 586,
       "distinct_labels": 333,
-      "semantic_concepts": 222
+      "semantic_concepts": 219
+    },
+    "domain_evidence_subdomains": {
+      "label": "Subdomains touched",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.476,
+      "semantic": 0.478,
+      "label_entries": 1445,
+      "distinct_labels": 58,
+      "semantic_concepts": 54
+    },
+    "bio_subdomain_anchors": {
+      "label": "Biological subdomain anchors",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.417,
+      "semantic": 0.419,
+      "label_entries": 588,
+      "distinct_labels": 39,
+      "semantic_concepts": 37
+    },
+    "social_subdomain_anchors": {
+      "label": "Social subdomain anchors",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.424,
+      "semantic": 0.424,
+      "label_entries": 490,
+      "distinct_labels": 17,
+      "semantic_concepts": 16
+    },
+    "concept_families": {
+      "label": "Concept families",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.468,
+      "semantic": 0.528,
+      "label_entries": 1041,
+      "distinct_labels": 40,
+      "semantic_concepts": 32
+    },
+    "concept_measures": {
+      "label": "Measures behind a construct",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.37,
+      "semantic": 0.431,
+      "label_entries": 201,
+      "distinct_labels": 88,
+      "semantic_concepts": 60
+    },
+    "instrument_constructs": {
+      "label": "What an instrument measures",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.183,
+      "semantic": 0.324,
+      "label_entries": 488,
+      "distinct_labels": 316,
+      "semantic_concepts": 199
+    },
+    "framework_domains": {
+      "label": "Domains a framework spans",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.715,
+      "semantic": 0.717,
+      "label_entries": 406,
+      "distinct_labels": 21,
+      "semantic_concepts": 19
+    },
+    "bps_definition_elements": {
+      "label": "Elements of a BPS definition",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.207,
+      "semantic": 0.261,
+      "label_entries": 292,
+      "distinct_labels": 154,
+      "semantic_concepts": 101
+    },
+    "bps_attributions": {
+      "label": "Who the model is credited to",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.186,
+      "semantic": 0.186,
+      "label_entries": 130,
+      "distinct_labels": 22,
+      "semantic_concepts": 22
+    },
+    "problem_affected_labels": {
+      "label": "Constructs a problem concerns",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.126,
+      "semantic": 0.185,
+      "label_entries": 1012,
+      "distinct_labels": 614,
+      "semantic_concepts": 426
+    },
+    "integration_mediators": {
+      "label": "Named mediators and moderators",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.016,
+      "semantic": 0.031,
+      "label_entries": 232,
+      "distinct_labels": 222,
+      "semantic_concepts": 181
+    },
+    "integration_endpoints": {
+      "label": "Factors at the ends of a link",
+      "layer": "vocabulary",
+      "label_kind": "free text",
+      "lexical": 0.029,
+      "semantic": 0.164,
+      "label_entries": 818,
+      "distinct_labels": 770,
+      "semantic_concepts": 366
     },
     "defined_concepts": {
       "label": "Concepts the review defines",
       "layer": "filtered",
       "label_kind": "free text",
-      "lexical": 0.272,
-      "semantic": 0.289,
-      "label_entries": 310,
-      "distinct_labels": 144,
-      "semantic_concepts": 122
+      "lexical": 0.23,
+      "semantic": 0.239,
+      "label_entries": 127,
+      "distinct_labels": 63,
+      "semantic_concepts": 56
     },
     "substantive_frameworks": {
       "label": "Frameworks doing real work",
       "layer": "filtered",
       "label_kind": "free text",
-      "lexical": 0.28,
-      "semantic": 0.349,
-      "label_entries": 306,
-      "distinct_labels": 165,
-      "semantic_concepts": 124
+      "lexical": 0.283,
+      "semantic": 0.307,
+      "label_entries": 303,
+      "distinct_labels": 151,
+      "semantic_concepts": 115
     },
     "mechanistic_integration_claims": {
       "label": "Mechanistic integration claims",
       "layer": "filtered",
       "label_kind": "free text",
-      "lexical": 0.43,
-      "semantic": 0.446,
-      "label_entries": 230,
-      "distinct_labels": 4,
-      "semantic_concepts": 3
+      "lexical": 0.021,
+      "semantic": 0.184,
+      "label_entries": 567,
+      "distinct_labels": 544,
+      "semantic_concepts": 208
+    },
+    "author_named_problems": {
+      "label": "Problems the authors name themselves",
+      "layer": "filtered",
+      "label_kind": "controlled",
+      "lexical": 0.127,
+      "semantic": 0.127,
+      "label_entries": 272,
+      "distinct_labels": 12,
+      "semantic_concepts": 12
     }
   },
   "duplicate_pair_overlap": {}

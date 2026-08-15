@@ -64,7 +64,15 @@ def chat_completion(prompt: str, model: str | None = None, temperature: float = 
     response = requests.post(f"{API_BASE}/chat/completions", headers=_headers(), data=json.dumps(payload), timeout=120)
     response.raise_for_status()
     data = response.json()
-    return data["choices"][0]["message"]["content"]
+    choices = data.get("choices") or []
+    content = (choices[0].get("message") or {}).get("content") if choices else None
+    if not content:
+        error = data.get("error") or {}
+        raise RuntimeError(
+            f"Model {chosen_model} returned no content "
+            f"(error={error.get('message') or error or 'none'})"
+        )
+    return content
 
 
 def _extract_json_blob(text: str) -> Any:
@@ -154,12 +162,29 @@ def chat_completion_json_with_usage(
         payload["reasoning"] = reasoning
     response = requests.post(f"{API_BASE}/chat/completions", headers=_headers(), data=json.dumps(payload), timeout=timeout)
     if response.status_code >= 400:
-        fallback_text = chat_completion(prompt, model=chosen_model, temperature=temperature)
-        return _extract_json_blob(fallback_text), {}
+        # Raised rather than retried here without the JSON mode, the token cap,
+        # and the reasoning settings this call was made with. That silent
+        # downgrade produced answers that looked like codings and were not, and
+        # it hid the status code from the caller's retry policy, which needs it
+        # to tell a congested provider from a bad request.
+        raise RuntimeError(
+            f"OpenRouter returned HTTP {response.status_code} for {chosen_model}: "
+            f"{response.text[:300]}"
+        )
     response.raise_for_status()
     data = response.json()
-    choice = data["choices"][0]
-    content = choice["message"].get("content")
+    choices = data.get("choices") or []
+    if not choices:
+        # An upstream provider error arrives as a 200 with no choices and an
+        # error block. Naming it is what lets the caller retry it as the
+        # transient condition it usually is.
+        error = data.get("error") or {}
+        raise RuntimeError(
+            f"Model {chosen_model} returned no choices "
+            f"(error={error.get('message') or error or 'none'})"
+        )
+    choice = choices[0] or {}
+    content = (choice.get("message") or {}).get("content")
     usage = data.get("usage") or {}
     if not content:
         # An empty answer with finish_reason "length" means the completion budget

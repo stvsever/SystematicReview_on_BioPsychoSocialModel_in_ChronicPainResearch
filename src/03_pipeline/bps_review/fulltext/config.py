@@ -54,6 +54,28 @@ RETRY_BACKOFF_SECONDS = 2.5
 HARD_TIMEOUT_SECONDS = 420.0  # wall-clock cap per attempt; a stalled provider is abandoned and retried
 REQUEST_TIMEOUT_SECONDS = 400
 
+# A congested provider is a different failure from a bad answer, and it needs a
+# different response. Retrying a malformed response quickly is right, because
+# waiting does not make the model answer differently. Retrying an overloaded
+# endpoint quickly is wrong: the four attempts above are exhausted inside fifteen
+# seconds, which is far shorter than a provider outage. One run lost 24 of its
+# 141 codings that way, to a run of 503s on a single model.
+#
+# So a transient failure buys more attempts and a much longer, exponential,
+# jittered wait. The jitter matters as much as the length: twelve workers
+# retrying in lockstep are part of what keeps a provider congested.
+MAX_TRANSIENT_RETRIES = 8      # attempts per paper when the failures are upstream
+TRANSIENT_BACKOFF_SECONDS = 8.0
+TRANSIENT_BACKOFF_CAP_SECONDS = 90.0
+
+# Concurrency for the repair pass that re-codes only the failed cells. It matches
+# the main pass, and is still a third of the load that produced the gap: a repair
+# runs one model at a time, where the main pass runs all three at once. The
+# patience for an overloaded provider now lives in the backoff above, which is
+# where it belongs, rather than in a low worker count that only makes the repair
+# slow.
+REPAIR_WORKERS = MAX_WORKERS
+
 # Every model used here advertises at least a 131k-token context window, so the
 # binding constraint is cost, not context. The instruction block is around 12k
 # tokens (it carries the anchors, the ladders, and the preferred-label
@@ -73,9 +95,13 @@ MAX_OUTPUT_TOKENS = 16000
 # The budgets are sized for the extraction, not for the verdict. A rich paper
 # fills thirteen extraction lists, so a truncated completion is the main way this
 # run can lose data, and completion tokens are the cheap half of the bill.
+# Nex is the reasoning model, and on a rich paper it spent close to 30k tokens
+# thinking before it began to answer, which left too little of a 40k budget for a
+# thirteen-list extraction and truncated the JSON mid-object. The budget is sized
+# for thinking plus a long answer, not for either alone.
 MODEL_RUNTIME: dict[str, dict] = {
     "deepseek/deepseek-v4-flash": {"reasoning": {"enabled": False}, "max_output_tokens": 16000},
-    "nex-agi/nex-n2-mini": {"reasoning": {"effort": "low"}, "max_output_tokens": 40000},
+    "nex-agi/nex-n2-mini": {"reasoning": {"effort": "low"}, "max_output_tokens": 64000},
     "poolside/laguna-xs-2.1": {"reasoning": {"enabled": False}, "max_output_tokens": 16000},
 }
 DEFAULT_RUNTIME: dict = {"reasoning": {"enabled": False}, "max_output_tokens": MAX_OUTPUT_TOKENS}

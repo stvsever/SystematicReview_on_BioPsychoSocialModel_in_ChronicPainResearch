@@ -1,8 +1,21 @@
-[08:57:39] Coding 47 full texts x 3 models = 141 codings (parallel_models=True, workers=12)
-[08:57:39] start  DeepSeek-V4-Flash
-[08:57:39] start  Nex-N2-Mini
-[08:57:39] start  Laguna-XS-2.1
-[08:59:39] done   Laguna-XS-2.1: 47/47 coded, 1152 extracted items, 119.5s
-[09:01:41] done   DeepSeek-V4-Flash: 47/47 coded, 983 extracted items, 242.1s
-[09:07:18] done   Nex-N2-Mini: 47/47 coded, 1945 extracted items, 579.1s
-[09:07:19] ALL DONE: 141 codings, 4080 extracted items, 3155248 tokens, $0.264 | methods={'llm_structured': 141}
+[15:38:29] Coding 47 full texts x 3 models = 141 codings (parallel_models=True, workers=12)
+[15:38:29] start  DeepSeek-V4-Flash
+[15:38:29] start  Nex-N2-Mini
+[15:38:29] start  Laguna-XS-2.1
+[15:42:22] done   Laguna-XS-2.1: 47/47 coded, 2251 extracted items, 233.2s
+[15:43:40] done   DeepSeek-V4-Flash: 47/47 coded, 2565 extracted items, 310.9s
+[15:57:34] done   Nex-N2-Mini: 23/47 coded, 2284 extracted items, 1145.4s
+[15:57:34] ALL DONE: 141 codings, 7100 extracted items, 3678899 tokens, $0.247 | methods={'llm_structured': 117, 'coding_failed': 24}
+[16:02:26] repair Nex-N2-Mini: re-coding 24 failed codings (workers=4)
+[16:13:37] repair Nex-N2-Mini: re-coding 24 failed codings (workers=12)
+[16:36:04] repair Nex-N2-Mini: 12 of 24 recovered, 1159 extracted items added
+[16:36:05] REPAIR DONE: 12 recovered, 12 still failed, 141 codings, 8259 extracted items | methods={'llm_structured': 129, 'coding_failed': 12}
+[16:38:21] repair Nex-N2-Mini: re-coding 12 failed codings (workers=12)
+[16:53:06] repair Nex-N2-Mini: 8 of 12 recovered, 760 extracted items added
+[16:53:07] REPAIR DONE: 8 recovered, 4 still failed, 141 codings, 9019 extracted items | methods={'llm_structured': 137, 'coding_failed': 4}
+[16:53:55] repair Nex-N2-Mini: re-coding 4 failed codings (workers=12)
+[17:08:10] repair Nex-N2-Mini: 3 of 4 recovered, 308 extracted items added
+[17:08:10] REPAIR DONE: 3 recovered, 1 still failed, 141 codings, 9327 extracted items | methods={'llm_structured': 140, 'coding_failed': 1}
+[17:08:48] repair Nex-N2-Mini: re-coding 1 failed codings (workers=12)
+[17:16:20] repair Nex-N2-Mini: 1 of 1 recovered, 73 extracted items added
+[17:16:20] REPAIR DONE: 1 recovered, 0 still failed, 141 codings, 9400 extracted items | methods={'llm_structured': 141}

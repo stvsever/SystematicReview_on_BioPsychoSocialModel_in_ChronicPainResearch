@@ -54,6 +54,7 @@ from bps_review.fulltext.coding.schema import (
     ITEM_QUOTE_KEY,
     OPEN_LIST_FIELDS,
 )
+from bps_review.fulltext.coding.runner import _backoff_seconds, _is_transient
 from bps_review.fulltext.coding.vocabulary import is_controlled, normalize_label
 from bps_review.fulltext.config import (
     EXTRACTION_SPACES,
@@ -62,9 +63,12 @@ from bps_review.fulltext.config import (
     LIST_FIELDS,
     LIST_LABEL_KEY,
     LIST_LABEL_KIND,
+    MAX_RETRIES,
+    MAX_TRANSIENT_RETRIES,
     PRESENCE_FIELDS,
     RELIABILITY_FIELDS,
     SPACE_BY_NAME,
+    TRANSIENT_BACKOFF_CAP_SECONDS,
 )
 from bps_review.fulltext.visualization.figures import EXTRACTION_YIELD_ORDER
 from bps_review.graph.builder import (
@@ -933,3 +937,187 @@ def test_reliability_runs_over_a_full_scheme_table():
     results = build_reliability(_full_scheme_frame(), write=False)
     assert len(results["field_reliability"]) == len(RELIABILITY_FIELDS)
     assert results["summary"]["n_papers"] == 3
+
+
+def _serialized_row(record_id: str, model) -> dict:
+    """One complete coding row for one paper and one model."""
+    record = FullTextCodingRecord.model_validate(_raw_payload(record_id))
+    row = serialize_row(record, model.openrouter_id)
+    row.update({"record_id": record_id, "model_order": model.order, "model_label": model.label,
+                "provider": model.provider, "model_id": model.openrouter_id})
+    return row
+
+
+# --------------------------------------------------------------------------
+# Surviving a provider outage.
+#
+# One run lost 24 of its 141 codings to a run of 503s on a single model. Two
+# things follow: a congested provider has to be told apart from a bad answer and
+# waited out, and filling the gap afterwards must not cost the whole grid.
+# --------------------------------------------------------------------------
+def test_an_upstream_outage_is_told_apart_from_a_bad_answer():
+    """The two failures need different responses, so they must be distinguishable."""
+    assert _is_transient("HTTPError: 503 Server Error: Service Unavailable")
+    assert _is_transient("HTTPError: 429 Too Many Requests")
+    assert _is_transient("hard timeout after 420s")
+    assert not _is_transient("ValueError: No valid JSON object found in model output.")
+    assert not _is_transient("ValidationError: record_id does not match")
+
+
+def test_an_outage_is_waited_out_far_longer_than_a_bad_answer():
+    """A linear backoff gave up on a 503 inside fifteen seconds. It must not again."""
+    transient = sum(_backoff_seconds(attempt, True) for attempt in range(1, MAX_TRANSIENT_RETRIES))
+    plain = sum(_backoff_seconds(attempt, False) for attempt in range(1, MAX_RETRIES))
+    assert transient > 10 * plain
+    assert MAX_TRANSIENT_RETRIES > MAX_RETRIES
+    # Jittered, so a pool of workers cannot retry in lockstep and keep the
+    # provider congested.
+    waits = {_backoff_seconds(3, True) for _ in range(20)}
+    assert len(waits) > 1
+    # And bounded, so a dead provider cannot stall the run indefinitely.
+    assert _backoff_seconds(99, True) <= TRANSIENT_BACKOFF_CAP_SECONDS * 1.4
+
+
+def test_a_repair_replaces_only_the_failed_cells(tmp_path, monkeypatch):
+    """Re-coding a failed cell must leave every other coding exactly as it was."""
+    from bps_review.fulltext.coding import runner
+
+    out = tmp_path / "02_model_codings"
+    (out / "by_model").mkdir(parents=True)
+    (out / "audit").mkdir(parents=True)
+
+    model = FULLTEXT_MODELS[0]
+    good = _serialized_row("P001", model)
+    bad = serialize_row(FullTextCodingRecord(record_id="P002"), model_id="", coding_method="coding_failed")
+    bad.update({"record_id": "P002", "model_order": model.order, "model_label": model.label,
+                "provider": model.provider, "model_id": model.openrouter_id})
+    frame = pd.DataFrame([good, bad])
+    frame.to_csv(out / "by_model" / f"{model.slug}.csv", index=False)
+    frame.to_csv(out / "all_model_codings_long.csv", index=False)
+    (out / "audit" / f"{model.slug}.jsonl").write_text(
+        json.dumps({"record_id": "P001", "model_id": model.openrouter_id, "status": "ok"}) + "\n"
+        + json.dumps({"record_id": "P002", "model_id": model.openrouter_id, "status": "failed"}) + "\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(runner, "codings_dir", lambda: out)
+    monkeypatch.setattr(runner, "long_codings_csv", lambda: out / "all_model_codings_long.csv")
+    monkeypatch.setattr(runner, "items_csv", lambda: out / "all_extracted_items_long.csv")
+    monkeypatch.setattr(
+        runner,
+        "_attempt",
+        lambda record, model_id: (
+            FullTextCodingRecord(
+                record_id=record["record_id"],
+                domain_coverage_bio="elaborated",
+                psychological_concepts=[{
+                    "concept_label": "catastrophizing", "definition_status": "defined",
+                    "evidence_verbatim": "Pain catastrophizing was measured.",
+                    "section_located": "methods",
+                }],
+            ),
+            {"record_id": record["record_id"], "model_id": model_id, "status": "ok", "attempts": 1,
+             "usage": {"prompt_tokens": 10, "completion_tokens": 5, "cost": 0.001}},
+        ),
+    )
+
+    records = [{"record_id": "P001", "title": "t", "abstract": "a", "body": "b", "sections": []},
+               {"record_id": "P002", "title": "t", "abstract": "a", "body": "b", "sections": []}]
+    repaired = runner.repair_failed_codings(models=[model], records=records, verbose=False)
+
+    assert len(repaired) == 2, "the repair changed the number of codings"
+    assert list(repaired["record_id"]) == ["P001", "P002"], "the repair reordered the table"
+    assert not (repaired["coding_method"] == "coding_failed").any(), "a failure survived the repair"
+    # The coding that already worked is untouched, down to the coded value.
+    assert repaired.loc[repaired["record_id"] == "P001", "domain_coverage_psych"].iloc[0] == good["domain_coverage_psych"]
+
+    audits = [json.loads(line) for line in
+              (out / "audit" / f"{model.slug}.jsonl").read_text().splitlines() if line.strip()]
+    assert {audit["record_id"] for audit in audits} == {"P001", "P002"}
+    assert all(audit["status"] == "ok" for audit in audits), "the audit still reports a failure"
+
+
+def test_a_repair_with_nothing_to_fix_is_a_no_op(tmp_path, monkeypatch):
+    """A clean run must not be rewritten, and must not call the API at all."""
+    from bps_review.fulltext.coding import runner
+
+    out = tmp_path / "02_model_codings"
+    (out / "by_model").mkdir(parents=True)
+    (out / "audit").mkdir(parents=True)
+    model = FULLTEXT_MODELS[0]
+    frame = pd.DataFrame([_serialized_row("P001", model)])
+    frame.to_csv(out / "by_model" / f"{model.slug}.csv", index=False)
+
+    monkeypatch.setattr(runner, "codings_dir", lambda: out)
+    monkeypatch.setattr(runner, "long_codings_csv", lambda: out / "all_model_codings_long.csv")
+    monkeypatch.setattr(runner, "items_csv", lambda: out / "all_extracted_items_long.csv")
+
+    def _never(record, model_id):
+        raise AssertionError("a clean run must not re-code anything")
+
+    monkeypatch.setattr(runner, "_attempt", _never)
+    records = [{"record_id": "P001", "title": "t", "abstract": "a", "body": "b", "sections": []}]
+    repaired = runner.repair_failed_codings(models=[model], records=records, verbose=False)
+    assert len(repaired) == 1
+
+
+# --------------------------------------------------------------------------
+# A provider that fails after accepting the request.
+#
+# OpenRouter reports an upstream generation failure as a 200 carrying an error
+# block and no choices, or a choice whose content is null. Both used to surface
+# as an opaque KeyError or AttributeError, which the retry policy could not read
+# and which told the reader nothing.
+# --------------------------------------------------------------------------
+class _FakeResponse:
+    def __init__(self, body: dict, status_code: int = 200):
+        self._body = body
+        self.status_code = status_code
+        self.text = json.dumps(body)
+
+    def json(self) -> dict:
+        return self._body
+
+    def raise_for_status(self) -> None:
+        if self.status_code >= 400:
+            raise RuntimeError(f"HTTP {self.status_code}")
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"error": {"message": "upstream provider is unavailable"}},
+        {"choices": []},
+        {"choices": [{"message": {"content": None}, "finish_reason": "error"}]},
+    ],
+)
+def test_a_provider_failure_is_named_rather_than_raising_a_type_error(body, monkeypatch):
+    """The caller has to be able to read the failure to decide how to retry it."""
+    from bps_review.llm import openrouter
+
+    monkeypatch.setattr(openrouter, "_headers", lambda: {})
+    monkeypatch.setattr(openrouter.requests, "post", lambda *a, **k: _FakeResponse(body))
+    with pytest.raises((RuntimeError, ValueError)) as caught:
+        openrouter.chat_completion_json_with_usage("prompt", model="m/x")
+    message = str(caught.value)
+    assert "m/x" in message, "the failure must name the model"
+    assert _is_transient(message), "an upstream generation failure must be retried as transient"
+
+
+def test_a_bad_status_is_raised_with_its_code_and_not_silently_downgraded(monkeypatch):
+    """The old fallback re-asked without JSON mode, the token cap, or reasoning."""
+    from bps_review.llm import openrouter
+
+    calls: list[str] = []
+
+    def _post(url, **kwargs):
+        calls.append(url)
+        return _FakeResponse({"error": {"message": "service unavailable"}}, status_code=503)
+
+    monkeypatch.setattr(openrouter, "_headers", lambda: {})
+    monkeypatch.setattr(openrouter.requests, "post", _post)
+    with pytest.raises(RuntimeError) as caught:
+        openrouter.chat_completion_json_with_usage("prompt", model="m/x", max_tokens=100)
+    assert "503" in str(caught.value)
+    assert _is_transient(str(caught.value))
+    assert len(calls) == 1, "a failed request must not be silently re-asked with weaker settings"

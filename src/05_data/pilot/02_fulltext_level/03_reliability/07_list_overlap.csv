@@ -1,7 +1,14 @@
 field,field_label,label_kind,mean_pairwise_jaccard,n_comparable_pairs,distinct_labels_total,papers_with_a_shared_label,mean_items_DeepSeek-V4-Flash,mean_items_Nex-N2-Mini,mean_items_Laguna-XS-2.1
-domain_evidence,Domain evidence,controlled,0.8782505910165486,141,3,47,2.83,3.0,2.47
-psychological_concepts,Psychological concepts,free text,0.4141680903430788,141,424,45,6.98,13.06,7.11
-integration_claims,Integration claims,free text,0.5845238095238096,140,4,37,2.23,3.57,2.17
-theoretical_frameworks,Theoretical frameworks,free text,0.34137336093857834,138,245,34,2.45,5.3,2.15
-conceptual_problems,Conceptual problems,controlled,0.29609929078014185,141,9,27,2.21,4.19,3.02
-key_quotes,Key quotes,controlled,0.43252279635258356,141,7,41,2.4,3.64,3.87
+bps_usage_instances,BPS usage instances,controlled,0.37929753461668353,141,10,36,3.28,3.47,2.47
+bps_definitions,BPS definitions,free text,0.18452380952380953,84,9,3,0.57,0.6,0.17
+domain_evidence,Domain evidence,controlled,0.9148936170212766,141,3,47,2.87,3.0,2.64
+biological_factors,Biological factors,free text,0.23409016848672973,140,604,34,7.47,10.81,5.34
+social_factors,Social factors,free text,0.2275866157344149,138,437,31,4.94,9.49,3.62
+psychological_concepts,Psychological concepts,free text,0.39897897001850136,140,477,44,9.43,14.62,7.96
+other_domain_factors,Lifestyle and existential factors,free text,0.16650887504546039,123,279,14,2.34,4.77,2.57
+concept_relations,Concept relations,free text,0.02578141742439057,139,1052,2,5.66,11.6,6.53
+integration_claims,Integration claims,free text,0.01983400831612431,136,786,2,3.77,11.17,2.51
+theoretical_frameworks,Theoretical frameworks,free text,0.3013409606266749,140,252,35,2.55,6.34,1.89
+instruments,Instruments,free text,0.2666166073646388,127,280,20,3.26,5.4,2.57
+conceptual_problems,Conceptual problems,controlled,0.2919706180344478,141,13,29,2.77,5.26,3.23
+key_quotes,Key quotes,controlled,0.4601317122593719,141,8,42,2.91,3.91,4.19

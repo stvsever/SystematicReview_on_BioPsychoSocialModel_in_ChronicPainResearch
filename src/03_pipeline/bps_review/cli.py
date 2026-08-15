@@ -73,6 +73,8 @@ def main() -> None:
     )
     fulltext_testrun.add_argument("--force-corpus", action="store_true", help="Retrieve the full texts again")
     fulltext_testrun.add_argument("--force-coding", action="store_true", help="Re-code every paper via the API")
+    fulltext_testrun.add_argument("--repair-coding", action="store_true",
+                                  help="Re-code only the codings that failed, then analyse as usual")
     fulltext_testrun.add_argument("--no-semantic", action="store_true",
                                   help="Skip embedding-based semantic overlap of the extraction lists")
     fulltext_testrun.add_argument("--no-graph", action="store_true",
@@ -141,6 +143,7 @@ def main() -> None:
         out = run_fulltext_testrun_pipeline(
             force_corpus=args.force_corpus,
             force_coding=args.force_coding,
+            repair_coding=args.repair_coding,
             make_semantic=not args.no_semantic,
             make_graph=not args.no_graph,
         )

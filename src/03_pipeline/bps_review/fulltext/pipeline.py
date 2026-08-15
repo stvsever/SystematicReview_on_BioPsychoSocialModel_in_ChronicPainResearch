@@ -21,7 +21,12 @@ import pandas as pd
 from bps_review.fulltext.analysis.integrity import build_integrity
 from bps_review.fulltext.analysis.reliability import build_reliability
 from bps_review.fulltext.analysis.semantic import build_semantic_overlap
-from bps_review.fulltext.coding.runner import load_items, load_or_run, run_fulltext_testrun
+from bps_review.fulltext.coding.runner import (
+    load_items,
+    load_or_run,
+    repair_failed_codings,
+    run_fulltext_testrun,
+)
 from bps_review.fulltext.config import corpus_csv, graph_dir, reliability_dir
 from bps_review.fulltext.corpus.pmc import build_corpus, load_corpus, load_corpus_records
 from bps_review.fulltext.report import write_fulltext_summary
@@ -41,6 +46,7 @@ def ensure_corpus(force: bool = False, verbose: bool = True) -> pd.DataFrame:
 def run_fulltext_testrun_pipeline(
     force_corpus: bool = False,
     force_coding: bool = False,
+    repair_coding: bool = False,
     make_figures: bool = True,
     make_semantic: bool = True,
     make_graph: bool = True,
@@ -55,6 +61,11 @@ def run_fulltext_testrun_pipeline(
     force_coding:
         Re-code every paper with every model instead of reusing the cached long
         table. This is the step that calls the API.
+    repair_coding:
+        Re-code only the cells written as ``coding_failed`` and splice them into
+        the cached run. A failed coding is almost always a provider outage rather
+        than a paper the model cannot read, so filling one in should not cost the
+        whole grid. Ignored when ``force_coding`` is set, which recodes anyway.
     make_figures:
         Render the multi-panel figures.
     make_semantic:
@@ -64,7 +75,12 @@ def run_fulltext_testrun_pipeline(
         Write the local interactive knowledge graph over the coded run.
     """
     corpus = ensure_corpus(force=force_corpus, verbose=verbose)
-    long_df = run_fulltext_testrun(verbose=verbose) if force_coding else load_or_run(force=False)
+    if force_coding:
+        long_df = run_fulltext_testrun(verbose=verbose)
+    elif repair_coding:
+        long_df = repair_failed_codings(verbose=verbose)
+    else:
+        long_df = load_or_run(force=False)
     items_df = load_items()
     records = load_corpus_records()
 

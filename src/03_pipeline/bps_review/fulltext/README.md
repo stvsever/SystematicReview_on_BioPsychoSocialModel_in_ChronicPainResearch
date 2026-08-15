@@ -61,6 +61,7 @@ out = run_fulltext_testrun_pipeline(force_coding=True)  # re-code every paper vi
 python -m bps_review build-fulltext-corpus     # retrieve the open-access full texts
 python -m bps_review run-fulltext-testrun      # analyse the cached codings
 python -m bps_review run-fulltext-testrun --force-coding
+python -m bps_review run-fulltext-testrun --repair-coding   # re-code only what failed
 python -m bps_review build-fulltext-graph      # rebuild only the knowledge graph
 ```
 
@@ -73,6 +74,19 @@ One paper is one request. Papers are coded concurrently inside a model and the
 models run in parallel, every attempt is wrapped in a hard wall-clock timeout,
 and a paper that never codes is written as an explicit `coding_failed` row rather
 than as a fabricated one.
+
+Two failures are told apart, because they need opposite responses. A malformed
+answer is retried promptly: waiting does not make a model answer differently. A
+congested provider (429, 5xx, a stalled request) is retried on a longer,
+exponential, jittered schedule, because waiting is the only thing that helps and
+because workers retrying in lockstep are part of what keeps a provider congested.
+
+`--repair-coding` re-codes only the cells written as `coding_failed` and splices
+them into the run in place: the recovered rows, their extracted items, and their
+audit entries replace the failed ones, the combined tables are rebuilt from the
+per-model files, and the manifest accumulates what the repair cost so the reported
+cost stays the true cost of the table on disk. Everything downstream then runs as
+usual. Filling one lost cell should not cost the whole grid.
 
 ## Module map
 

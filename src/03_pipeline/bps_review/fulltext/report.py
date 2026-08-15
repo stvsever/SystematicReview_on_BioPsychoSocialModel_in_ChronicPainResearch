@@ -153,11 +153,23 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
             "read a paper the same way and write different words."
         )
         lines.append("")
+        # A run that carries every extraction list answers every declared space, so
+        # the shortfall clause is only written when there is a shortfall to explain.
+        n_declared = semantic_summary["n_spaces_declared"]
+        n_measured = semantic_summary["n_spaces_measured"]
+        coverage_clause = (
+            f"The scheme declares {n_declared} comparison spaces and this run answers every "
+            "one of them."
+            if n_measured >= n_declared
+            else (
+                f"The scheme declares {n_declared} comparison spaces and this run supports "
+                f"{n_measured} of them; the rest belong to extraction lists this run does not "
+                "carry."
+            )
+        )
         lines.append(
-            f"Every one of those vocabularies is compared here. The scheme declares "
-            f"{semantic_summary['n_spaces_declared']} comparison spaces and this run supports "
-            f"{semantic_summary['n_spaces_measured']} of them; the rest belong to extraction "
-            f"lists this run does not carry. Every label is embedded once with "
+            f"Every one of those vocabularies is compared here. {coverage_clause} "
+            f"Every label is embedded once with "
             f"`{semantic_summary['embedding_model']}`, and two labels count as the same concept "
             f"at a cosine of {semantic_summary['similarity_threshold']:.2f}, which turns the "
             "overlap into a soft Jaccard on the same 0 to 1 scale. Both columns are computed in "

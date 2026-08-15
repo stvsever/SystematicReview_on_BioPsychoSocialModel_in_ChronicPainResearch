@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: install search search-wos search-psycinfo api-check dedupe prep-screen screen reliability code code-llm prep-stage3 assets report review test run-all testrun-abstract testrun-fulltext fulltext-corpus fulltext-graph schemes
+.PHONY: install search search-wos search-psycinfo api-check dedupe prep-screen screen reliability code code-llm prep-stage3 assets report review test run-all testrun-abstract testrun-fulltext testrun-fulltext-repair fulltext-corpus fulltext-graph schemes
 
 install:
 	$(PYTHON) -m pip install -e .
@@ -55,6 +55,9 @@ testrun-abstract:
 
 testrun-fulltext:
 	$(PYTHON) -m bps_review run-fulltext-testrun
+
+testrun-fulltext-repair:
+	$(PYTHON) -m bps_review run-fulltext-testrun --repair-coding
 
 fulltext-corpus:
 	$(PYTHON) -m bps_review build-fulltext-corpus

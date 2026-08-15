@@ -2,43 +2,43 @@
   "n_papers": 47,
   "n_models": 3,
   "n_codings": 141,
-  "mean_fleiss_kappa": 0.17831844855653373,
-  "mean_krippendorff_alpha": 0.1841459772901751,
-  "mean_pairwise_agreement": 0.6589577551649708,
-  "mean_unanimous_rate": 0.5328399629972248,
-  "categorical_mean_fleiss_kappa": 0.2167095194156161,
-  "presence_mean_fleiss_kappa": 0.11859900499796121,
-  "coverage_mean_adjacent_agreement": 0.921985815602837,
-  "integration_mean_adjacent_agreement": 0.6755319148936171,
+  "mean_fleiss_kappa": 0.2470369024655653,
+  "mean_krippendorff_alpha": 0.25237706627786627,
+  "mean_pairwise_agreement": 0.6921648091860857,
+  "mean_unanimous_rate": 0.5724417426545086,
+  "categorical_mean_fleiss_kappa": 0.2592533539255299,
+  "presence_mean_fleiss_kappa": 0.2307483005189458,
+  "coverage_mean_adjacent_agreement": 0.924822695035461,
+  "integration_mean_adjacent_agreement": 0.5656028368794326,
   "key_field_reliability": {
     "integration_triadic": {
-      "fleiss_kappa": 0.07105412298101459,
-      "krippendorff_alpha": 0.07764239161235476,
-      "mean_pairwise_agreement": 0.34042553191489366,
-      "adjacent_agreement": 0.8156028368794326
+      "fleiss_kappa": -0.08813088439573992,
+      "krippendorff_alpha": -0.0804136440808767,
+      "mean_pairwise_agreement": 0.29078014184397166,
+      "adjacent_agreement": 0.7375886524822695
     },
     "bps_typology": {
-      "fleiss_kappa": 0.00044306601683657515,
-      "krippendorff_alpha": 0.007532122286220688,
-      "mean_pairwise_agreement": 0.3191489361702127,
+      "fleiss_kappa": -0.006988173859622068,
+      "krippendorff_alpha": 0.00015358623867300913,
+      "mean_pairwise_agreement": 0.3404255319148936,
       "adjacent_agreement": null
     },
     "domain_coverage_social": {
-      "fleiss_kappa": 0.2725795053003532,
-      "krippendorff_alpha": 0.27773851590106,
-      "mean_pairwise_agreement": 0.48226950354609927,
-      "adjacent_agreement": 0.8368794326241135
+      "fleiss_kappa": 0.25184558597354645,
+      "krippendorff_alpha": 0.25715164564749304,
+      "mean_pairwise_agreement": 0.5106382978723404,
+      "adjacent_agreement": 0.9078014184397163
     },
     "fulltext_eligibility": {
-      "fleiss_kappa": 0.06297468354430426,
-      "krippendorff_alpha": 0.069620253164557,
-      "mean_pairwise_agreement": 0.8510638297872339,
+      "fleiss_kappa": 0.10759493670886126,
+      "krippendorff_alpha": 0.11392405063291144,
+      "mean_pairwise_agreement": 0.8581560283687942,
       "adjacent_agreement": null
     },
     "present_integration_evidence": {
-      "fleiss_kappa": 0.013986013986015065,
-      "krippendorff_alpha": 0.020979020979020935,
-      "mean_pairwise_agreement": 0.8581560283687942,
+      "fleiss_kappa": -0.02496839443742137,
+      "krippendorff_alpha": -0.017699115044247815,
+      "mean_pairwise_agreement": 0.6737588652482268,
       "adjacent_agreement": null
     }
   },
@@ -47,32 +47,43 @@
       "DeepSeek-V4-Flash",
       "Laguna-XS-2.1"
     ],
-    "agreement": 0.7086031452358926
+    "agreement": 0.729483282674772
   },
   "least_agreeing_pair": {
     "models": [
       "Nex-N2-Mini",
       "Laguna-XS-2.1"
     ],
-    "agreement": 0.6207215541165587
+    "agreement": 0.6443768996960486
   },
   "eligibility_unanimous_items": 38,
-  "consensus_include": 47,
+  "consensus_include": 46,
   "consensus_typology_counts": {
-    "pseudo_bps": 18,
-    "true_integrative": 17,
-    "multifactorial": 12
+    "multifactorial": 24,
+    "pseudo_bps": 17,
+    "true_integrative": 5,
+    "narrow_despite_label": 1
   },
   "consensus_triadic_counts": {
-    "none": 19,
-    "descriptive": 12,
-    "partial": 10,
-    "mechanistic": 6
+    "none": 28,
+    "descriptive": 9,
+    "partial": 6,
+    "mechanistic": 4
   },
   "list_overlap": {
-    "psychological_concepts": 0.369,
-    "theoretical_frameworks": 0.304,
-    "conceptual_problems": 0.296
+    "bps_usage_instances": 0.379,
+    "bps_definitions": 0.185,
+    "domain_evidence": 0.915,
+    "biological_factors": 0.234,
+    "social_factors": 0.228,
+    "psychological_concepts": 0.399,
+    "other_domain_factors": 0.167,
+    "concept_relations": 0.026,
+    "integration_claims": 0.02,
+    "theoretical_frameworks": 0.301,
+    "instruments": 0.267,
+    "conceptual_problems": 0.292,
+    "key_quotes": 0.46
   },
-  "typology_coded_matches_derived": 0.6028368794326241
+  "typology_coded_matches_derived": 0.5319148936170213
 }
