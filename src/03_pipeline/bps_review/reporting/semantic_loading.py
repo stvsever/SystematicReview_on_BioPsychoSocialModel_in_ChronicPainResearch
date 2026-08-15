@@ -313,7 +313,7 @@ def run_semantic_loading(stage2: pd.DataFrame) -> SemanticLoadingResult:
         ]
     )
 
-    vector_root = project_path("semantic", "semantic_loading")
+    vector_root = project_path("semantic")
     records_dir = vector_root / "records"
     ontology_dir = vector_root / "ontology"
     analysis_dir = vector_root / "analysis"

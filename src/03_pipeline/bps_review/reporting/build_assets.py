@@ -695,9 +695,9 @@ def _embedding_landscape_plot(
     if record_loadings.empty or not required.issubset(record_loadings.columns):
         return pd.DataFrame()
 
-    record_embeddings_path = project_path("semantic", "semantic_loading", "records", "record_embeddings.npy")
-    ontology_embeddings_path = project_path("semantic", "semantic_loading", "ontology", "ontology_embeddings.npy")
-    subdomain_embeddings_path = project_path("semantic", "semantic_loading", "ontology", "subdomain_embeddings.npy")
+    record_embeddings_path = project_path("semantic", "records", "record_embeddings.npy")
+    ontology_embeddings_path = project_path("semantic", "ontology", "ontology_embeddings.npy")
+    subdomain_embeddings_path = project_path("semantic", "ontology", "subdomain_embeddings.npy")
     if not record_embeddings_path.exists() or not ontology_embeddings_path.exists() or not subdomain_embeddings_path.exists():
         return pd.DataFrame()
 
@@ -1571,9 +1571,9 @@ def _semantic_landscape_integrated_plot(
     if pairwise_loadings.empty:
         return pd.DataFrame()
 
-    record_embeddings_path = project_path("semantic", "semantic_loading", "records", "record_embeddings.npy")
-    ontology_embeddings_path = project_path("semantic", "semantic_loading", "ontology", "ontology_embeddings.npy")
-    subdomain_embeddings_path = project_path("semantic", "semantic_loading", "ontology", "subdomain_embeddings.npy")
+    record_embeddings_path = project_path("semantic", "records", "record_embeddings.npy")
+    ontology_embeddings_path = project_path("semantic", "ontology", "ontology_embeddings.npy")
+    subdomain_embeddings_path = project_path("semantic", "ontology", "subdomain_embeddings.npy")
     embeddings_available = (record_embeddings_path.exists() and
                             ontology_embeddings_path.exists() and
                             subdomain_embeddings_path.exists())

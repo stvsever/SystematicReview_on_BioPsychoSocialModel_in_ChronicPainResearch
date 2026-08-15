@@ -24,5 +24,25 @@ paper/report/*.xdv
 src/02_coding_schemes/**/*.aux
 src/02_coding_schemes/**/*.log
 src/02_coding_schemes/**/*.out
+
+# Article full texts. The review may read them, it may not redistribute them, so
+# no individual article body is carried in Git. What is carried is the inventory,
+# the identifiers, and everything the coding derived from the text: the coded
+# rows, the extracted items, the verbatim evidence quotes, and the aggregate
+# tables. An authorized reviewer restores the texts locally with
+# `make fulltext-corpus`, which repeats retrieval and quote verification.
 src/06_review_stages/04_extraction/inputs/fulltext_cache/
-src/08_docs/*.tmp
+src/05_data/pilot/02_fulltext_level/01_corpus/03_fulltext_txt/*
+!src/05_data/pilot/02_fulltext_level/01_corpus/03_fulltext_txt/.gitkeep
+
+# Local vector store for semantic label matching. The embeddings are a cache of
+# the OpenRouter embedding endpoint keyed by label text: regenerating them is one
+# command and a fraction of a cent, so the vectors are not carried in Git.
+src/05_data/interim/embeddings/
+
+# Internal working sections, kept local and never published. 07_docs holds the
+# project status write-ups, 08_artifacts is scratch space for run logs and
+# validation. Neither carries review data: the committed record of a run lives
+# under src/05_data and src/06_review_stages.
+src/07_docs/
+src/08_artifacts/

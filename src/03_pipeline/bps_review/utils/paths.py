@@ -21,9 +21,11 @@ WORKSPACE_SECTIONS: dict[str, str] = {
     "notebooks": "04_notebooks",
     "data": "05_data",
     "review_stages": "06_review_stages",
-    "semantic": "07_semantic_space",
-    "docs": "08_docs",
-    "artifacts": "09_artifacts",
+    # The semantic space is an output of the synthesis stage, so it lives inside
+    # that stage rather than beside it. Code still asks for it by name.
+    "semantic": "06_review_stages/05_synthesis/semantic_space",
+    "docs": "07_docs",
+    "artifacts": "08_artifacts",
 }
 
 
