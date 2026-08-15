@@ -148,20 +148,26 @@
       return (children.get(node.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
     }
 
-    function leafFieldsOf(group) {
+    // Headings nest to any depth: a group can hold entities, and an entity can
+    // hold kinds of its own. The coding fields are the leaves, wherever they sit.
+    function leafFieldsOf(node, depth, depths) {
       const leaves = [];
-      branchesOf(group).forEach((branch) => {
+      branchesOf(node).forEach((branch) => {
         if (branch.type === "subgroup") {
-          branchesOf(branch).forEach((field) => leaves.push({ field, subgroup: branch }));
+          depths.set(branch.id, depth + 1);
+          leaves.push(...leafFieldsOf(branch, depth + 1, depths));
         } else {
-          leaves.push({ field: branch, subgroup: null });
+          leaves.push(branch);
         }
       });
       return leaves;
     }
 
     const groupNodes = branchesOf(root);
-    const leavesByGroup = new Map(groupNodes.map((group) => [group.id, leafFieldsOf(group)]));
+    const headingDepth = new Map();
+    const leavesByGroup = new Map(
+      groupNodes.map((group) => [group.id, leafFieldsOf(group, 0, headingDepth)]));
+    const maxHeadingDepth = Math.max(1, ...headingDepth.values());
     const totalFields = Math.max(1, groupNodes.reduce(
       (total, group) => total + leavesByGroup.get(group.id).length, 0));
     let angleCursor = -Math.PI / 2;
@@ -177,7 +183,7 @@
       const padding = Math.min(0.06, sector * 0.12);
       const subgroupAngles = new Map();
 
-      leaves.forEach(({ field, subgroup }, fieldIndex) => {
+      leaves.forEach((field, fieldIndex) => {
         const ratio = (fieldIndex + 0.5) / Math.max(1, leaves.length);
         const angle = angleCursor + padding + ratio * Math.max(0.01, sector - padding * 2);
         const radius = state.showAll ? 5000 : 760 + (fieldIndex % 2) * 86;
@@ -185,10 +191,16 @@
         const fieldX = Math.cos(angle) * radius;
         const fieldY = Math.sin(angle) * radius;
         positionNode(field, fieldX, fieldY);
-        if (subgroup) {
-          const seen = subgroupAngles.get(subgroup.id) || [];
+        // Every heading above this field takes the field's angle into account, so
+        // a heading ends up on the mean bearing of its whole subtree.
+        let ancestorId = parents.get(field.id);
+        while (ancestorId) {
+          const ancestor = nodeById.get(ancestorId);
+          if (!ancestor || ancestor.type !== "subgroup") break;
+          const seen = subgroupAngles.get(ancestor.id) || [];
           seen.push(angle);
-          subgroupAngles.set(subgroup.id, seen);
+          subgroupAngles.set(ancestor.id, seen);
+          ancestorId = parents.get(ancestor.id);
         }
 
         const providerNodes = (children.get(field.id) || []).map((id) => nodeById.get(id)).filter(Boolean);
@@ -243,7 +255,13 @@
         const subgroup = nodeById.get(subgroupId);
         if (!subgroup) return;
         const meanAngle = angles.reduce((total, value) => total + value, 0) / angles.length;
-        const subgroupRadius = state.showAll ? 3300 : 545;
+        // Heading rings sit evenly between the group ring and the field ring, one
+        // ring per nesting level, so depth in the tree reads as distance out.
+        const innerRadius = state.showAll ? 1800 : 330;
+        const outerRadius = state.showAll ? 5000 : 760;
+        const depth = headingDepth.get(subgroupId) || 1;
+        const subgroupRadius = innerRadius
+          + (outerRadius - innerRadius) * depth / (maxHeadingDepth + 1);
         subgroup.layoutAngle = meanAngle;
         positionNode(
           subgroup,

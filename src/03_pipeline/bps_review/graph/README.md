@@ -35,8 +35,11 @@ works directly from `file://` in browsers that block local fetch requests.
 The hierarchy is
 
 ```text
-run -> field group -> [entity] -> coding field -> provider -> article -> item
+run -> field group -> [entity ...] -> coding field -> provider -> article -> item
 ```
+
+Headings nest to whatever depth the group declares, so an entity can hold kinds
+of its own.
 
 The initial radial overview shows only the scheme layer: the field groups of
 scheme 3, the entities, and every coding field inside them. Reviewers can expand
@@ -47,21 +50,38 @@ to the field. A separate Show all mode renders every selected layer at once.
 
 ### The entity layer
 
-One group carries a level of its own, and it is the group the review is about.
-**Biopsychosocial entities** holds five entities, and each holds its own coding
-fields:
+One group nests, and it is the group the review is about. **Biopsychosocial
+entities** holds the triad as three siblings, and everything the registration
+adds beyond the triad under a fourth heading with children of its own:
 
-| Entity | Coding fields |
-| --- | --- |
-| Biological factors | the named biological factors, and the biological evidence with the constructs carrying it |
-| Psychological factors | the psychological constructs, whether the review defines them, the relations drawn between them, and the psychological evidence |
-| Social factors | the named social factors, and the social evidence with its constructs |
-| Lifestyle factors | the lifestyle factors named beyond the triad, and how deeply lifestyle is covered |
-| Spiritual and existential factors | the existential and environmental factors named, and how deeply that domain is covered |
+```text
+Biopsychosocial entities
+├── Biological factors
+│   ├── Biological factors (named)
+│   └── Biological evidence and constructs
+├── Psychological factors
+│   ├── Psychological concepts
+│   ├── Concept definitions
+│   ├── Concept relations
+│   └── Psychological evidence and constructs
+├── Social factors
+│   ├── Social factors (named)
+│   └── Social evidence and constructs
+└── Other factors
+    ├── Lifestyle factors
+    │   ├── Lifestyle factors named
+    │   └── Lifestyle coverage
+    └── Spiritual and existential factors
+        ├── Existential factors named
+        ├── Spiritual or existential coverage
+        └── Environmental factors named
+```
 
-That level exists because these fields are not siblings. A concept definition and
-a social factor are different kinds of thing, and one flat ring of coding fields
-says they are the same.
+The depth is the argument. A concept definition and a social factor are different
+kinds of thing, so one flat ring of coding fields would say they are alike. And
+lifestyle and the existential are not a fourth and fifth domain sitting beside
+biology: they are the account of what falls outside the triad, so they sit one
+level down, under a heading that says exactly that.
 
 Two of the scheme's lists hold more than one entity at a time. `domain_evidence`
 is a single list covering all three domains, and `other_domain_factors` a single

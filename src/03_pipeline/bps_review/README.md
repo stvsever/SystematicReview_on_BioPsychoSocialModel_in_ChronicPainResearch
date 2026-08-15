@@ -89,9 +89,9 @@ HTML, CSS, and JavaScript, no server and no network. The hierarchy is run, field
 group, entity, coding field, provider, article coding, extracted item, so a
 reviewer can walk from the scheme itself down to the sentence one judgement rests
 on. The entity level is what the review is about: **Biopsychosocial entities**
-holds the biological, psychological, social, lifestyle, and existential entities,
-each with its own coding fields, and the two lists that carry several entities at
-once are split so the biological evidence sits under biology rather than in one
+holds the triad as three siblings and everything beyond it under a fourth heading
+with children of its own, and the two lists that carry several entities at once
+are split so the biological evidence sits under biology rather than in one
 undifferentiated list. See [`graph/README.md`](graph/README.md).
 
 ## Running it

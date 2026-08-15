@@ -741,14 +741,15 @@ def test_graph_payload_is_a_connected_tree_down_to_the_extracted_item():
     assert concept_items[0]["detail"]["Normalized label"] == "catastrophizing"
 
 
+def _spec_columns(spec) -> set[str]:
+    """Every column a group names, however deeply its headings nest."""
+    if isinstance(spec, dict):
+        return {column for child in spec.values() for column in _spec_columns(child)}
+    return {view.column if isinstance(view, FieldView) else view for view in spec}
+
+
 def _grouped_columns() -> set[str]:
-    columns: set[str] = set()
-    for spec in FIELD_GROUPS.values():
-        branches = spec.values() if isinstance(spec, dict) else [spec]
-        for views in branches:
-            for view in views:
-                columns.add(view.column if isinstance(view, FieldView) else view)
-    return columns
+    return {column for spec in FIELD_GROUPS.values() for column in _spec_columns(spec)}
 
 
 def test_graph_groups_only_name_fields_the_scheme_produces():
@@ -759,21 +760,29 @@ def test_graph_groups_only_name_fields_the_scheme_produces():
     assert grouped <= produced, f"grouped but never produced: {sorted(grouped - produced)}"
 
 
-def test_the_entity_layer_covers_the_triad_and_what_lies_beyond_it():
-    """Five entities: the three domains, plus the two the registration adds."""
+def test_the_entity_layer_separates_the_triad_from_what_lies_beyond_it():
+    """The three domains are siblings; what the registration adds is one level down.
+
+    Lifestyle and the spiritual or existential are not a fourth and fifth domain.
+    They are the account of what falls outside the three, so they sit under one
+    heading of their own and the depth of the tree says so.
+    """
     assert list(BPS_ENTITY_SUBGROUPS) == [
         "Biological factors",
         "Psychological factors",
         "Social factors",
+        "Other factors",
+    ]
+    assert list(BPS_ENTITY_SUBGROUPS["Other factors"]) == [
         "Lifestyle factors",
         "Spiritual and existential factors",
     ]
-    # Each entity owns at least one field, and every view reads a real column.
+    # Every entity owns at least one field, and every view reads a real column.
     row = serialize_row(FullTextCodingRecord.model_validate(_raw_payload()), "vendor/model-x")
-    for entity, views in BPS_ENTITY_SUBGROUPS.items():
-        assert views, f"{entity} has no coding fields"
-        for view in views:
-            assert view.column in row, f"{entity} reads {view.column}, which the scheme never writes"
+    for entity, spec in BPS_ENTITY_SUBGROUPS.items():
+        assert _spec_columns(spec), f"{entity} has no coding fields"
+        for column in _spec_columns(spec):
+            assert column in row, f"{entity} reads {column}, which the scheme never writes"
 
 
 def test_a_list_holding_several_entities_is_split_into_one_node_each():
@@ -811,15 +820,31 @@ def test_a_list_holding_several_entities_is_split_into_one_node_each():
         assert {node["detail"]["domain"] for node in items} == {domain}
 
 
-def test_every_node_below_an_entity_hangs_off_that_entity():
+def test_a_field_hangs_off_the_headings_that_name_it():
+    """The path a node reports and the path its edges take have to be the same one."""
     corpus_df, long_df, items_df = _graph_frames()
+    long_df = long_df.assign(
+        other_domain_factors=json.dumps([
+            {"factor_label": "sleep hygiene", "domain": "lifestyle"},
+            {"factor_label": "meaning in life", "domain": "spiritual or existential"},
+        ]),
+    )
     payload = graph_payload(corpus_df, long_df, items_df)
     by_id = {node["id"]: node for node in payload["nodes"]}
     parent = {edge["target"]: edge["source"] for edge in payload["edges"]}
+
+    nested = [node for node in payload["nodes"]
+              if node["type"] == "field" and node.get("field_path") == [
+                  "Other factors", "Lifestyle factors"]]
+    assert nested, "the lifestyle slice never reached its heading"
+
     for node in payload["nodes"]:
-        if node["type"] != "field" or not node.get("field_subgroup"):
+        if node["type"] != "field" or not node.get("field_path"):
             continue
-        holder = by_id[parent[node["id"]]]
-        assert holder["type"] == "subgroup"
-        assert holder["label"] == node["field_subgroup"]
-        assert by_id[parent[holder["id"]]]["type"] == "group"
+        walked = []
+        cursor = by_id[parent[node["id"]]]
+        while cursor["type"] == "subgroup":
+            walked.append(cursor["label"])
+            cursor = by_id[parent[cursor["id"]]]
+        assert cursor["type"] == "group"
+        assert list(reversed(walked)) == node["field_path"]
