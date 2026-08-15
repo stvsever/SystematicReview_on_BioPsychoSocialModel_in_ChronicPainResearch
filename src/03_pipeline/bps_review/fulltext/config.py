@@ -415,5 +415,9 @@ def figures_dir():
     return fulltext_root() / "04_figures"
 
 
+def graph_dir():
+    return fulltext_root() / "05_knowledge_graph"
+
+
 def summary_md():
     return fulltext_root() / "TESTRUN_SUMMARY_FULLTEXT.md"

@@ -2,8 +2,7 @@
 
 Everything under `src/` is grouped into numbered sections that follow the order of the review:
 what it committed to, the instruments it uses, the code that applies them, the notebooks that
-run them, the data they produce, the stage-by-stage outputs, the semantic layer, and the
-documentation around it.
+run them, the data they produce, the stage-by-stage outputs, and the documentation around it.
 
 ```text
 src/
@@ -26,13 +25,15 @@ src/
 │   │   └── search_queries.yaml     # search strings per database
 │   ├── tests/                  # the test suite (pytest)
 │   └── bps_review/             # the Python package
+│       ├── README.md               # what each subpackage does and how a run flows
 │       ├── cli.py                  # command routing (python -m bps_review ...)
 │       ├── search/                 # PubMed, Web of Science, PsycINFO, deduplication
 │       ├── screening/              # Stage 1 eligibility and reliability
 │       ├── extraction/             # Stage 2 abstract coding and Stage 3 preparation
 │       ├── synthesis/              # corpus-level synthesis helpers
 │       ├── reporting/              # figures, tables, manuscript fragments, semantic loading
-│       ├── llm/                    # OpenRouter client
+│       ├── graph/                  # local interactive knowledge graph over a coded run
+│       ├── llm/                    # OpenRouter chat and embedding client
 │       ├── utils/                  # paths, io, env, metadata helpers
 │       │
 │       ├── pilot/              # cross-provider test run, abstract level (scheme 2)
@@ -49,9 +50,10 @@ src/
 │           ├── config.py               # models, per-model runtime, ladders, caps, paths
 │           ├── corpus/pmc.py           # open-access retrieval for the candidate set
 │           ├── coding/                 # schema, prompt, condenser, repair, derivations, runner
-│           ├── analysis/               # reliability plus quote and evidence integrity
+│           ├── analysis/               # reliability, semantic overlap, quote and evidence integrity
 │           ├── visualization/figures.py
 │           ├── report.py
+│           ├── graph_export.py         # rebuild the knowledge graph from cached tables
 │           └── pipeline.py             # run_fulltext_testrun_pipeline()
 │
 ├── 04_notebooks/           # the two end-to-end test-run notebooks
@@ -62,17 +64,18 @@ src/
 │   ├── raw/ interim/ processed/    # main-pipeline data areas
 │   └── pilot/                      # everything both test runs produce
 │       ├── 01_abstract_level/          # sample, codings, reliability, figures, candidate set
-│       └── 02_fulltext_level/          # corpus, codings, reliability, integrity, figures
+│       └── 02_fulltext_level/          # corpus, codings, reliability, integrity, figures,
+│                                       # and the interactive knowledge graph
 │
 ├── 06_review_stages/       # organized outputs of the main pipeline, by stage
-│   └── 01_protocol/ 02_search/ 03_screening/ 04_extraction/ 05_synthesis/ 06_reporting/
+│   ├── 01_protocol/ 02_search/ 03_screening/ 04_extraction/ 06_reporting/
+│   └── 05_synthesis/
+│       ├── outputs/                # PRISMA counts and the results summary
+│       └── semantic_space/         # ontology-aligned embeddings and domain loadings
 │
-├── 07_semantic_space/      # ontology-aligned embeddings and semantic loading analyses
-│   └── semantic_loading/ontology/ records/ analysis/
+├── 07_docs/                # project status and working notes (local only)
 │
-├── 08_docs/                # project status and working notes
-│
-└── 09_artifacts/           # run logs and validation scratch space
+└── 08_artifacts/           # run logs and validation scratch space (local only)
 ```
 
 ## Where the section names live
@@ -95,6 +98,9 @@ single call site.
 | Run the abstract-level test run                      | `04_notebooks/01_abstractlevel_testrun.ipynb`                          |
 | Run the full-text test run                           | `04_notebooks/02_fulltextlevel_testrun.ipynb`                          |
 | Read the test-run results without running anything   | `05_data/pilot/*/TESTRUN_SUMMARY*.md`                                 |
+| Browse a coded run interactively                     | `05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html`        |
+| See how the knowledge graph is built                 | `03_pipeline/bps_review/graph/README.md`                              |
+| Compare providers by meaning rather than by wording  | `03_pipeline/bps_review/fulltext/analysis/semantic.py`                |
 | Change the models or the worker counts               | `03_pipeline/bps_review/pilot/config.py`                              |
 | See the main-pipeline outputs stage by stage         | `06_review_stages/`                                                   |
 
@@ -106,8 +112,9 @@ exports the consensus candidate set.
 
 `bps_review.fulltext` retrieves the open-access full texts of that candidate set, applies the
 Stage 3 deep coding scheme with the same three models, verifies every extracted quote against
-its source article, and quantifies categorical agreement, adjacent agreement on the ordered
-ladders, binary presence agreement, and extraction overlap.
+its source article, quantifies categorical agreement, adjacent agreement on the ordered
+ladders, binary presence agreement, and extraction overlap both lexically and semantically,
+and writes the interactive knowledge graph over the whole run.
 
 ```python
 from bps_review.pilot import run_abstract_testrun

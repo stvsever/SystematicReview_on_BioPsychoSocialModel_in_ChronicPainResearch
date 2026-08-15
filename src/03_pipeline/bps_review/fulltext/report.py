@@ -35,7 +35,8 @@ def _run_manifest() -> dict:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
-def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus: pd.DataFrame) -> str:
+def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus: pd.DataFrame,
+                  semantic: dict | None = None) -> str:
     summary = results["summary"]
     field_rel = results["field_reliability"].sort_values("fleiss_kappa", ascending=False, na_position="last")
     behavior = results["per_model_behavior"]
@@ -137,6 +138,37 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
             f"{int(row['distinct_labels_total'])} | {int(row['papers_with_a_shared_label'])} |"
         )
     lines.append("")
+    if semantic is not None and not semantic["overlap"].empty:
+        semantic_summary = semantic["summary"]
+        lines.append("## The same lists, measured by meaning")
+        lines.append("")
+        lines.append(
+            "The Jaccard above asks whether two providers wrote the same string. That is the wrong "
+            "question for an open list: 'pain catastrophising' and 'catastrophic thinking about pain' "
+            "are one construct, and a string comparison scores them as a disagreement. Every label is "
+            f"therefore embedded once with `{semantic_summary['embedding_model']}` and two labels count "
+            f"as the same concept at a cosine of {semantic_summary['similarity_threshold']:.2f}, which "
+            "turns the overlap into a soft Jaccard on the same 0 to 1 scale."
+        )
+        lines.append("")
+        lines.append("| List | Lexical | Semantic | Gain | Distinct labels | Distinct concepts |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        for _, row in semantic["overlap"].iterrows():
+            lines.append(
+                f"| {row['field_label']} | {_num(row['mean_pairwise_jaccard'])} | "
+                f"{_num(row['mean_pairwise_semantic_jaccard'])} | {_num(row['semantic_gain'])} | "
+                f"{int(row['n_distinct_labels'])} | {int(row['n_semantic_concepts'])} |"
+            )
+        lines.append("")
+        lines.append(
+            f"Mean over the lists: {_num(semantic_summary['mean_lexical_jaccard'])} lexical against "
+            f"{_num(semantic_summary['mean_semantic_jaccard'])} semantic, over "
+            f"{semantic_summary['n_labels_embedded']} embedded labels. The distance between those two "
+            "numbers is the part of the apparent disagreement that was only ever wording. Sensitivity to "
+            "the threshold is reported in `semantic_overlap_summary.json`, so no conclusion rests on "
+            "where exactly the line is drawn."
+        )
+        lines.append("")
     spine = integrity.get("spine_coverage")
     if spine is not None and not spine.empty:
         lines.append("## How much of the extraction lands on the project ontology")
@@ -170,6 +202,17 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
     lines.append(f"- Coded typology matches the rule-derived typology in "
                  f"{_pct(summary['typology_coded_matches_derived'])} of codings.")
     lines.append("")
+    lines.append("## Review surfaces")
+    lines.append("")
+    lines.append("- `01_corpus/`: the retrieved corpus, its manifest, and the retrieval log")
+    lines.append("- `02_model_codings/`: every article by provider coding, the item-level table, "
+                 "the raw audit trail, and the usage manifest")
+    lines.append("- `03_reliability/`: agreement, consensus, overlap, ontology coverage, and quote "
+                 "verification tables")
+    lines.append("- `04_figures/`: the static review figures")
+    lines.append("- `05_knowledge_graph/index.html`: the self-contained interactive knowledge graph, "
+                 "from the coding scheme down to the quoted sentence behind one extracted item")
+    lines.append("")
     lines.append("## How to read this")
     lines.append("")
     lines.append(
@@ -184,7 +227,7 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
 
 
 def write_fulltext_summary(long_df: pd.DataFrame, results: dict, integrity: dict,
-                           corpus: pd.DataFrame) -> str:
-    text = build_summary(long_df, results, integrity, corpus)
+                           corpus: pd.DataFrame, semantic: dict | None = None) -> str:
+    text = build_summary(long_df, results, integrity, corpus, semantic)
     write_text(summary_md(), text)
     return text

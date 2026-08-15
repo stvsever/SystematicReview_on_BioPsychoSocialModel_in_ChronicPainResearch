@@ -79,6 +79,8 @@ The open-access subset of the candidate set the abstract stage produced: 47 full
 - **Quote verification.** Every extracted quote is matched back against its source article. Unverified quotes are reported, not hidden, and the per-model spread is a concrete criterion for choosing the state-of-the-art model later.
 - **Evidence discipline.** For every domain pair graded above `mentioned`, the run checks whether the coder returned a quoted claim for exactly that pair. A graded link with no passage behind it is a judgement the review cannot audit.
 - **Ontology coverage** (new with the extraction layer). Every extracted item reports whether its ontology anchor landed on the project vocabularies, so the next run says how much of what this literature names the ontology can currently hold, and which off-spine labels recur.
+- **Semantic overlap of the open lists.** A string comparison scores `pain catastrophising` and `catastrophic thinking about pain` as a disagreement, which makes the measured overlap a property of the wording rather than of the reading. Every extracted label is therefore embedded once and two labels count as the same concept above a cosine threshold, so each list is reported twice: lexically and semantically. On this run the mean overlap rises from 0.35 to 0.40, and the theoretical frameworks from 0.34 to 0.44, which is the share of the apparent disagreement that was only ever vocabulary. The 424 distinct concept labels the three providers wrote collapse into 281 concepts.
+- **An interactive knowledge graph.** The whole run is also a browsable graph: run, field group, coding field, provider, article coding, extracted item, with filters, full-text search over every label and quote, and an inspector that shows the verbatim passage and its verification verdict. It is plain local HTML with no server. Open [`src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html`](src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html).
 
 - Notebook: [`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](src/04_notebooks/02_fulltextlevel_testrun.ipynb) or `python -m bps_review run-fulltext-testrun`
 - Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_data/pilot/02_fulltext_level/](src/05_data/pilot/02_fulltext_level/)
@@ -160,7 +162,8 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/   # project roo
     ├── 03_pipeline/           # everything that runs
     │   ├── bps_review/            # the Python package
     │   │   ├── pilot/                 # abstract-level test run (scheme 2)
-    │   │   └── fulltext/              # full-text test run (scheme 3)
+    │   │   ├── fulltext/              # full-text test run (scheme 3)
+    │   │   └── graph/                 # interactive knowledge graph over a coded run
     │   ├── config/                # YAML configs controlling pipeline behavior
     │   └── tests/                 # the test suite
     ├── 04_notebooks/
@@ -170,11 +173,11 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/   # project roo
     │   ├── raw/ interim/ processed/   # main-pipeline data areas
     │   └── pilot/                     # both test runs, side by side
     │       ├── 01_abstract_level/         # 100 abstracts x 3 models
-    │       └── 02_fulltext_level/         # 47 full texts x 3 models
+    │       └── 02_fulltext_level/         # 47 full texts x 3 models, plus the knowledge graph
     ├── 06_review_stages/      # organized outputs of the main pipeline, by stage
-    ├── 07_semantic_space/     # ontology-aligned embeddings and loadings
-    ├── 08_docs/               # project status
-    └── 09_artifacts/          # run logs and validation scratch space
+    │   └── 05_synthesis/semantic_space/  # ontology-aligned embeddings and loadings
+    ├── 07_docs/               # project status (local only)
+    └── 08_artifacts/          # run logs and validation scratch space (local only)
 ```
 
 ## 🛠️ Setup and Installation
@@ -221,6 +224,7 @@ python -m bps_review run-abstract-testrun                  # reuse cached sample
 python -m bps_review run-abstract-testrun --force-coding   # re-code all 100 abstracts (300 calls)
 python -m bps_review build-fulltext-corpus                 # retrieve the open-access full texts
 python -m bps_review run-fulltext-testrun --force-coding   # re-code every full text
+python -m bps_review build-fulltext-graph                  # rebuild only the knowledge graph
 ```
 
 ### Run the full main pipeline
@@ -261,6 +265,7 @@ python -m bps_review build-assets
 python -m bps_review run-abstract-testrun
 python -m bps_review build-fulltext-corpus
 python -m bps_review run-fulltext-testrun
+python -m bps_review build-fulltext-graph
 ```
 
 ### What `run-all` does
@@ -318,6 +323,12 @@ Figures, tables, generated LaTeX, compiled manuscript
 
 - `src/05_data/pilot/01_abstract_level/` (sample, codings, reliability tables, figures, candidate set, summary)
 - `src/05_data/pilot/02_fulltext_level/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
+- `src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html` (the interactive graph over the coded run)
+
+Article full texts are read but never redistributed, so no article body is carried in Git.
+What is carried is the inventory, the identifiers, and everything the coding derived from the
+text: the coded rows, the extracted items, the verbatim evidence quotes, and the aggregate
+tables. `make fulltext-corpus` restores the texts locally and repeats quote verification.
 
 ### Core manuscript outputs
 
@@ -337,10 +348,10 @@ Figures, tables, generated LaTeX, compiled manuscript
 
 ### Semantic outputs
 
-- `src/07_semantic_space/semantic_loading/records/semantic_corpus.jsonl`
-- `src/07_semantic_space/semantic_loading/records/record_embeddings.npy`
-- `src/07_semantic_space/semantic_loading/analysis/record_domain_loadings.csv`
-- `src/07_semantic_space/semantic_loading/analysis/pairwise_domain_loadings.csv`
+- `src/06_review_stages/05_synthesis/semantic_space/records/semantic_corpus.jsonl`
+- `src/06_review_stages/05_synthesis/semantic_space/records/record_embeddings.npy`
+- `src/06_review_stages/05_synthesis/semantic_space/analysis/record_domain_loadings.csv`
+- `src/06_review_stages/05_synthesis/semantic_space/analysis/pairwise_domain_loadings.csv`
 
 ### Coding-scheme dossiers
 

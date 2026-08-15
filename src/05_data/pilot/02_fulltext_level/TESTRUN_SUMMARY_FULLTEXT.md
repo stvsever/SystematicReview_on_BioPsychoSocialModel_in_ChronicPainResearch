@@ -78,6 +78,28 @@ Of the 356 domain links graded above 'mentioned', 95.2% carry a quoted claim for
 | Theoretical frameworks | 0.304 | 269 | 26 |
 | Conceptual problems | 0.296 | 9 | 27 |
 
+## The same lists, measured by meaning
+
+The Jaccard above asks whether two providers wrote the same string. That is the wrong question for an open list: `pain catastrophising` and `catastrophic thinking about pain` are one construct, and a string comparison scores them as a disagreement. Every extracted label was therefore embedded once with `openai/text-embedding-3-large`, and two labels count as the same concept at a cosine of 0.65, which turns the overlap into a soft Jaccard on the same 0 to 1 scale.
+
+Both columns below are recomputed from the stored codings by the current code, which is why the lexical column and the label counts differ from the table above: the project vocabularies have been extended since this run was coded, so more spellings now normalize onto one label. Reading the two columns against each other therefore compares a metric with itself, not with an older instrument.
+
+| List | Lexical | Semantic | Distinct labels | Distinct concepts |
+| --- | --- | --- | --- | --- |
+| Psychological concepts | 0.414 | 0.463 | 424 | 281 |
+| Theoretical frameworks | 0.341 | 0.436 | 245 | 170 |
+| Conceptual problems | 0.296 | 0.296 | 9 | 9 |
+
+Mean over the lists: 0.350 lexical against 0.398 semantic, over 666 embedded labels. The distance between those two numbers is the part of the apparent disagreement that was only ever wording. The conceptual problems are unchanged because that list is identified by a controlled `problem_type`, where a string comparison is already the right one. Sensitivity to the threshold is in `03_reliability/semantic_overlap_summary.json`: the mean moves by 0.02 across cosine 0.60 to 0.75, so no reading here depends on where exactly the line is drawn.
+
+## Review surfaces
+
+- `01_corpus/`: the corpus inventory, identifiers, and retrieval log. The article texts stay local and are never pushed.
+- `02_model_codings/`: every article by provider coding, the item-level table, the raw audit trail, and the usage manifest.
+- `03_reliability/`: agreement, consensus, lexical and semantic overlap, and quote verification.
+- `04_figures/`: the five static review figures.
+- `05_knowledge_graph/index.html`: the self-contained interactive knowledge graph over this run, from the coding scheme down to the quoted sentence behind one extracted item. Open it in a desktop browser; it needs no server.
+
 ## Consensus picture of the corpus
 
 - Biological coverage: elaborated 30, mentioned 17

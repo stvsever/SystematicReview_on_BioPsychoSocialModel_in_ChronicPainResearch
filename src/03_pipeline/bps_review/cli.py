@@ -73,6 +73,15 @@ def main() -> None:
     )
     fulltext_testrun.add_argument("--force-corpus", action="store_true", help="Retrieve the full texts again")
     fulltext_testrun.add_argument("--force-coding", action="store_true", help="Re-code every paper via the API")
+    fulltext_testrun.add_argument("--no-semantic", action="store_true",
+                                  help="Skip embedding-based semantic overlap of the extraction lists")
+    fulltext_testrun.add_argument("--no-graph", action="store_true",
+                                  help="Skip the local interactive knowledge graph")
+
+    subparsers.add_parser(
+        "build-fulltext-graph",
+        help="Rebuild the local interactive knowledge graph from the cached full-text run",
+    )
 
     subparsers.add_parser(
         "build-fulltext-corpus",
@@ -129,13 +138,26 @@ def main() -> None:
     elif args.command == "run-fulltext-testrun":
         from bps_review.fulltext import run_fulltext_testrun_pipeline
 
-        out = run_fulltext_testrun_pipeline(force_corpus=args.force_corpus, force_coding=args.force_coding)
+        out = run_fulltext_testrun_pipeline(
+            force_corpus=args.force_corpus,
+            force_coding=args.force_coding,
+            make_semantic=not args.no_semantic,
+            make_graph=not args.no_graph,
+        )
+        semantic = (out.get("semantic") or {}).get("summary") or {}
         print(json.dumps({
             "papers": len(out["corpus"]),
             "codings": len(out["long_df"]),
             "extracted_items": len(out["items_df"]),
+            "semantic_list_overlap": semantic.get("mean_semantic_jaccard"),
+            "knowledge_graph": str(out["graph_path"]) if out["graph_path"] else None,
             "summary": out["results"]["summary"],
         }, indent=2, default=str))
+    elif args.command == "build-fulltext-graph":
+        from bps_review.fulltext.graph_export import export_fulltext_graph
+
+        summary = export_fulltext_graph()
+        print(json.dumps(summary, indent=2, default=str))
     elif args.command == "build-fulltext-corpus":
         from bps_review.fulltext.corpus.pmc import build_corpus as build_fulltext_corpus
 

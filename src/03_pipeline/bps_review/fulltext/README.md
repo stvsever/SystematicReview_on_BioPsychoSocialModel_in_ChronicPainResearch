@@ -61,7 +61,13 @@ out = run_fulltext_testrun_pipeline(force_coding=True)  # re-code every paper vi
 python -m bps_review build-fulltext-corpus     # retrieve the open-access full texts
 python -m bps_review run-fulltext-testrun      # analyse the cached codings
 python -m bps_review run-fulltext-testrun --force-coding
+python -m bps_review build-fulltext-graph      # rebuild only the knowledge graph
 ```
+
+`--no-semantic` and `--no-graph` switch off the two enrichment steps. Both are
+built on top of an already complete result, so a semantic-overlap failure
+(network, credentials, provider outage) is reported and skipped rather than
+allowed to invalidate the run.
 
 One paper is one request. Papers are coded concurrently inside a model and the
 models run in parallel, every attempt is wrapped in a hard wall-clock timeout,
@@ -80,11 +86,17 @@ than as a fabricated one.
 | `coding/condense.py` | fits a long article into the reading budget, dropping the least conceptual paragraphs first |
 | `coding/derive.py` | repair, deterministic derivations, presence flags, serialization |
 | `coding/runner.py` | one article per request, all models in parallel, with retries and usage accounting |
-| `analysis/reliability.py` | categorical agreement, adjacent agreement on the ladders, presence agreement, list overlap |
+| `analysis/reliability.py` | categorical agreement, adjacent agreement on the ladders, presence agreement, lexical list overlap |
+| `analysis/semantic.py` | the same lists compared by meaning: embedded labels, soft Jaccard, vocabulary collapse |
 | `analysis/integrity.py` | completeness, quote verification, evidence discipline, extraction yield |
-| `visualization/figures.py` | four multi-panel figures |
+| `visualization/figures.py` | five multi-panel figures, none with a figure-level title |
+| `graph_export.py` | rebuild the knowledge graph from the cached tables, without re-deriving anything |
 | `report.py` | the standalone summary |
 | `pipeline.py` | `run_fulltext_testrun_pipeline()` |
+
+The knowledge graph itself lives one level up, in
+[`bps_review/graph/`](../graph/README.md), because it is a rendering of a coded
+run rather than a part of scheme 3.
 
 ## Design commitments
 
@@ -108,6 +120,13 @@ than as a fabricated one.
   adjacent-agreement rate, conceptual elements get a derived binary presence, and
   open label lists get set overlap over vocabulary-normalized labels, with
   relations and integration claims compared as edges rather than as single labels.
+- **Wording is not disagreement.** The open lists are measured twice: once
+  lexically, and once over sentence embeddings, where two labels count as the same
+  concept above a cosine threshold. `pain catastrophising` and `catastrophic
+  thinking about pain` are one construct, and a metric that scores them as a
+  disagreement is measuring the vocabulary rather than the reading. Both numbers
+  are on the same 0 to 1 scale, the soft one reduces to the hard one at a
+  threshold of 1.0, and the threshold sensitivity is written next to the result.
 - **The ontology is measured, not assumed.** Every extracted item reports whether
   it anchored to the project vocabularies, so the run says how much of what this
   literature names the ontology can currently hold.

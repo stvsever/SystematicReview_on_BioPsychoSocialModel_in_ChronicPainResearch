@@ -2,8 +2,9 @@ from __future__ import annotations
 
 """Multi-panel figures for the cross-provider full-text test run.
 
-Four clustered figures, each a 2x2 panel, in the same restrained academic style
-as the abstract-level run:
+Clustered figures in the same restrained academic style as the abstract-level
+run. No figure carries a figure-level title: each panel states what it shows, and
+a title above them all would only repeat the caption.
 
 * ``01_field_reliability_2x2.png``  - kappa, alpha, observed agreement, and the
   adjacent-agreement rate on the ordered ladders;
@@ -12,7 +13,10 @@ as the abstract-level run:
 * ``03_integration_profile.png``    - the coverage and integration ladders per
   model, and the corpus-level integration index;
 * ``04_evidence_and_yield.png``     - extraction volume, quote verification,
-  evidence discipline, and the open-list overlap.
+  evidence discipline, and the open-list overlap;
+* ``05_semantic_overlap.png``       - the same extraction lists measured
+  lexically and semantically, and how far the label vocabulary collapses once
+  wording variants are merged. Written only when the semantic layer ran.
 """
 
 from pathlib import Path
@@ -466,10 +470,83 @@ def fig_evidence(yield_table: pd.DataFrame, quotes_by_model: pd.DataFrame,
 
 
 # --------------------------------------------------------------------------
+# Figure 5: lexical against semantic overlap
+# --------------------------------------------------------------------------
+def fig_semantic_overlap(semantic_overlap: pd.DataFrame, summary: dict, out_path: Path) -> None:
+    """Lexical against semantic overlap, and how far the label vocabulary collapses."""
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.6))
+    threshold = summary.get("similarity_threshold")
+    n_models = len(MODEL_LABELS)
+
+    # Panel A: the same lists measured twice.
+    ax = axes[0]
+    order = semantic_overlap.dropna(subset=["mean_pairwise_semantic_jaccard"]).sort_values(
+        "mean_pairwise_semantic_jaccard", ascending=False)
+    y = np.arange(len(order))
+    height = 0.38
+    ax.barh(y - height / 2, order["mean_pairwise_semantic_jaccard"], height=height,
+            color=PALETTE["teal"], edgecolor="white", label="semantic (embeddings)")
+    ax.barh(y + height / 2, order["mean_pairwise_jaccard"], height=height,
+            color=PALETTE["violet"], edgecolor="white", label="lexical (exact string)")
+    ax.set_yticks(y)
+    ax.set_yticklabels([FIELD_LABELS.get(field, field) for field in order["field"]], fontsize=8.5)
+    ax.invert_yaxis()
+    upper = float(order["mean_pairwise_semantic_jaccard"].max()) if len(order) else 0.6
+    ax.set_xlim(0, max(0.7, upper + 0.14))
+    rule = f"same concept at cosine >= {threshold:.2f}" if threshold is not None else "same concept"
+    ax.set_xlabel(f"Mean pairwise overlap between provider pairs ({rule}, "
+                  f"{summary.get('embedding_model', '')})")
+    ax.set_title("Do the providers extract the same things?")
+    for position, (_, row) in zip(y, order.iterrows()):
+        ax.text(float(row["mean_pairwise_semantic_jaccard"]) + 0.008, position - height / 2,
+                f"{row['mean_pairwise_semantic_jaccard']:.2f}", va="center", ha="left",
+                fontsize=7.4, color=INK)
+        ax.text(float(row["mean_pairwise_jaccard"]) + 0.008, position + height / 2,
+                f"{row['mean_pairwise_jaccard']:.2f}", va="center", ha="left",
+                fontsize=7.4, color=MUTED)
+    ax.legend(loc="lower right", frameon=False, fontsize=8.5)
+    _despine(ax)
+    ax.xaxis.grid(True, color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    _panel_label(ax, "A")
+
+    # Panel B: distinct labels against distinct concepts.
+    ax = axes[1]
+    collapse = semantic_overlap.sort_values("n_distinct_labels", ascending=False)
+    y = np.arange(len(collapse))
+    ax.barh(y, collapse["n_distinct_labels"], height=0.62, color="#c7ccd4", edgecolor="white",
+            label="distinct labels written")
+    ax.barh(y, collapse["n_semantic_concepts"], height=0.62, color=PALETTE["teal"],
+            edgecolor="white", label="distinct concepts after merging")
+    ax.set_yticks(y)
+    ax.set_yticklabels([FIELD_LABELS.get(field, field) for field in collapse["field"]], fontsize=8.5)
+    ax.invert_yaxis()
+    ax.set_xlabel(f"Labels over all {n_models} providers and all papers")
+    ax.set_title("How much of the vocabulary is wording rather than concept")
+    for position, (_, row) in zip(y, collapse.iterrows()):
+        ax.text(float(row["n_distinct_labels"]) + 2, position,
+                f"{int(row['n_distinct_labels'])} to {int(row['n_semantic_concepts'])}",
+                va="center", ha="left", fontsize=7.4, color=INK)
+    ax.set_xlim(0, float(collapse["n_distinct_labels"].max()) * 1.22 if len(collapse) else 1)
+    ax.legend(loc="lower right", frameon=False, fontsize=8.5)
+    _despine(ax)
+    ax.xaxis.grid(True, color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    _panel_label(ax, "B")
+
+    # No figure-level title. The matching rule belongs with the axis it applies
+    # to, so it is carried by the x-axis label of panel A instead.
+    fig.tight_layout()
+    ensure_parent(out_path)
+    fig.savefig(out_path)
+    plt.close(fig)
+
+
+# --------------------------------------------------------------------------
 # Orchestration
 # --------------------------------------------------------------------------
 def build_figures(long_df: pd.DataFrame, results: dict, integrity: dict,
-                  out_dir: Path | None = None) -> list[Path]:
+                  out_dir: Path | None = None, semantic: dict | None = None) -> list[Path]:
     _apply_style()
     out_dir = out_dir or figures_dir()
     builders = {
@@ -483,6 +560,9 @@ def build_figures(long_df: pd.DataFrame, results: dict, integrity: dict,
             integrity["extraction_yield"], integrity["quote_verification_by_model"],
             integrity["evidence_discipline_by_model"], results["list_overlap"], path),
     }
+    if semantic and not semantic["overlap"].empty:
+        builders["05_semantic_overlap.png"] = lambda path: fig_semantic_overlap(
+            semantic["overlap"], semantic["summary"], path)
     written = []
     for name, builder in builders.items():
         path = out_dir / name

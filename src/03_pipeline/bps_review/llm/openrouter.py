@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import requests
@@ -13,6 +14,10 @@ from bps_review.utils.env import load_environment
 API_BASE = "https://openrouter.ai/api/v1"
 DEFAULT_CHAT_MODEL = "google/gemini-2.0-flash-001"
 DEFAULT_EMBEDDING_MODEL = "openai/text-embedding-3-small"
+# Semantic label matching needs the larger embedding model: the labels are short
+# noun phrases whose difference is often a single qualifier, and the small model
+# does not separate those reliably.
+SEMANTIC_EMBEDDING_MODEL = "openai/text-embedding-3-large"
 
 
 def _headers() -> dict[str, str]:
@@ -168,6 +173,63 @@ def chat_completion_json_with_usage(
             f"reasoning_tokens={reasoning_tokens}, completion_tokens={usage.get('completion_tokens')})"
         )
     return _extract_json_blob(content), usage
+
+
+def embed_batch_with_usage(
+    texts: list[str], model: str | None = None, timeout: int = 120
+) -> tuple[list[list[float]], dict]:
+    """Embed one batch and return the vectors in input order plus provider usage."""
+    load_environment()
+    chosen_model = model or os.environ.get("OPENROUTER_EMBEDDING_MODEL") or DEFAULT_EMBEDDING_MODEL
+    payload = {"model": chosen_model, "input": texts}
+    response = requests.post(
+        f"{API_BASE}/embeddings", headers=_headers(), data=json.dumps(payload), timeout=timeout
+    )
+    response.raise_for_status()
+    body = response.json()
+    data = sorted(body.get("data", []), key=lambda item: item.get("index", 0))
+    vectors = [item.get("embedding", []) for item in data]
+    if len(vectors) != len(texts):
+        raise RuntimeError("Embedding response length does not match input length.")
+    return vectors, body.get("usage") or {}
+
+
+def embed_texts_concurrent(
+    texts: list[str],
+    model: str | None = None,
+    batch_size: int = 96,
+    max_workers: int = 8,
+    timeout: int = 120,
+) -> tuple[list[list[float]], dict]:
+    """Embed many short texts in parallel batches, preserving input order.
+
+    The label vocabulary of one run is a few hundred short strings, so the wall
+    time is dominated by round trips rather than by tokens. Batches go out on a
+    thread pool and the usage blocks are summed, so the embedding step reports
+    its own cost the same way the coding step does.
+    """
+    if not texts:
+        return [], {}
+    batches = [(start, texts[start:start + batch_size]) for start in range(0, len(texts), batch_size)]
+    results: dict[int, list[list[float]]] = {}
+    usage_total = {"prompt_tokens": 0, "total_tokens": 0, "cost_usd": 0.0, "requests": 0}
+    with ThreadPoolExecutor(max_workers=min(max_workers, len(batches))) as pool:
+        futures = {
+            pool.submit(embed_batch_with_usage, chunk, model, timeout): start
+            for start, chunk in batches
+        }
+        for future in as_completed(futures):
+            start = futures[future]
+            vectors, usage = future.result()
+            results[start] = vectors
+            usage_total["prompt_tokens"] += int(usage.get("prompt_tokens") or 0)
+            usage_total["total_tokens"] += int(usage.get("total_tokens") or 0)
+            usage_total["cost_usd"] += float(usage.get("cost") or 0.0)
+            usage_total["requests"] += 1
+    ordered: list[list[float]] = []
+    for start, _ in batches:
+        ordered.extend(results[start])
+    return ordered, usage_total
 
 
 def embed_texts(texts: list[str], model: str | None = None, batch_size: int = 32) -> list[list[float]]:

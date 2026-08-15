@@ -34,9 +34,16 @@ bps-review = "bps_review.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src/03_pipeline"}
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src/03_pipeline"]
+
+[tool.setuptools.package-data]
+# The knowledge-graph bundle is HTML, CSS, and JavaScript copied verbatim into a
+# run directory, so it has to travel with an installed package, not only with the
+# source tree.
+"bps_review.graph" = ["assets/*.html", "assets/*.css", "assets/*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["src/03_pipeline/tests"]

@@ -200,7 +200,7 @@ def _normalize_label(value: str) -> str:
     return re.sub(r"[^a-z0-9 \-]+", "", cleaned)
 
 
-def _labels_of(value: object, field: str) -> set[str]:
+def labels_of(value: object, field: str) -> set[str]:
     """Normalized label set from one JSON-serialized extraction list cell.
 
     An item is identified by one key or by several joined together, because a
@@ -246,7 +246,7 @@ def compute_list_overlap(long_df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for field in LIST_FIELDS:
         columns, _ = aligned_columns(long_df, field)
-        as_sets = [[_labels_of(value, field) for value in column] for column in columns]
+        as_sets = [[labels_of(value, field) for value in column] for column in columns]
         scores: list[float] = []
         for first, second in itertools.combinations(range(len(MODEL_LABELS)), 2):
             for index in range(len(as_sets[first])):
@@ -372,7 +372,7 @@ def consensus_codings(long_df: pd.DataFrame) -> pd.DataFrame:
         for field in LIST_FIELDS:
             union: set[str] = set()
             for value in subset[field].tolist():
-                union |= _labels_of(value, field)
+                union |= labels_of(value, field)
             row[field] = " | ".join(sorted(union))
         rows.append(row)
     return pd.DataFrame(rows)

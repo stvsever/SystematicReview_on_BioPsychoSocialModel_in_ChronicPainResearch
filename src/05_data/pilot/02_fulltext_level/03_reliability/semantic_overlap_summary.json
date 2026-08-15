@@ -1,0 +1,54 @@
+{
+  "embedding_model": "openai/text-embedding-3-large",
+  "embedding_dimensions": 3072,
+  "similarity_threshold": 0.65,
+  "n_labels_embedded": 666,
+  "n_labels_new_this_run": 0,
+  "embedding_usage": {},
+  "match_similarity_distribution": {
+    "n_label_comparisons": 2091,
+    "median_best_match": 1.0,
+    "share_above_threshold": 0.593
+  },
+  "mean_semantic_jaccard": 0.3981,
+  "mean_lexical_jaccard": 0.3505,
+  "threshold_sensitivity": {
+    "0.60": {
+      "mean": 0.401,
+      "psychological_concepts": 0.469
+    },
+    "0.65": {
+      "mean": 0.398,
+      "psychological_concepts": 0.463
+    },
+    "0.70": {
+      "mean": 0.393,
+      "psychological_concepts": 0.456
+    },
+    "0.75": {
+      "mean": 0.382,
+      "psychological_concepts": 0.449
+    }
+  },
+  "per_field": {
+    "psychological_concepts": {
+      "lexical": 0.414,
+      "semantic": 0.463,
+      "distinct_labels": 424,
+      "semantic_concepts": 281
+    },
+    "theoretical_frameworks": {
+      "lexical": 0.341,
+      "semantic": 0.436,
+      "distinct_labels": 245,
+      "semantic_concepts": 170
+    },
+    "conceptual_problems": {
+      "lexical": 0.296,
+      "semantic": 0.296,
+      "distinct_labels": 9,
+      "semantic_concepts": 9
+    }
+  },
+  "duplicate_pair_overlap": {}
+}

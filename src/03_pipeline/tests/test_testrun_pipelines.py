@@ -12,12 +12,18 @@ import importlib.util
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from bps_review.extraction.llm_stage2 import FIELD_SPECIFICATION, Stage2StructuredRecord, _batch_prompt
 from bps_review.fulltext.analysis.integrity import integration_evidence_discipline, verify_quote
 from bps_review.fulltext.analysis.reliability import adjacent_agreement, compute_list_overlap
+from bps_review.fulltext.analysis.semantic import (
+    SEMANTIC_LIST_FIELDS,
+    greedy_match,
+    semantic_jaccard,
+)
 from bps_review.fulltext.coding.condense import build_coding_text, paragraph_score
 from bps_review.fulltext.coding.derive import (
     assert_usable_payload,
@@ -48,6 +54,7 @@ from bps_review.fulltext.config import (
     PRESENCE_FIELDS,
     RELIABILITY_FIELDS,
 )
+from bps_review.graph.builder import FIELD_GROUPS, graph_payload
 from bps_review.pilot.analysis.metrics import (
     cohen_kappa,
     fleiss_kappa,
@@ -563,3 +570,104 @@ def test_list_overlap_compares_relations_as_edges():
     row = relations[relations["field"] == "concept_relations"].iloc[0]
     # identical edge on one pair, a different endpoint on the other two
     assert row["mean_pairwise_jaccard"] == pytest.approx((1.0 + 0.0 + 0.0) / 3)
+
+
+# --------------------------------------------------------------------------
+# Semantic overlap of the open lists
+# --------------------------------------------------------------------------
+class _StubStore:
+    """A vector store with hand-placed labels, so matching is testable offline."""
+
+    def __init__(self, vectors: dict[str, list[float]]):
+        self._vectors = {label: np.asarray(values, dtype=np.float32) for label, values in vectors.items()}
+
+    def vectors_for(self, texts):
+        rows = [self._vectors[text] for text in texts if text in self._vectors]
+        if not rows:
+            return np.zeros((0, 0), dtype=np.float32)
+        return np.vstack(rows)
+
+    def known(self, texts):
+        return [text for text in texts if text in self._vectors]
+
+
+def test_greedy_match_pairs_each_label_at_most_once():
+    similarity = np.array([[0.9, 0.8], [0.7, 0.95]])
+    matched = greedy_match(similarity, 0.65)
+    assert sorted((left, right) for left, right, _ in matched) == [(0, 0), (1, 1)]
+    # the strongest pair is taken first, so a shared partner cannot be double counted
+    contested = np.array([[0.9], [0.95]])
+    assert len(greedy_match(contested, 0.65)) == 1
+
+
+def test_semantic_jaccard_reduces_to_the_lexical_one_at_full_similarity():
+    """At a threshold of 1.0 only identical vectors match, so the soft Jaccard is the hard one."""
+    store = _StubStore({"a": [1.0, 0.0], "b": [0.0, 1.0], "a-prime": [0.94, 0.34]})
+    first, second = ["a", "b"], ["a", "a-prime"]
+    assert semantic_jaccard(first, second, store, 1.0) == pytest.approx(1 / 3)
+    # a and a-prime are one concept at a permissive threshold, so both labels pair up
+    assert semantic_jaccard(first, second, store, 0.9) == pytest.approx(1 / 3)
+    assert semantic_jaccard(["a"], ["a-prime"], store, 0.9) == pytest.approx(1.0)
+
+
+def test_semantic_lists_are_the_lexically_compared_lists():
+    """The two overlap metrics must describe the same lists, or they cannot be read together."""
+    assert SEMANTIC_LIST_FIELDS == LIST_FIELDS
+
+
+# --------------------------------------------------------------------------
+# Knowledge graph
+# --------------------------------------------------------------------------
+def _graph_frames():
+    empty = {field: "[]" for field in ITEM_MODELS}
+    concepts = json.dumps([
+        {"concept_label": "catastrophizing", "concept_family": "pain-related cognition",
+         "definitional_status": "formally_defined", "definition_verbatim": "a negative mental set"},
+    ])
+    row = serialize_row(FullTextCodingRecord.model_validate(_raw_payload("F001_1")), "vendor/model-x")
+    long_df = pd.DataFrame([
+        {**row, **empty, "psychological_concepts": concepts, "model_order": 1,
+         "model_label": "Model-A", "provider": "Vendor A", "model_id": "vendor/model-x"},
+        {**row, **empty, "psychological_concepts": "[]", "model_order": 2,
+         "model_label": "Model-B", "provider": "Vendor B", "model_id": "vendor/model-y"},
+    ])
+    corpus_df = pd.DataFrame([{"record_id": "F001_1", "title": "A review of something"}])
+    items_df = pd.DataFrame([
+        {"record_id": "F001_1", "model_label": "Model-A", "extraction_field": "psychological_concepts",
+         "item_index": 0, "label_raw": "catastrophizing", "label_normalized": "catastrophizing",
+         "label_controlled": "yes", "anchor_label": "pain-related cognition",
+         "quote": "a negative mental set", "item_json": "{}"},
+    ])
+    return corpus_df, long_df, items_df
+
+
+def test_graph_payload_carries_every_coded_field_exactly_once():
+    """A field that no group claims still has to reach the reviewer, under 'Other coded fields'."""
+    corpus_df, long_df, items_df = _graph_frames()
+    payload = graph_payload(corpus_df, long_df, items_df)
+    field_nodes = [node for node in payload["nodes"] if node["type"] == "field"]
+    coded_columns = [column for column in long_df.columns
+                     if column not in {"record_id", "model_order", "model_label", "provider", "model_id"}]
+    assert sorted(node["field"] for node in field_nodes) == sorted(coded_columns)
+    assert len(field_nodes) == len({node["field"] for node in field_nodes})
+
+
+def test_graph_payload_is_a_connected_tree_down_to_the_extracted_item():
+    corpus_df, long_df, items_df = _graph_frames()
+    payload = graph_payload(corpus_df, long_df, items_df)
+    node_ids = {node["id"] for node in payload["nodes"]}
+    assert all(edge["source"] in node_ids and edge["target"] in node_ids for edge in payload["edges"])
+    # one root, and every other node reached by exactly one parent edge
+    assert len(payload["edges"]) == len(payload["nodes"]) - 1
+    concept_items = [node for node in payload["nodes"]
+                     if node["type"] == "item" and node["field"] == "psychological_concepts"]
+    assert [node["label"] for node in concept_items] == ["catastrophizing"]
+    assert concept_items[0]["detail"]["Normalized label"] == "catastrophizing"
+
+
+def test_graph_groups_only_name_fields_the_scheme_produces():
+    """Grouping must not drift away from the schema it lays out."""
+    row = serialize_row(FullTextCodingRecord.model_validate(_raw_payload()), "vendor/model-x")
+    produced = set(row) | {"model_order", "model_label", "provider", "model_id"}
+    grouped = {field for fields in FIELD_GROUPS.values() for field in fields}
+    assert grouped <= produced, f"grouped but never produced: {sorted(grouped - produced)}"

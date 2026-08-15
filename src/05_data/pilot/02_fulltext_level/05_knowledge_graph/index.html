@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>FULL-TEXT CODING SCHEME (test run)</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="brand-copy">
+        <p class="eyebrow">Biopsychosocial chronic pain review</p>
+        <h1>FULL-TEXT CODING SCHEME (test run)</h1>
+        <p>47 open-access reviews coded by 3 independent providers</p>
+      </div>
+      <div class="topbar-stats" id="headlineStats" aria-label="Graph summary"></div>
+      <div class="toolbar" aria-label="Graph controls">
+        <button type="button" class="tool-button" id="popupToggle" aria-pressed="true">Pop-up on</button>
+        <button type="button" class="tool-button" id="themeToggle" aria-pressed="false">Light</button>
+        <button type="button" class="tool-button" id="toggleLabels" aria-pressed="true">Labels</button>
+        <button type="button" class="tool-button" id="fitGraph">Fit</button>
+        <button type="button" class="tool-button" id="showAll" aria-pressed="false">Show all</button>
+        <button type="button" class="tool-button primary" id="resetGraph">Reset view</button>
+      </div>
+    </header>
+
+    <aside class="filter-panel" aria-label="Graph filters">
+      <div class="panel-scroll">
+        <label class="search-wrap" for="graphSearch">
+          <span>Search all coding content</span>
+          <input id="graphSearch" type="search" placeholder="Factor, concept, quote, paper, field..." autocomplete="off">
+          <kbd>/</kbd>
+        </label>
+
+        <section class="filter-section">
+          <div class="section-heading">
+            <div><span class="section-kicker">Corpus</span><h2>Articles</h2></div>
+            <div class="mini-actions"><button type="button" data-set="articles" data-action="all">All</button><button type="button" data-set="articles" data-action="none">None</button></div>
+          </div>
+          <div class="filter-list articles" id="articleFilters"></div>
+        </section>
+
+        <section class="filter-section">
+          <div class="section-heading">
+            <div><span class="section-kicker">Raters</span><h2>Providers</h2></div>
+            <div class="mini-actions"><button type="button" data-set="providers" data-action="all">All</button><button type="button" data-set="providers" data-action="none">None</button></div>
+          </div>
+          <div class="filter-list" id="providerFilters"></div>
+        </section>
+
+        <section class="filter-section field-section">
+          <div class="section-heading">
+            <div><span class="section-kicker">Scheme 3</span><h2>Coding fields</h2></div>
+            <div class="mini-actions"><button type="button" data-set="fields" data-action="all">All</button><button type="button" data-set="fields" data-action="none">None</button></div>
+          </div>
+          <div id="fieldFilters"></div>
+        </section>
+      </div>
+      <div class="filter-footer">
+        <span class="pulse-dot"></span>
+        <span id="visibleStatus">Preparing graph</span>
+      </div>
+    </aside>
+
+    <main class="graph-stage" aria-label="Interactive knowledge graph">
+      <canvas id="graphCanvas"></canvas>
+      <div class="canvas-vignette" aria-hidden="true"></div>
+      <div class="view-trail" id="viewTrail">Scheme overview</div>
+      <div class="graph-hint" id="graphHint">Double-click a node to expand · scroll to zoom · drag to pan or pin</div>
+      <div class="zoom-readout" id="zoomReadout">100%</div>
+      <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+      <section class="quick-card" id="quickCard" aria-label="Selected node preview" hidden>
+        <div class="quick-card-topline" id="quickCardHandle">
+          <span class="node-badge" id="quickCardType"></span>
+          <div class="quick-card-controls"><span class="drag-label">Drag</span><button type="button" id="quickCardClose" aria-label="Close preview">×</button></div>
+        </div>
+        <h2 id="quickCardTitle"></h2>
+        <p id="quickCardMeta"></p>
+        <div class="quick-card-body" id="quickCardBody"></div>
+        <div class="quick-card-actions">
+          <button type="button" id="quickCardExpand" hidden></button>
+          <button type="button" id="quickCardOpen">Full inspector</button>
+        </div>
+      </section>
+    </main>
+
+    <aside class="detail-panel" id="detailPanel" aria-label="Selected node detail">
+      <div class="detail-empty" id="detailEmpty">
+        <div class="detail-orbit" aria-hidden="true"><span></span></div>
+        <p class="eyebrow">Inspector</p>
+        <h2>Select a node</h2>
+        <p>Click a field, article, provider, or extracted item to inspect its complete value and immediate connections.</p>
+      </div>
+      <div class="detail-content" id="detailContent" hidden>
+        <div class="detail-header">
+          <div class="detail-topline"><span class="node-badge" id="detailType"></span><button type="button" id="closeDetail" aria-label="Close inspector">×</button></div>
+          <h2 id="detailTitle"></h2>
+          <p class="detail-path" id="detailPath"></p>
+          <div class="detail-actions">
+            <button type="button" id="backNode" hidden>Back one level</button>
+            <button type="button" id="expandNode" hidden></button>
+            <button type="button" id="focusNode">Fit context</button>
+            <button type="button" id="releaseNode">Release pin</button>
+          </div>
+        </div>
+        <div id="detailFields"></div>
+        <div class="neighbor-block"><h3>Connected nodes</h3><p id="neighborSummary"></p><div id="neighborList"></div></div>
+      </div>
+    </aside>
+  </div>
+
+  <noscript>This local knowledge graph requires JavaScript to render.</noscript>
+  <script src="assets/graph_data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

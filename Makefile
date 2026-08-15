@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: install search search-wos search-psycinfo api-check dedupe prep-screen screen reliability code code-llm prep-stage3 assets report review test run-all testrun-abstract testrun-fulltext fulltext-corpus schemes
+.PHONY: install search search-wos search-psycinfo api-check dedupe prep-screen screen reliability code code-llm prep-stage3 assets report review test run-all testrun-abstract testrun-fulltext fulltext-corpus fulltext-graph schemes
 
 install:
 	$(PYTHON) -m pip install -e .
@@ -58,6 +58,9 @@ testrun-fulltext:
 
 fulltext-corpus:
 	$(PYTHON) -m bps_review build-fulltext-corpus
+
+fulltext-graph:
+	$(PYTHON) -m bps_review build-fulltext-graph
 
 schemes:
 	cd src/02_coding_schemes/_build && $(PYTHON) build.py
