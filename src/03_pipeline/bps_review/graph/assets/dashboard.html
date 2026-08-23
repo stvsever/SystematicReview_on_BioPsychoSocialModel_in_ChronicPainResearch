@@ -18,6 +18,8 @@
       </div>
       <div class="topbar-stats" id="headlineStats" aria-label="Graph summary"></div>
       <div class="toolbar" aria-label="Graph controls">
+        <button type="button" class="tool-button" id="toggleFilters" aria-pressed="true" title="Show or hide the filter panel">Filters</button>
+        <button type="button" class="tool-button" id="toggleInspector" aria-pressed="true" title="Show or hide the inspector panel">Inspector</button>
         <button type="button" class="tool-button" id="popupToggle" aria-pressed="true">Pop-up on</button>
         <button type="button" class="tool-button" id="themeToggle" aria-pressed="false">Light</button>
         <button type="button" class="tool-button" id="toggleLabels" aria-pressed="true">Labels</button>
@@ -31,9 +33,10 @@
       <div class="panel-scroll">
         <label class="search-wrap" for="graphSearch">
           <span>Search all coding content</span>
-          <input id="graphSearch" type="search" placeholder="Factor, concept, quote, paper, field..." autocomplete="off">
+          <input id="graphSearch" type="search" placeholder="e.g. catastrophizing mediator" autocomplete="off">
           <kbd>/</kbd>
         </label>
+        <p class="search-hint">All words must match, ranked by where they hit. Use "a phrase" for exact wording, -word to exclude, and field: group: provider: article: label: type: to scope a word.</p>
 
         <section class="filter-section">
           <div class="section-heading">
@@ -68,7 +71,6 @@
     <main class="graph-stage" aria-label="Interactive knowledge graph">
       <canvas id="graphCanvas"></canvas>
       <div class="canvas-vignette" aria-hidden="true"></div>
-      <div class="view-trail" id="viewTrail">Scheme overview</div>
       <div class="graph-hint" id="graphHint">Double-click a node to expand · scroll to zoom · drag to pan or pin</div>
       <div class="zoom-readout" id="zoomReadout">100%</div>
       <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>

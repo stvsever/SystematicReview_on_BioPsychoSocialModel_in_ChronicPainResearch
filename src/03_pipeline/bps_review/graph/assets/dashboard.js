@@ -10,6 +10,7 @@
   const canvas = document.getElementById("graphCanvas");
   const context = canvas.getContext("2d", { alpha: false });
   const stage = document.querySelector(".graph-stage");
+  const appShell = document.querySelector(".app-shell");
   const tooltip = document.getElementById("tooltip");
   const quickCard = document.getElementById("quickCard");
   const detailPanel = document.getElementById("detailPanel");
@@ -31,6 +32,25 @@
     manualOffsetX: 0,
     manualOffsetY: 0,
   }));
+  // Two short haystacks per node, built once. The payload already carries one
+  // lowercase blob per node covering its label, its identifiers, and its whole
+  // detail; these two add the parts a match should count for more, so ranking
+  // never has to re-lowercase anything while the reviewer types.
+  nodes.forEach((node) => {
+    node.matchLabel = String(node.label || "").toLowerCase();
+    node.matchIdent = [
+      node.field,
+      String(node.field || "").replace(/_/g, " "),
+      node.field_group,
+      node.field_subgroup,
+      Array.isArray(node.field_path) ? node.field_path.join(" ") : "",
+      node.provider,
+      node.provider_name,
+      node.article_id,
+      node.article_title,
+      typeof node.value === "string" ? node.value : "",
+    ].filter(Boolean).join(" ").toLowerCase();
+  });
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const edges = data.edges.map((edge) => ({
     ...edge,
@@ -56,7 +76,9 @@
     showAll: false,
     popupEnabled: true,
     search: "",
+    searchActive: false,
     searchTruncated: false,
+    searchTotal: 0,
     scale: 0.6,
     offsetX: 0,
     offsetY: 0,
@@ -392,25 +414,169 @@
     return false;
   }
 
+  // ---------------------------------------------------------------------
+  // Search.
+  //
+  // The query is a small lexical language rather than one substring test.
+  // Whitespace separates terms and every term has to match, so "kinesiophobia
+  // avoidance" finds the nodes carrying both words in any order instead of only
+  // the ones carrying that exact string. A "quoted phrase" is required
+  // contiguously, -term excludes, and key:value restricts a term to one part of
+  // a node (type, field, group, provider, article, label, text).
+  //
+  // Matches are then ranked, which is what the cap depends on: a match in the
+  // node's own label outranks one in an identifier, which outranks one buried in
+  // the coded detail, whole words outrank fragments inside longer words, and
+  // shallower nodes come before the hundreds of leaves beneath them. Truncation
+  // therefore drops the weakest matches rather than whatever the node list
+  // happened to hold last.
+  // ---------------------------------------------------------------------
+  const SEARCH_LIMIT = 300;
+  const SEARCH_SCOPES = {
+    type: (node) => node.type,
+    field: (node) => `${node.field || ""} ${String(node.field || "").replace(/_/g, " ")} ${node.type === "field" ? node.matchLabel : ""}`,
+    group: (node) => `${node.field_group || ""} ${node.field_subgroup || ""} ${Array.isArray(node.field_path) ? node.field_path.join(" ") : ""}`,
+    provider: (node) => `${node.provider || ""} ${node.provider_name || ""}`,
+    article: (node) => `${node.article_id || ""} ${node.article_title || ""}`,
+    label: (node) => node.matchLabel,
+    text: (node) => node.search,
+  };
+
+  function isWordCharacter(character) {
+    return character >= "a" && character <= "z" ? true : character >= "0" && character <= "9";
+  }
+
+  function hasWholeWord(text, term) {
+    let index = text.indexOf(term);
+    while (index !== -1) {
+      const before = index === 0 ? " " : text[index - 1];
+      const after = index + term.length >= text.length ? " " : text[index + term.length];
+      if (!isWordCharacter(before) && !isWordCharacter(after)) return true;
+      index = text.indexOf(term, index + 1);
+    }
+    return false;
+  }
+
+  function tokenizeQuery(text) {
+    const tokens = [];
+    let current = "";
+    let quoted = false;
+    for (const character of text) {
+      if (character === '"') { quoted = !quoted; continue; }
+      if (!quoted && /\s/.test(character)) {
+        if (current) tokens.push(current);
+        current = "";
+        continue;
+      }
+      current += character;
+    }
+    if (current) tokens.push(current);
+    return tokens;
+  }
+
+  function parseQuery(raw) {
+    const positive = [];
+    const negative = [];
+    tokenizeQuery(String(raw || "").toLowerCase()).forEach((token) => {
+      let text = token;
+      let exclude = false;
+      if (text.length > 1 && text.startsWith("-")) {
+        exclude = true;
+        text = text.slice(1);
+      }
+      let scope = "";
+      const colon = text.indexOf(":");
+      if (colon > 0 && colon < text.length - 1) {
+        const key = text.slice(0, colon);
+        // An unknown prefix is part of the search text, not a broken scope.
+        if (Object.prototype.hasOwnProperty.call(SEARCH_SCOPES, key)) {
+          scope = key;
+          text = text.slice(colon + 1);
+        }
+      }
+      text = text.trim();
+      if (!text) return;
+      (exclude ? negative : positive).push({ text, scope });
+    });
+    // Excluding without searching would select almost the whole graph, so a
+    // query of nothing but negative terms is treated as no query at all.
+    return { positive, negative, active: positive.length > 0 };
+  }
+
+  function scopedTier(node, term) {
+    const haystack = String(SEARCH_SCOPES[term.scope](node) || "").toLowerCase();
+    if (!haystack) return 0;
+    if (haystack === term.text) return 8;
+    if (hasWholeWord(haystack, term.text)) return 5;
+    return haystack.includes(term.text) ? 3 : 0;
+  }
+
+  function termTier(node, term) {
+    if (term.scope) return scopedTier(node, term);
+    // One scan of the big blob rejects most nodes before any ranking work.
+    if (!node.search.includes(term.text)) return 0;
+    const label = node.matchLabel;
+    if (label === term.text) return 9;
+    if (label.startsWith(term.text)) return 7;
+    if (hasWholeWord(label, term.text)) return 6;
+    if (label.includes(term.text)) return 4;
+    const identity = node.matchIdent;
+    if (hasWholeWord(identity, term.text)) return 3;
+    if (identity.includes(term.text)) return 2;
+    return 1;
+  }
+
+  function matchScore(node, query) {
+    let score = 0;
+    for (const term of query.positive) {
+      const tier = termTier(node, term);
+      if (!tier) return -1;
+      score += tier;
+    }
+    for (const term of query.negative) {
+      if (termTier(node, term)) return -1;
+    }
+    return score;
+  }
+
+  function compareMatches(a, b) {
+    if (b.score !== a.score) return b.score - a.score;
+    if (a.node.level !== b.node.level) return a.node.level - b.node.level;
+    if (a.node.matchLabel.length !== b.node.matchLabel.length) {
+      return a.node.matchLabel.length - b.node.matchLabel.length;
+    }
+    return a.node.matchLabel < b.node.matchLabel ? -1 : a.node.matchLabel > b.node.matchLabel ? 1 : 0;
+  }
+
   function updateVisibility() {
-    const query = state.search.trim().toLowerCase();
+    const query = parseQuery(state.search);
     const searchMatches = new Set();
     const searchContext = new Set();
+    state.searchActive = query.active;
     state.searchTruncated = false;
+    state.searchTotal = 0;
     nodes.forEach((node) => { node.searchMatch = false; });
-    if (query) {
-      const matches = nodes.filter((node) => passesFilters(node) && node.search.includes(query));
-      state.searchTruncated = matches.length > 240;
-      matches.slice(0, 240).forEach((node) => {
-        node.searchMatch = true;
-        searchMatches.add(node.id);
-        ancestorIds(node.id).forEach((id) => searchContext.add(id));
+    if (query.active) {
+      const scored = [];
+      nodes.forEach((node) => {
+        if (!passesFilters(node)) return;
+        const score = matchScore(node, query);
+        if (score < 0) return;
+        scored.push({ node, score });
+      });
+      scored.sort(compareMatches);
+      state.searchTotal = scored.length;
+      state.searchTruncated = scored.length > SEARCH_LIMIT;
+      scored.slice(0, SEARCH_LIMIT).forEach((match) => {
+        match.node.searchMatch = true;
+        searchMatches.add(match.node.id);
+        ancestorIds(match.node.id).forEach((id) => searchContext.add(id));
       });
     }
 
     nodes.forEach((node) => {
       const filterPass = passesFilters(node);
-      const structurePass = query
+      const structurePass = query.active
         ? searchMatches.has(node.id) || searchContext.has(node.id)
         : baseVisibility(node);
       const redundantProviderHub = node.type === "provider" && state.selectedProviders.size === 1;
@@ -445,7 +611,6 @@
     }
     state.settledFrames = 0;
     updateStatus();
-    updateViewTrail();
   }
 
   function updateFiltersFromControls() {
@@ -476,34 +641,17 @@
   }
 
   function updateStatus() {
-    const suffix = state.searchTruncated ? " · first 240 matches" : "";
-    document.getElementById("visibleStatus").textContent = `${visibleNodes.length.toLocaleString()} nodes · ${visibleEdges.length.toLocaleString()} links visible${suffix}`;
-  }
-
-  function updateViewTrail() {
-    const host = document.getElementById("viewTrail");
-    if (state.search.trim()) {
-      host.textContent = `Search results · ${state.search.trim()}`;
+    const host = document.getElementById("visibleStatus");
+    if (state.searchActive && !state.searchTotal) {
+      host.textContent = `No matches for ${state.search.trim()}`;
       return;
     }
-    if (state.showAll) {
-      host.textContent = "Complete graph · every selected field, article, provider, and extracted item";
-      return;
-    }
-    if (!state.activeField) {
-      host.textContent = "Scheme overview · field groups and coding fields";
-      return;
-    }
-    const field = nodeById.get(state.activeField);
-    if (state.activeArticle) {
-      const article = nodeById.get(state.activeArticle);
-      host.textContent = `${field.field_group} / ${field.label} / ${article.provider} / ${article.article_id} / extracted items`;
-    } else if (state.activeProvider) {
-      const provider = nodeById.get(state.activeProvider);
-      host.textContent = `${field.field_group} / ${field.label} / ${provider.provider} / papers`;
-    } else {
-      host.textContent = `${field.field_group} / ${field.label} / providers and papers`;
-    }
+    const matches = state.searchActive
+      ? state.searchTruncated
+        ? ` · top ${SEARCH_LIMIT.toLocaleString()} of ${state.searchTotal.toLocaleString()} matches`
+        : ` · ${state.searchTotal.toLocaleString()} ${state.searchTotal === 1 ? "match" : "matches"}`
+      : "";
+    host.textContent = `${visibleNodes.length.toLocaleString()} nodes · ${visibleEdges.length.toLocaleString()} links visible${matches}`;
   }
 
   function buildHeadline() {
@@ -740,7 +888,7 @@
       const textWidth = context.measureText(text).width;
       const dimmed = focusSet.size > 0 && !focusSet.has(node.id);
 
-      if (node.type === "field" && !state.search.trim()) {
+      if (node.type === "field" && !state.searchActive) {
         const angle = node.layoutAngle || Math.atan2(node.y, node.x);
         const flipped = Math.cos(angle) < 0;
         const rotation = flipped ? angle + Math.PI : angle;
@@ -1114,11 +1262,11 @@
     host.appendChild(section);
   }
 
-  function renderDetails(detail, host, compact) {
+  function renderDetails(detail, host, compact, maxSections) {
     host.textContent = "";
     const source = detail && typeof detail === "object" && !Array.isArray(detail) ? detail : { Value: detail };
     const entries = Object.entries(source);
-    const limit = compact ? 4 : entries.length;
+    const limit = maxSections || (compact ? 4 : entries.length);
     entries.slice(0, limit).forEach(([key, value]) => appendDetailValue(host, key, value, { compact }));
   }
 
@@ -1215,7 +1363,10 @@
     document.getElementById("quickCardType").style.borderColor = rgba(node.color, 0.58);
     document.getElementById("quickCardTitle").textContent = node.label;
     document.getElementById("quickCardMeta").textContent = [node.field_group, node.article_id, node.provider].filter(Boolean).join(" · ") || pathFor(node);
-    renderDetails(node.detail || { Value: node.value }, document.getElementById("quickCardBody"), true);
+    // A coding field carries its explanation and its full value list, so its card
+    // keeps those complete and only caps how many sections it shows.
+    const isField = node.type === "field";
+    renderDetails(node.detail || { Value: node.value }, document.getElementById("quickCardBody"), !isField, isField ? 6 : 4);
     configureActionButton(document.getElementById("quickCardExpand"), node);
     quickCard.hidden = false;
     quickCard.dataset.nodeId = node.id;
@@ -1310,7 +1461,7 @@
   }
 
   function cameraNodes() {
-    if (!state.activeField || state.showAll || state.search.trim()) return visibleNodes;
+    if (!state.activeField || state.showAll || state.searchActive) return visibleNodes;
     const field = nodeById.get(state.activeField);
     if (!field) return visibleNodes;
     const branch = [field];
@@ -1359,7 +1510,7 @@
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    const overview = !state.activeField && !state.search.trim() && !state.showAll;
+    const overview = !state.activeField && !state.searchActive && !state.showAll;
     const horizontalInset = overview ? 330 : 190;
     const verticalInset = overview ? 210 : 170;
     const graphWidth = Math.max(140, maxX - minX);
@@ -1490,6 +1641,36 @@
     requestAnimationFrame(fitVisible);
   }
 
+  // Either side panel can be folded away, which hands its width to the canvas:
+  // the shell is a grid, so setting the panel column to zero is all it takes.
+  const PANEL_SETUP = {
+    left: { attribute: "leftPanel", button: "toggleFilters", storage: "bpsGraphLeftPanel" },
+    right: { attribute: "rightPanel", button: "toggleInspector", storage: "bpsGraphRightPanel" },
+  };
+
+  function panelVisible(side) {
+    return appShell.dataset[PANEL_SETUP[side].attribute] !== "hidden";
+  }
+
+  function setPanelVisible(side, visible) {
+    const setup = PANEL_SETUP[side];
+    if (panelVisible(side) === visible) return;
+    appShell.dataset[setup.attribute] = visible ? "shown" : "hidden";
+    document.getElementById(setup.button).setAttribute("aria-pressed", String(visible));
+    try {
+      window.localStorage.setItem(setup.storage, visible ? "shown" : "hidden");
+    } catch (error) { /* Local storage can be unavailable for local files. */ }
+    resizeCanvas();
+  }
+
+  function initialPanelSetting(side) {
+    try {
+      return window.localStorage.getItem(PANEL_SETUP[side].storage) !== "hidden";
+    } catch (error) {
+      return true;
+    }
+  }
+
   function setPopupEnabled(enabled) {
     state.popupEnabled = enabled;
     const button = document.getElementById("popupToggle");
@@ -1520,13 +1701,36 @@
     return "dark";
   }
 
-  searchInput.addEventListener("input", () => {
+  // Scoring runs over every node, so typing schedules the pass instead of
+  // running one per keystroke. Enter and a cleared box apply immediately.
+  let searchTimer = null;
+  function applySearch() {
+    if (searchTimer) {
+      window.clearTimeout(searchTimer);
+      searchTimer = null;
+    }
     state.search = searchInput.value;
     updateVisibility();
+  }
+  searchInput.addEventListener("input", () => {
+    if (searchTimer) window.clearTimeout(searchTimer);
+    if (!searchInput.value.trim()) {
+      applySearch();
+      return;
+    }
+    searchTimer = window.setTimeout(applySearch, 160);
+  });
+  searchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      applySearch();
+      requestAnimationFrame(fitVisible);
+    }
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "/" && document.activeElement !== searchInput) {
       event.preventDefault();
+      setPanelVisible("left", true);
       searchInput.focus();
     }
     if (event.key === "Escape") clearDetail();
@@ -1542,10 +1746,13 @@
   document.getElementById("themeToggle").addEventListener("click", () => {
     setTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light");
   });
+  document.getElementById("toggleFilters").addEventListener("click", () => setPanelVisible("left", !panelVisible("left")));
+  document.getElementById("toggleInspector").addEventListener("click", () => setPanelVisible("right", !panelVisible("right")));
   document.getElementById("closeDetail").addEventListener("click", clearDetail);
   document.getElementById("quickCardClose").addEventListener("click", () => { quickCard.hidden = true; });
   document.getElementById("quickCardOpen").addEventListener("click", () => {
     if (state.selectedNode) {
+      setPanelVisible("right", true);
       populateInspector(state.selectedNode);
       detailContent.focus({ preventScroll: true });
     }
@@ -1599,6 +1806,8 @@
 
   setTheme(initialTheme());
   setPopupEnabled(initialPopupSetting());
+  setPanelVisible("left", initialPanelSetting("left"));
+  setPanelVisible("right", initialPanelSetting("right"));
   buildHeadline();
   buildFilters();
   resizeCanvas();

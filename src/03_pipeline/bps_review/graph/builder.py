@@ -53,7 +53,22 @@ import numpy as np
 import pandas as pd
 
 from bps_review.fulltext.coding import schema
-from bps_review.fulltext.config import FIELD_LABELS
+from bps_review.fulltext.coding.prompt import (
+    CONTROLLED_LIST_VALUES,
+    CONTROLLED_VALUES,
+    ITEM_VALUE_LISTS,
+    LADDERS,
+)
+from bps_review.fulltext.config import (
+    FIELD_LABELS,
+    ITEM_CAPS,
+    ITEM_SUBLIST_CAP,
+    MAX_NOTE_WORDS,
+    MAX_QUOTE_WORDS,
+    MAX_SUMMARY_WORDS,
+    OPEN_LIST_CAPS,
+    PRESENCE_ORDER,
+)
 from bps_review.utils.io import ensure_parent
 
 
@@ -400,6 +415,683 @@ ITEM_METADATA_LABELS: OrderedDict[str, str] = OrderedDict(
         ("anchor_controlled", "Anchor on the controlled list"),
     ]
 )
+
+
+# --------------------------------------------------------------------------
+# The reader-facing reference layer.
+#
+# A coding-field node used to carry only counts, which says how often a field was
+# filled but never what the field means or which values it can take. Every field
+# therefore also carries a one or two sentence explanation and its value space:
+# the closed vocabulary when it has one, the rung-by-rung rule when the field is
+# a ladder, the format when it is open, and the item fields with their own
+# vocabularies for the structured extraction lists.
+#
+# The explanations are written here. Every value list, ladder, and cap is read
+# from the schema, the prompt, and the configuration, so the graph cannot drift
+# from what the coder was asked for or from what the validator accepts.
+# --------------------------------------------------------------------------
+FIELD_DESCRIPTIONS: dict[str, str] = {
+    # Article context
+    "review_track": (
+        "Which of the two planned reviews this record belongs to, read from the pain condition the "
+        "paper actually studies. Musculoskeletal covers low back, neck, osteoarthritis, fibromyalgia "
+        "and similar; neuropathic covers painful neuropathy, radicular pain and similar."
+    ),
+    "source_type": (
+        "What kind of evidence synthesis this is, read from how the paper describes itself in its "
+        "abstract and methods. The most specific applicable value wins, so meta-analysis outranks "
+        "systematic review when effect sizes are pooled, and umbrella review applies when the units "
+        "reviewed are themselves reviews."
+    ),
+    "icd11_pain_category": (
+        "The ICD-11 aligned pain category the paper is about, read from the full text. Mixed or "
+        "unspecified covers a paper that genuinely spans several categories."
+    ),
+    "population": (
+        "The population the reviewed evidence concerns. Mixed ages covers adults and younger "
+        "participants together, and not applicable fits a purely theoretical paper with no population."
+    ),
+    "care_setting": (
+        "The care setting the paper is about, when it reports one. Not reported is the honest answer "
+        "for most reviews and is preferred over a guess."
+    ),
+    "primary_discipline": (
+        "The disciplinary home of the paper, read from the journal, the framing, and the vocabulary "
+        "rather than from author affiliations. Multidisciplinary describes the writing, not the "
+        "author list."
+    ),
+    "pain_condition_detail": (
+        "The exact pain condition or conditions the paper studies, in the paper's own words."
+    ),
+    "pain_conditions": (
+        "The specific pain conditions the paper names, as short labels. The project vocabulary is a "
+        "preferred spine, and the paper's own wording is kept when it is more precise."
+    ),
+    "context_note": (
+        "The cultural, geographic, or healthcare-system context, when the paper states one. Empty "
+        "when it does not."
+    ),
+    "quality_assessment_reported": (
+        "Whether the paper reports a formal quality or risk-of-bias assessment of the evidence it "
+        "reviews. This is descriptive only, since this review does not appraise those papers itself."
+    ),
+    "quality_assessment_tools": (
+        "The appraisal tools the paper names, such as AMSTAR, ROBIS, GRADE, or the Cochrane "
+        "risk-of-bias tool. Empty when none is named."
+    ),
+    # Biopsychosocial label
+    "bps_label_used": (
+        "Which biopsychosocial vocabulary the paper actually uses, from the explicit term through a "
+        "variant such as psychosocial or multidimensional, down to domain language carrying no model "
+        "label at all."
+    ),
+    "bps_primary_function": (
+        "The single dominant work the biopsychosocial label does, judged over the paper as a whole. "
+        "Operational definition is reserved for a paper that turns the model into the variables it "
+        "codes or measures, and rhetorical label for ceremonial use with no analytic follow-through."
+    ),
+    "bps_functions_present": (
+        "Every function the label performs anywhere in the paper. A paper routinely does two or three "
+        "of these at once, and which ones it combines is itself a finding."
+    ),
+    "bps_definition_status": (
+        "How the paper handles the meaning of the model itself, from a stated definition down to a "
+        "label used with no meaning given anywhere. Undefined is a finding, not a coding failure."
+    ),
+    "bps_model_variants": (
+        "The model labels the paper actually uses, verbatim and de-duplicated, such as "
+        "biopsychosocial model, bio-psycho-social framework, or sociopsychobiological model. This is "
+        "what makes terminological drift visible."
+    ),
+    "bps_usage_instances": (
+        "One item for every distinct passage where the biopsychosocial label does work, with the "
+        "function it serves there, whether it is definitional, who the model is credited to, and the "
+        "quoted passage. A paper that invokes the model in the introduction and again in the "
+        "discussion yields two items, not one."
+    ),
+    "bps_definitions": (
+        "One item for every place where the paper says what the biopsychosocial model is, with the "
+        "quoted definition, its type, its attributed source, and the components it names. The list is "
+        "empty when the paper never says what the model is."
+    ),
+    "bps_operationalization_summary": (
+        "What this paper actually does with the biopsychosocial model, as opposed to what it says "
+        "about it, named as a mechanism of use and written in the coder's own words."
+    ),
+    "bps_function_set": (
+        "Derived: every distinct function the label performs in this coding, pooled from the coded "
+        "function list and from the functions attached to the individual usage passages."
+    ),
+    "bps_has_substantive_function": (
+        "Derived yes or no: whether the label does substantive work anywhere in the paper, meaning it "
+        "serves as an explanatory framework, an operational definition, an intervention rationale, or "
+        "an organizing principle rather than only ceremonial or background use."
+    ),
+    "bps_usage_sections": (
+        "Derived: the distinct sections of the paper in which the biopsychosocial label is used, "
+        "pooled from the usage passages. Passages whose location is unclear are left out."
+    ),
+    # Domain coverage
+    "domain_coverage_bio": (
+        "How deeply the paper treats biological content: anatomy, physiology, pathophysiology, "
+        "nociception, central or peripheral sensitization, inflammation, imaging, genetics, "
+        "pharmacology, tissue pathology. The word biopsychosocial is never evidence of coverage."
+    ),
+    "domain_coverage_psych": (
+        "How deeply the paper treats psychological content: cognition, affect, behaviour, beliefs, "
+        "coping, catastrophizing, fear-avoidance, self-efficacy, depression, anxiety, acceptance, "
+        "psychological treatment."
+    ),
+    "domain_coverage_social": (
+        "How deeply the paper treats social content: work and occupational context, family and "
+        "relationships, culture, socioeconomic position, healthcare system, social support, stigma, "
+        "policy."
+    ),
+    "coverage_lifestyle": (
+        "How deeply the paper treats lifestyle content, on the same ladder as the triad: physical "
+        "activity and exercise behaviour, sleep, diet and weight, smoking, alcohol. Lifestyle is "
+        "registered as a domain in its own right and is not folded into the three."
+    ),
+    "coverage_spiritual_existential": (
+        "How deeply the paper treats spiritual or existential content, on the same ladder: meaning, "
+        "faith or religion, hope, existential suffering. Absent is the expected value for most papers "
+        "and is a finding in itself."
+    ),
+    "domain_evidence": (
+        "One item per core domain that was not scored as absent, carrying the passage that justifies "
+        "the coverage level given to it, together with the constructs the paper names and the "
+        "ontology subdomains that content belongs to."
+    ),
+    "domain_evidence__biological": (
+        "The domain-evidence item for the biological domain: the passage that justifies the "
+        "biological coverage level, with the biological constructs the paper names and the ontology "
+        "subdomains they belong to."
+    ),
+    "domain_evidence__psychological": (
+        "The domain-evidence item for the psychological domain: the passage that justifies the "
+        "psychological coverage level, with the constructs the paper names and the ontology "
+        "subdomains they belong to."
+    ),
+    "domain_evidence__social": (
+        "The domain-evidence item for the social domain: the passage that justifies the social "
+        "coverage level, with the social constructs the paper names and the ontology subdomains they "
+        "belong to."
+    ),
+    # Biopsychosocial entities
+    "biological_factors": (
+        "Every biological factor the paper names, one item each, in the paper's own wording, with the "
+        "ontology subdomain it maps onto, the mechanism level it sits at, the role it plays in this "
+        "paper, and the passage that shows it. Psychological constructs belong under psychological "
+        "concepts instead."
+    ),
+    "social_factors": (
+        "Every social factor the paper names, one item each, with its ontology subdomain, the level "
+        "of social organization it sits at, its role, and the passage that shows it. The social "
+        "domain is the one this literature is thinnest on, so even brief mentions are recorded."
+    ),
+    "other_domain_factors": (
+        "Factors outside the triad, held in one list: lifestyle, spiritual or existential, "
+        "environmental, and anything else that matters to the paper's account without belonging to a "
+        "named domain."
+    ),
+    "other_domain_factors__lifestyle": (
+        "The lifestyle factors the paper names, taken from the single list that holds everything "
+        "beyond the triad: activity and exercise, sleep, diet and weight, smoking, alcohol, each with "
+        "its role and its quoted passage."
+    ),
+    "other_domain_factors__spiritual_or_existential": (
+        "The spiritual or existential factors the paper names, out of the same beyond-the-triad list: "
+        "meaning, faith, hope, existential suffering, each with its role and its quoted passage."
+    ),
+    "other_domain_factors__environmental": (
+        "The environmental factors the paper names, out of the same beyond-the-triad list: the "
+        "physical environment, housing, climate, and the built environment, each with its role and "
+        "its quoted passage."
+    ),
+    "psychological_concepts": (
+        "Every psychological construct the paper uses, one item each, at the resolution the paper "
+        "uses it, with the concept family it belongs to, whether and how the paper defines it, the "
+        "measure it is operationalized with, and the role it plays."
+    ),
+    "concept_definitions_present": (
+        "Whether the review defines the psychological constructs it uses. Partial means some are "
+        "defined or clearly operationalized while others are only named."
+    ),
+    "concept_relations": (
+        "Every relation the paper draws between two constructs, as a source, a relation type, and a "
+        "target. These are the edges that turn a list of concepts into a map, and silent conflation "
+        "of two constructs is recorded here as a relation type of its own."
+    ),
+    # Integration
+    "integration_bio_psych": (
+        "How far the paper integrates the biological and the psychological domain, on the pairwise "
+        "ladder. Integration is a claim about a relation, never about co-occurrence in a sentence."
+    ),
+    "integration_psych_social": (
+        "How far the paper integrates the psychological and the social domain, on the pairwise ladder."
+    ),
+    "integration_bio_social": (
+        "How far the paper integrates the biological and the social domain, on the pairwise ladder. "
+        "This is the pair this literature articulates least often."
+    ),
+    "integration_triadic": (
+        "How far the paper integrates all three domains at once. Serial listing of biological, then "
+        "psychological, then social content is none, however long the lists are. This is the most "
+        "consequential judgement in the scheme."
+    ),
+    "integration_claims": (
+        "One item for every passage that relates two or three domains to one another, naming the two "
+        "specific factors that are linked, the direction, any named mediator or moderator, the quoted "
+        "claim, and the pathway when one is given. This is the evidence base behind the four "
+        "integration ladders."
+    ),
+    "integration_mechanism_summary": (
+        "The cross-domain pathways this paper actually proposes, in the coder's own words, or 'none "
+        "proposed' when it proposes none."
+    ),
+    # Typology and balance
+    "overall_balance": (
+        "Relative emphasis across the three core domains, judged on how much of the paper each one "
+        "occupies. Dyadic means two domains carry the paper and the third is marginal."
+    ),
+    "bps_typology": (
+        "What this review does with the biopsychosocial model at full-text depth, from a genuinely "
+        "integrative account down to a single-domain review that claims a biopsychosocial frame."
+    ),
+    "derived_typology": (
+        "The same typology recomputed from coverage and integration by a fixed rule, so the coded "
+        "judgement can be checked against the rule the codebook states."
+    ),
+    "typology_matches_derived": (
+        "Whether the coded typology and the rule-derived typology agree for this coding. Disagreement "
+        "tests how tightly the typology is defined, and is not by itself a coding error."
+    ),
+    # Frameworks and instruments
+    "theoretical_frameworks": (
+        "Every theoretical model or framework the paper invokes, with the role it plays here, which "
+        "of the three domains it actually spans, its attributed source, and the quoted passage."
+    ),
+    "instruments": (
+        "Every measurement or appraisal instrument the paper names, with what the paper says it "
+        "captures, the domain it measures, and its role. What a review measures is the most concrete "
+        "form its operationalization of the model takes."
+    ),
+    # Conceptual problems
+    "conceptual_problems": (
+        "Conceptual problems the paper names or merely displays, each with its type, what it is "
+        "about, the constructs it concerns, whether the authors point it out themselves, and the "
+        "passage that shows it."
+    ),
+    # Synthesis hooks
+    "key_quotes": (
+        "The most conceptually load-bearing passages in the paper, quoted for the later synthesis, "
+        "each typed and carrying one sentence on why it matters."
+    ),
+    "emergent_labels": (
+        "Every conceptually important term this paper uses that the project vocabularies do not "
+        "contain. This list is the review's own error signal: it is how the ontology finds out what "
+        "it is missing."
+    ),
+    "conceptual_tensions": (
+        "Contradictions, ambiguities, unresolved debates, and gaps the paper names or displays, "
+        "including tensions visible inside the paper itself."
+    ),
+    "additional_observations": (
+        "Anything else conceptually relevant that no other field captures, so an observation never "
+        "has to be forced into a field where it does not belong."
+    ),
+    "synthesis_note": (
+        "What this paper contributes to the question of how the biopsychosocial model is "
+        "operationalized, and what it does not, written for a reviewer who has not read it."
+    ),
+    "coding_rationale": (
+        "The coder's short justification of its main judgements: the typology, the triadic "
+        "integration level, and anything that was a close call."
+    ),
+    # Presence flags
+    "present_bps_usage_evidence": (
+        "Derived yes or no: whether this coder returned at least one passage in which the "
+        "biopsychosocial label does work."
+    ),
+    "present_bps_definition": (
+        "Derived yes or no: whether this coder returned at least one definition of the "
+        "biopsychosocial model."
+    ),
+    "present_integration_evidence": (
+        "Derived yes or no: whether this coder returned at least one integration claim."
+    ),
+    "present_triadic_claim": (
+        "Derived yes or no: whether at least one integration claim links all three domains at once."
+    ),
+    "present_named_integration_edge": (
+        "Derived yes or no: whether at least one integration claim names both the source and the "
+        "target factor, which is what makes a claim usable as an ontology edge."
+    ),
+    "present_biological_factors": (
+        "Derived yes or no: whether this coder named at least one biological factor."
+    ),
+    "present_social_factors": (
+        "Derived yes or no: whether this coder named at least one social factor."
+    ),
+    "present_other_domain_factors": (
+        "Derived yes or no: whether this coder named at least one factor beyond the triad."
+    ),
+    "present_psychological_concepts": (
+        "Derived yes or no: whether this coder named at least one psychological construct."
+    ),
+    "present_defined_concepts": (
+        "Derived yes or no: whether at least one psychological construct is formally defined or "
+        "operationalized through a measure rather than only named."
+    ),
+    "present_concept_relations": (
+        "Derived yes or no: whether this coder recorded at least one relation between two constructs."
+    ),
+    "present_hierarchical_relation": (
+        "Derived yes or no: whether at least one concept relation is hierarchical, meaning a subtype, "
+        "a part or component, or a synonym relation."
+    ),
+    "present_theoretical_frameworks": (
+        "Derived yes or no: whether this coder named at least one theoretical framework."
+    ),
+    "present_instruments": (
+        "Derived yes or no: whether this coder named at least one instrument."
+    ),
+    "present_conceptual_problems": (
+        "Derived yes or no: whether this coder recorded at least one conceptual problem."
+    ),
+    "present_domain_evidence_bio": (
+        "Derived yes or no: whether a quoted evidence passage was returned for the biological domain."
+    ),
+    "present_domain_evidence_psych": (
+        "Derived yes or no: whether a quoted evidence passage was returned for the psychological "
+        "domain."
+    ),
+    "present_domain_evidence_social": (
+        "Derived yes or no: whether a quoted evidence passage was returned for the social domain."
+    ),
+    # Eligibility and yield
+    "fulltext_eligibility": (
+        "The derived post-retrieval verdict, computed from the coded content rather than asked of the "
+        "coder. It protects recall, so anything doubtful becomes uncertain rather than exclude, and "
+        "it stays a recommendation for human adjudication."
+    ),
+    "fulltext_exclusion_reason": (
+        "The rule that produced a verdict other than include, empty for an included paper."
+    ),
+    "conceptual_yield": (
+        "The derived measure of how much conceptual material this paper actually yielded. It counts "
+        "what was extracted, weighted towards integration claims, named factors, and defined "
+        "concepts, because those carry the review's questions."
+    ),
+    "synthesis_priority": (
+        "The derived reading order for the later synthesis, combining the eligibility verdict with "
+        "the conceptual yield."
+    ),
+    "integration_index": (
+        "One number per coding: the three pairwise ladders averaged and the triadic ladder, each "
+        "normalized to its own top rung and then averaged, so papers can be compared on integration "
+        "without treating a ladder as an interval scale."
+    ),
+    "coverage_total": (
+        "The three core coverage ladders added up as depth scores, from 0 when all three domains are "
+        "absent to 9 when all three are elaborated."
+    ),
+    "domains_present": (
+        "How many of the three core domains are substantively covered, counting a domain as present "
+        "from the mentioned rung upward."
+    ),
+    "coverage_depth_bio": "The biological coverage ladder as a depth score.",
+    "coverage_depth_psych": "The psychological coverage ladder as a depth score.",
+    "coverage_depth_social": "The social coverage ladder as a depth score.",
+    "pairwise_depth_total": (
+        "The three pairwise integration ladders added up as depth scores, from 0 when no pair is "
+        "related to 12 when all three pairs are mechanistic."
+    ),
+    "pairwise_depth_max": (
+        "The highest of the three pairwise integration ladders, as a depth score."
+    ),
+    "triadic_depth": "The triadic integration ladder as a depth score.",
+    # Counts and provenance
+    "n_bps_usage_instances": (
+        "How many biopsychosocial usage passages this provider extracted from this paper."
+    ),
+    "n_bps_definitions": (
+        "How many definitions of the biopsychosocial model this provider extracted from this paper."
+    ),
+    "n_domain_evidence": (
+        "How many domain-evidence items this provider extracted, at most one per core domain."
+    ),
+    "n_biological_factors": "How many biological factors this provider named for this paper.",
+    "n_social_factors": "How many social factors this provider named for this paper.",
+    "n_other_domain_factors": (
+        "How many factors beyond the triad this provider named for this paper."
+    ),
+    "n_psychological_concepts": (
+        "How many psychological constructs this provider named for this paper."
+    ),
+    "n_defined_concepts": (
+        "How many of those constructs are formally defined or operationalized through a measure "
+        "rather than only named."
+    ),
+    "n_concept_relations": (
+        "How many relations between constructs this provider extracted from this paper."
+    ),
+    "n_hierarchical_relations": (
+        "How many of those relations are hierarchical: subtype, part or component, or synonym."
+    ),
+    "n_integration_claims": (
+        "How many cross-domain integration claims this provider extracted from this paper."
+    ),
+    "n_triadic_claims": "How many of those claims link all three domains at once.",
+    "n_named_integration_edges": (
+        "How many of those claims name both ends of the link, which is how many usable ontology edges "
+        "this coding contributes."
+    ),
+    "n_theoretical_frameworks": (
+        "How many theoretical frameworks this provider named for this paper."
+    ),
+    "n_instruments": "How many instruments this provider named for this paper.",
+    "n_conceptual_problems": (
+        "How many conceptual problems this provider recorded for this paper."
+    ),
+    "n_key_quotes": "How many key quotes this provider extracted from this paper.",
+    "n_emergent_labels": (
+        "How many terms this provider recorded as absent from the project vocabularies."
+    ),
+    "n_subdomains_bio": (
+        "How many distinct biological ontology subdomains this coding touched, across the biological "
+        "factors and the biological evidence item."
+    ),
+    "n_subdomains_psych": (
+        "How many distinct psychological concept families this coding touched, across the "
+        "psychological concepts and the psychological evidence item."
+    ),
+    "n_subdomains_social": (
+        "How many distinct social ontology subdomains this coding touched, across the social factors "
+        "and the social evidence item."
+    ),
+    "n_subdomains_named": (
+        "How many distinct ontology subdomains this coding touched in total, across the three "
+        "domains. This is the breadth of the account the paper gives."
+    ),
+    "n_bps_functions": (
+        "How many distinct functions the biopsychosocial label performs in this coding."
+    ),
+    "n_bps_usage_sections": (
+        "In how many distinct sections of the paper the biopsychosocial label is used."
+    ),
+    "n_open_list_entries": (
+        "How many entries this coding wrote across all record-level open lists together."
+    ),
+    "n_labels_checked": (
+        "How many extracted items carried an ontology anchor that could be checked against the "
+        "project vocabularies."
+    ),
+    "controlled_label_share": (
+        "The share of those anchors that landed on the controlled vocabulary. It measures the "
+        "ontology against the literature, so a low share says the vocabularies need extending rather "
+        "than that the coder erred."
+    ),
+    "n_evidence_quotes": (
+        "How many non-empty verbatim quotes this coding carries across every extraction list. Quotes "
+        "are checked against the source text after the run."
+    ),
+    "n_extracted_items": (
+        "The total number of structured items in this coding, summed over the thirteen extraction "
+        "lists."
+    ),
+    "coding_method": (
+        "How this row was produced. A paper that never coded after every retry is written as an "
+        "explicit failed row rather than dropped, so the table stays complete."
+    ),
+    "llm_model": "The model identifier of the provider that produced this coding.",
+}
+
+# Closed value lists that are derived rather than coded, so they are not part of
+# the prompt's controlled vocabularies. The strings match ``coding.derive``.
+DERIVED_VALUES: dict[str, list[str]] = {
+    "fulltext_eligibility": list(schema.ELIGIBILITY_OPTIONS),
+    "conceptual_yield": list(schema.YIELD_OPTIONS),
+    "synthesis_priority": list(schema.SYNTHESIS_PRIORITY_OPTIONS),
+    # The rule never returns "unclear": it always lands on one of the five.
+    "derived_typology": [
+        value for value in schema.TYPOLOGY_OPTIONS if value != "unclear"
+    ],
+    "typology_matches_derived": list(PRESENCE_ORDER),
+    "bps_has_substantive_function": list(PRESENCE_ORDER),
+    "coding_method": ["llm_structured", "coding_failed"],
+    "bps_function_set": list(schema.BPS_FUNCTION_OPTIONS),
+    "bps_usage_sections": [
+        value for value in schema.SECTION_OPTIONS if value != "unclear"
+    ],
+    "fulltext_exclusion_reason": [
+        "(empty, the paper is included)",
+        "no biopsychosocial domain content in the full text",
+        "single-domain review with no cross-domain claim",
+        "reads as a primary study rather than an evidence synthesis",
+        "fewer than two domains substantively covered",
+        "no biopsychosocial vocabulary and no readable typology",
+        "typology not readable and no triadic integration found",
+    ],
+}
+
+# The ladder scores, spelled out as the rung each number stands for.
+COVERAGE_SCALE = ["0 = absent", "1 = minimal", "2 = mentioned", "3 = elaborated"]
+PAIRWISE_SCALE = ["0 = none", "1 = mentioned", "2 = descriptive", "3 = directional", "4 = mechanistic"]
+TRIADIC_SCALE = ["0 = none", "1 = partial", "2 = descriptive", "3 = mechanistic"]
+
+SCORE_VALUES: dict[str, list[str]] = {
+    "coverage_depth_bio": COVERAGE_SCALE,
+    "coverage_depth_psych": COVERAGE_SCALE,
+    "coverage_depth_social": COVERAGE_SCALE,
+    "pairwise_depth_max": PAIRWISE_SCALE,
+    "triadic_depth": TRIADIC_SCALE,
+}
+
+# Which ladder rules belong to which coded field.
+FIELD_LADDERS: dict[str, str] = {
+    **{name: "domain_coverage" for name in (
+        "domain_coverage_bio",
+        "domain_coverage_psych",
+        "domain_coverage_social",
+        "coverage_lifestyle",
+        "coverage_spiritual_existential",
+    )},
+    **{name: "pairwise_integration" for name in (
+        "integration_bio_psych",
+        "integration_psych_social",
+        "integration_bio_social",
+    )},
+    "integration_triadic": "triadic_integration",
+}
+
+# The item-count columns and the extraction list each one counts.
+COUNT_SOURCE_FIELDS: dict[str, str] = {f"n_{name}": name for name in schema.ITEM_MODELS}
+COUNT_SOURCE_FIELDS.update(
+    {
+        "n_defined_concepts": "psychological_concepts",
+        "n_hierarchical_relations": "concept_relations",
+        "n_triadic_claims": "integration_claims",
+        "n_named_integration_edges": "integration_claims",
+        "n_emergent_labels": "emergent_labels",
+    }
+)
+
+_TOTAL_ITEM_CAP = sum(ITEM_CAPS.values())
+_TOTAL_OPEN_LIST_CAP = sum(OPEN_LIST_CAPS.values())
+_ANCHORED_ITEM_CAP = sum(ITEM_CAPS[name] for name in schema.ITEM_ANCHOR)
+_N_SECTIONS = len([value for value in schema.SECTION_OPTIONS if value != "unclear"])
+
+# Formats for the fields with no closed value list.
+OPEN_VALUE_FORMATS: dict[str, str] = {
+    "pain_condition_detail": f"Free text, at most {MAX_NOTE_WORDS} words",
+    "context_note": f"Free text, at most {MAX_NOTE_WORDS} words",
+    "coding_rationale": f"Free text, at most {MAX_NOTE_WORDS} words",
+    "bps_operationalization_summary": f"Free text, at most {MAX_SUMMARY_WORDS} words",
+    "integration_mechanism_summary": f"Free text, at most {MAX_SUMMARY_WORDS} words",
+    "synthesis_note": f"Free text, at most {MAX_SUMMARY_WORDS} words",
+    "llm_model": "Provider model identifier",
+    "integration_index": "Number between 0 and 1, rounded to four decimals",
+    "controlled_label_share": "Number between 0 and 1, rounded to four decimals",
+    "coverage_total": "Whole number, 0 to 9",
+    "domains_present": "Whole number, 0 to 3",
+    "pairwise_depth_total": "Whole number, 0 to 12",
+    "n_evidence_quotes": f"Whole number, 0 to {_TOTAL_ITEM_CAP}",
+    "n_extracted_items": f"Whole number, 0 to {_TOTAL_ITEM_CAP}",
+    "n_open_list_entries": f"Whole number, 0 to {_TOTAL_OPEN_LIST_CAP}",
+    "n_labels_checked": f"Whole number, 0 to {_ANCHORED_ITEM_CAP}",
+    "n_bps_functions": f"Whole number, 0 to {len(schema.BPS_FUNCTION_OPTIONS)}",
+    "n_bps_usage_sections": f"Whole number, 0 to {_N_SECTIONS}",
+    "n_subdomains_bio": "Whole number",
+    "n_subdomains_psych": "Whole number",
+    "n_subdomains_social": "Whole number",
+    "n_subdomains_named": "Whole number",
+    **{
+        column: f"Whole number, 0 to {ITEM_CAPS[source]}"
+        for column, source in COUNT_SOURCE_FIELDS.items()
+        if source in ITEM_CAPS
+    },
+    **{
+        column: f"Whole number, 0 to {OPEN_LIST_CAPS[source]}"
+        for column, source in COUNT_SOURCE_FIELDS.items()
+        if source in OPEN_LIST_CAPS
+    },
+}
+
+
+def _closed_values(field: str, column: str) -> list[str] | None:
+    """The closed vocabulary of a field, coded or derived, if it has one."""
+    for name in (field, column):
+        if name in CONTROLLED_VALUES:
+            return list(CONTROLLED_VALUES[name])
+        if name in CONTROLLED_LIST_VALUES:
+            return list(CONTROLLED_LIST_VALUES[name])
+        if name in DERIVED_VALUES:
+            return list(DERIVED_VALUES[name])
+        if name in SCORE_VALUES:
+            return list(SCORE_VALUES[name])
+        if name.startswith("present_"):
+            return list(PRESENCE_ORDER)
+    return None
+
+
+def _value_format(column: str) -> str:
+    """A short statement of the value space of a field with no closed vocabulary."""
+    if column in STRUCTURED_FIELDS:
+        cap = ITEM_CAPS.get(column)
+        quoted = " Every item carries a verbatim quote." if column in schema.ITEM_QUOTE_KEY else ""
+        return (f"Structured extraction list, at most {cap} items.{quoted}" if cap
+                else "Structured extraction list.")
+    if column in FLAT_LIST_FIELDS:
+        cap = OPEN_LIST_CAPS.get(column)
+        limit = f", at most {cap} entries" if cap else ""
+        return f"Open list{limit}, written as one value per entry"
+    return OPEN_VALUE_FORMATS.get(column, "Free text")
+
+
+def _item_value_space(column: str) -> dict[str, Any]:
+    """Every field inside one extracted item, with its vocabulary or its format."""
+    model = schema.ITEM_MODELS[column]
+    value_lists = ITEM_VALUE_LISTS.get(column, {})
+    space: dict[str, Any] = {}
+    for name, info in model.model_fields.items():
+        if name in value_lists:
+            space[name] = list(value_lists[name])
+        elif name.endswith("verbatim"):
+            space[name] = f"Verbatim quote copied from the article, at most {MAX_QUOTE_WORDS} words"
+        elif info.annotation == list[str]:
+            space[name] = f"List of short free-text labels, at most {ITEM_SUBLIST_CAP}"
+        elif name in ("note", "why_it_matters", "mechanism_note"):
+            space[name] = f"Free text, at most {MAX_NOTE_WORDS} words"
+        else:
+            space[name] = "Free-text label"
+    return space
+
+
+def _field_reference(view: "FieldView") -> "OrderedDict[str, Any]":
+    """The explanation and the value space shown on a coding-field node.
+
+    A filtered view explains its own slice when it has an explanation of its own,
+    and otherwise falls back to the explanation of the column it reads.
+    """
+    field = view.resolved_key()
+    column = view.column
+    reference: "OrderedDict[str, Any]" = OrderedDict()
+    description = FIELD_DESCRIPTIONS.get(field) or FIELD_DESCRIPTIONS.get(column)
+    if description:
+        reference["What this field records"] = description
+    values = _closed_values(field, column)
+    if values:
+        reference["Possible values"] = values
+    else:
+        reference["Value format"] = _value_format(column)
+    ladder = FIELD_LADDERS.get(column)
+    if ladder:
+        reference["What each value means"] = dict(LADDERS[ladder])
+    if column in STRUCTURED_FIELDS:
+        reference["Item fields and their values"] = _item_value_space(column)
+    return reference
 
 
 def _json_value(value: Any) -> Any:
@@ -769,6 +1461,7 @@ def graph_payload(
             value=f"{populated} recorded values",
             detail={
                 "Coding field": label,
+                **_field_reference(view),
                 "Field key": field,
                 "Coded column": column,
                 **({"Restricted to items where": restriction} if restriction else {}),
@@ -1069,6 +1762,46 @@ def graph_payload(
     }
 
 
+def bundle_readme(payload: dict[str, Any]) -> str:
+    """The run-specific opening instructions written next to the bundle."""
+    return (
+        "# Knowledge graph review surface\n\n"
+        "Open `index.html` in a desktop browser. The bundle is fully local and requires no server.\n\n"
+        f"- Papers: {payload['meta']['n_papers']}\n"
+        f"- Providers: {payload['meta']['n_providers']}\n"
+        f"- Coding cells: {payload['meta']['n_codings']}\n"
+        f"- Graph nodes: {payload['meta']['n_nodes']}\n"
+        f"- Graph links: {payload['meta']['n_edges']}\n\n"
+        "Search accepts several words at once, all of which must match, and ranks what it finds: a "
+        "quoted phrase stays contiguous, a leading minus excludes a word, and field:, group:, "
+        "provider:, article:, label:, and type: aim a word at one part of a node. The filter panel "
+        "and the inspector each fold away from the toolbar to give the canvas their width.\n\n"
+        "The first view shows the field groups, the biopsychosocial entities, and all canonical "
+        "scheme 3 coding fields. The entity level holds the triad as three siblings and everything "
+        "beyond it under Other factors, which carries lifestyle and spiritual or existential as its "
+        "own children, so the evidence for one domain sits under that domain rather than in one "
+        "undifferentiated list.\n\n"
+        "Every coding field explains itself: its card and its inspector state what the field records, "
+        "list its possible values when the field has a closed vocabulary, give its value format when it "
+        "does not, spell out the rung-by-rung rule for the coverage and integration ladders, and, for a "
+        "structured extraction list, name every item field with its own vocabulary.\n\n"
+        "Double-click a "
+        "field or use its Explore button to reveal provider hubs with papers grouped beneath them, then "
+        "expand an article coding to reveal extracted items. With one selected provider, papers connect "
+        "directly to the field. Use Show all to render every selected layer. Use "
+        "the left panel to filter articles, providers, and coding fields. Drag nodes to pin them, drag the "
+        "background to pan, use the mouse wheel to zoom, switch theme, move or disable the node preview, and "
+        "click a node for its formatted inspector. The complete root-to-leaf path stays highlighted while the "
+        "scheme overview remains visible as context. Whenever Labels is enabled, the run root, field-group "
+        "labels, and canonical coding-field labels stay visible at every drill-down depth. Back one level and "
+        "parent-node double-clicks move upward. "
+        "Deep article views use compact automatically sized rings and collision-aware leaf labels. Context "
+        "fitting frames the active branch, and dragging a parent moves its complete descendant subtree, "
+        "including hidden descendants expanded later. Manual zoom supports up to 1000 percent. Reset view "
+        "returns to the complete scheme overview and clears manual placement.\n"
+    )
+
+
 def build_knowledge_graph(
     corpus_df: pd.DataFrame,
     long_df: pd.DataFrame,
@@ -1102,32 +1835,5 @@ def build_knowledge_graph(
         "window.BPS_GRAPH_DATA = " + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n",
         encoding="utf-8",
     )
-    (output_dir / "README.md").write_text(
-        "# Knowledge graph review surface\n\n"
-        "Open `index.html` in a desktop browser. The bundle is fully local and requires no server.\n\n"
-        f"- Papers: {payload['meta']['n_papers']}\n"
-        f"- Providers: {payload['meta']['n_providers']}\n"
-        f"- Coding cells: {payload['meta']['n_codings']}\n"
-        f"- Graph nodes: {payload['meta']['n_nodes']}\n"
-        f"- Graph links: {payload['meta']['n_edges']}\n\n"
-        "The first view shows the field groups, the biopsychosocial entities, and all canonical "
-        "scheme 3 coding fields. The entity level holds the triad as three siblings and everything "
-        "beyond it under Other factors, which carries lifestyle and spiritual or existential as its "
-        "own children, so the evidence for one domain sits under that domain rather than in one "
-        "undifferentiated list. Double-click a "
-        "field or use its Explore button to reveal provider hubs with papers grouped beneath them, then "
-        "expand an article coding to reveal extracted items. With one selected provider, papers connect "
-        "directly to the field. Use Show all to render every selected layer. Use "
-        "the left panel to filter articles, providers, and coding fields. Drag nodes to pin them, drag the "
-        "background to pan, use the mouse wheel to zoom, switch theme, move or disable the node preview, and "
-        "click a node for its formatted inspector. The complete root-to-leaf path stays highlighted while the "
-        "scheme overview remains visible as context. Whenever Labels is enabled, the run root, field-group "
-        "labels, and canonical coding-field labels stay visible at every drill-down depth. Back one level and "
-        "parent-node double-clicks move upward. "
-        "Deep article views use compact automatically sized rings and collision-aware leaf labels. Context "
-        "fitting frames the active branch, and dragging a parent moves its complete descendant subtree, "
-        "including hidden descendants expanded later. Manual zoom supports up to 1000 percent. Reset view "
-        "returns to the complete scheme overview and clears manual placement.\n",
-        encoding="utf-8",
-    )
+    (output_dir / "README.md").write_text(bundle_readme(payload), encoding="utf-8")
     return index_path

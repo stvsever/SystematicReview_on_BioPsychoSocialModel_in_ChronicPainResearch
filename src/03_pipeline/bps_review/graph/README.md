@@ -97,7 +97,15 @@ field, provider, and article. Reviewers can return with the Back one level
 control or by double-clicking a visible parent node.
 
 Node size decreases with depth. Every coding field receives a stable variation in
-hue, saturation, and luminance within its field-group palette. Extracted items
+hue, saturation, and luminance within its field-group palette. Every coding field
+also carries its own reference layer: a short statement of what the field
+records, its closed vocabulary when it has one or its value format when it does
+not, the rung-by-rung rule for the coverage and integration ladders, and, for the
+structured extraction lists, every item field with its own vocabulary. A filtered
+view explains its own slice. The explanations are written in `builder.py`, while
+every value list, ladder, and cap is read from the schema, the prompt, and the
+configuration, so the graph cannot drift from what the coder was asked for.
+Extracted items
 carry the coder's own label, its normalized form, its ontology anchor, and the
 quote-verification verdict when those tables are supplied. Reviewers can filter
 by article, provider, or coding field, search all labels and evidence, drag
@@ -143,3 +151,25 @@ build_knowledge_graph(
 
 The full-text pipeline calls this for every run, so `make testrun-fulltext`
 refreshes the graph together with the tables and the figures.
+
+## Search
+
+The search box is a small lexical query language over the payload's per-node
+text, not a single substring test. Whitespace separates terms and every term has
+to match, so two words find the nodes carrying both in any order. A `"quoted
+phrase"` is required contiguously, `-word` excludes, and `field:`, `group:`,
+`provider:`, `article:`, `label:`, `type:` aim a term at one part of a node
+rather than at everything it carries.
+
+Matches are ranked before the result cap applies, so truncation drops the
+weakest matches instead of whatever came last in the node list. A hit in the
+node's own label outranks one in an identifier, which outranks one buried in the
+coded detail; whole words outrank fragments inside longer words; and among equal
+matches the shallower node and the shorter label come first. The status line
+reports the true number of matches, and says so when nothing matches.
+
+## Panels
+
+The filter panel and the inspector each fold away from the toolbar, which hands
+their grid column to the canvas. The choice persists per browser, and opening
+the full inspector from a node preview brings the right panel back.
