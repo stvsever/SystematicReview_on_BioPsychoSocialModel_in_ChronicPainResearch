@@ -1,0 +1,33 @@
+{
+  "n_papers": 47,
+  "n_papers_with_doi": 47,
+  "n_providers": 3,
+  "n_coding_rows": 141,
+  "n_coding_columns": 935,
+  "n_extracted_items": 9400,
+  "items_per_category": {
+    "biological_factors": 1180,
+    "psychological_concepts": 1564,
+    "social_factors": 888,
+    "other_domain_factors": 455,
+    "domain_evidence": 404,
+    "integration_claims": 820,
+    "concept_relations": 1118,
+    "bps_usage_instances": 576,
+    "bps_definitions": 97,
+    "theoretical_frameworks": 513,
+    "instruments": 529,
+    "conceptual_problems": 573,
+    "key_quotes": 683
+  },
+  "n_api_calls": 141,
+  "outputs": {
+    "workbook": "00_workbook.xlsx",
+    "codings": "01_codings/",
+    "extracted_items": "02_extracted_items/",
+    "by_provider": "03_by_provider/",
+    "api_calls": "04_api_calls/",
+    "papers": "../01_corpus/papers.csv",
+    "coding_scheme": "../../../02_coding_schemes/scheme_3/"
+  }
+}

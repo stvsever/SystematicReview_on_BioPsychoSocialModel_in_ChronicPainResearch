@@ -18,12 +18,9 @@ from pathlib import Path
 import pandas as pd
 
 from bps_review.fulltext.analysis.integrity import verify_all_quotes
-from bps_review.fulltext.config import (
-    graph_dir,
-    items_csv,
-    long_codings_csv,
-)
+from bps_review.fulltext.config import codings_dir, graph_dir
 from bps_review.fulltext.corpus.pmc import load_corpus, load_corpus_records
+from bps_review.fulltext.publish import load_run_from_tables
 from bps_review.graph import build_knowledge_graph
 
 
@@ -55,13 +52,12 @@ def export_fulltext_graph(
     verbose: bool = True,
 ) -> dict:
     """Write the knowledge graph of the cached full-text run and report what it holds."""
-    path = long_codings_csv()
-    if not path.exists():
+    if not codings_dir().exists():
         raise FileNotFoundError(
-            f"No cached full-text coding table at {path}. Run the full-text test run first."
+            f"No published full-text coding tables under {codings_dir()}. "
+            "Run the full-text test run first."
         )
-    long_df = pd.read_csv(path).fillna("")
-    items_df = pd.read_csv(items_csv()).fillna("") if items_csv().exists() else pd.DataFrame()
+    long_df, items_df = load_run_from_tables(codings_dir())
     corpus = load_corpus()
     verification = _quote_verification(items_df)
     if verbose:

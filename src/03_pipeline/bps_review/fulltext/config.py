@@ -723,11 +723,13 @@ COVERAGE_DEPTH: dict[str, int] = {"absent": 0, "minimal": 1, "mentioned": 2, "el
 
 
 # --------------------------------------------------------------------------
-# Paths. Everything this test run produces lives under
-# src/05_data/pilot/02_fulltext_level, mirroring the abstract-level layout.
+# Paths. Everything this run produces lives under src/05_test_runs/official,
+# beside the abstract-level run that produced its candidate set. The run is the
+# published record: the tables under 02_model_codings are the store the coding
+# is read back from, not a copy of one kept elsewhere.
 # --------------------------------------------------------------------------
 def fulltext_root():
-    return project_path("data", "pilot", "02_fulltext_level")
+    return project_path("test_runs", "official")
 
 
 def corpus_dir():
@@ -735,35 +737,55 @@ def corpus_dir():
 
 
 def corpus_text_dir():
-    return corpus_dir() / "03_fulltext_txt"
+    return corpus_dir() / "fulltext_txt"
 
 
 def corpus_csv():
-    return corpus_dir() / "02_fulltext_corpus.csv"
+    return corpus_dir() / "articles.csv"
 
 
 def corpus_candidates_csv():
-    return corpus_dir() / "01_retrieval_candidates.csv"
+    return corpus_dir() / "retrieval_candidates.csv"
 
 
 def corpus_selection_log_csv():
-    return corpus_dir() / "04_retrieval_log.csv"
+    return corpus_dir() / "retrieval_log.csv"
 
 
 def corpus_manifest_json():
-    return corpus_dir() / "05_corpus_manifest.json"
+    return corpus_dir() / "corpus_manifest.json"
+
+
+def papers_csv():
+    """The reader-facing paper list: full citation, DOI, and where the text came from."""
+    return corpus_dir() / "papers.csv"
 
 
 def codings_dir():
     return fulltext_root() / "02_model_codings"
 
 
+# The runner writes its native artifacts into a staging folder. They are
+# absorbed into the published tables and removed, so the coding directory holds
+# one representation of the run rather than two.
+RUN_STAGING_DIRNAME = "_staging"
+
+
+def run_staging_dir():
+    return codings_dir() / RUN_STAGING_DIRNAME
+
+
 def long_codings_csv():
-    return codings_dir() / "all_model_codings_long.csv"
+    return run_staging_dir() / "all_model_codings_long.csv"
 
 
 def items_csv():
-    return codings_dir() / "all_extracted_items_long.csv"
+    return run_staging_dir() / "all_extracted_items_long.csv"
+
+
+def api_calls_dir():
+    """Where the run's own bookkeeping is kept: one row per API call, plus the raw trail."""
+    return codings_dir() / "04_api_calls"
 
 
 def reliability_dir():
@@ -779,4 +801,8 @@ def graph_dir():
 
 
 def summary_md():
-    return fulltext_root() / "TESTRUN_SUMMARY_FULLTEXT.md"
+    return fulltext_root() / "TEST_RUN_SUMMARY.md"
+
+
+def run_overview_json():
+    return fulltext_root() / "run_overview.json"

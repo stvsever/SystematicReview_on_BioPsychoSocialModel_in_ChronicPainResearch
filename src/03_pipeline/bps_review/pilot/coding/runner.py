@@ -17,7 +17,7 @@ one the review will run. The runner adds:
 * per-call token usage, so the real cost of the run is reportable rather than
   estimated.
 
-Outputs, all under ``src/05_data/pilot/01_abstract_level/02_model_codings``:
+Outputs, all under ``src/05_test_runs/tests/01_pilot_abstract/02_model_codings``:
 ``by_model/<model>.csv``, ``audit/<model>.jsonl``, ``all_model_codings_long.csv``,
 ``run_manifest.json`` and ``run.log``.
 """

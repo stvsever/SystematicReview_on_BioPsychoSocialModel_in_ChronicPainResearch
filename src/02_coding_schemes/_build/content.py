@@ -278,13 +278,13 @@ SCHEME_1 = {
     "sources": [
         "src/01_protocol/decision_rules/screening_rules.md",
         "src/03_pipeline/bps_review/screening/rules.py",
-        "src/06_review_stages/03_screening/README.md",
+        "src/09_review_stages/03_screening/README.md",
         "src/01_protocol/osf/OSF_registration_HTBMFCPR.md",
     ],
     "outputs": [
-        "src/06_review_stages/03_screening/outputs/stage1_screening.csv",
-        "src/06_review_stages/03_screening/audit/stage1_screening_summary.csv",
-        "src/06_review_stages/03_screening/audit/reliability_report.csv",
+        "src/09_review_stages/03_screening/outputs/stage1_screening.csv",
+        "src/09_review_stages/03_screening/audit/stage1_screening_summary.csv",
+        "src/09_review_stages/03_screening/audit/reliability_report.csv",
     ],
     "sections": [
         {
@@ -477,18 +477,18 @@ SCHEME_2 = {
             "SQ1 (conceptual problems)", "Feeds the Stage 3 candidate gate"],
     "sources": [
         "src/01_protocol/codebooks/stage2_codebook.md",
-        "src/06_review_stages/04_extraction/codebooks/stage2_codebook.csv",
+        "src/09_review_stages/04_extraction/codebooks/stage2_codebook.csv",
         "src/03_pipeline/bps_review/extraction/stage2.py",
         "src/03_pipeline/bps_review/extraction/llm_stage2.py",
-        "src/06_review_stages/04_extraction/outputs/stage2_abstract_coding.csv",
-        "src/06_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv",
-        "src/06_review_stages/04_extraction/outputs/llm_stage2_structured_batches.jsonl",
+        "src/09_review_stages/04_extraction/outputs/stage2_abstract_coding.csv",
+        "src/09_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv",
+        "src/09_review_stages/04_extraction/outputs/llm_stage2_structured_batches.jsonl",
     ],
     "outputs": [
-        "src/06_review_stages/04_extraction/outputs/stage2_abstract_coding.csv",
-        "src/06_review_stages/04_extraction/forms/stage2_double_code_subset.csv",
-        "src/06_review_stages/04_extraction/outputs/stage2_objective_llm_assist.csv",
-        "src/06_review_stages/04_extraction/outputs/llm_objective_pilot.json",
+        "src/09_review_stages/04_extraction/outputs/stage2_abstract_coding.csv",
+        "src/09_review_stages/04_extraction/forms/stage2_double_code_subset.csv",
+        "src/09_review_stages/04_extraction/outputs/stage2_objective_llm_assist.csv",
+        "src/09_review_stages/04_extraction/outputs/llm_objective_pilot.json",
     ],
     "sections": [
         {
@@ -882,15 +882,15 @@ SCHEME_3 = {
         "src/03_pipeline/bps_review/fulltext/coding/runner.py",
         "src/03_pipeline/bps_review/fulltext/analysis/integrity.py",
         "src/01_protocol/codebooks/stage3_codebook.md",
-        "src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
+        "src/09_review_stages/04_extraction/codebooks/stage3_codebook.csv",
+        "src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
     ],
     "outputs": [
-        "src/05_data/pilot/02_fulltext_level/02_model_codings/all_model_codings_long.csv",
-        "src/05_data/pilot/02_fulltext_level/02_model_codings/all_extracted_items_long.csv",
-        "src/05_data/pilot/02_fulltext_level/03_reliability/",
-        "src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
+        "src/05_test_runs/official/02_model_codings/01_codings/01_one_row_per_paper_and_provider.csv",
+        "src/05_test_runs/official/02_model_codings/02_extracted_items/00_all_categories/01_one_row_per_item.csv",
+        "src/05_test_runs/official/03_reliability/",
+        "src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
     ],
     "sections": [
         {
@@ -1970,16 +1970,16 @@ SCHEME_4 = {
             "quality"],
     "sources": [
         "src/03_pipeline/bps_review/extraction/stage3_prep.py",
-        "src/06_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv",
+        "src/09_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv",
     ],
     "outputs": [
-        "src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
-        "src/06_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv",
-        "src/06_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
+        "src/09_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv",
+        "src/09_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv",
     ],
     "sections": [
         {
@@ -2131,10 +2131,10 @@ SCHEME_5 = {
         "src/03_pipeline/bps_review/extraction/coding.py",
         "src/01_protocol/codebooks/stage2_codebook.md",
         "src/01_protocol/codebooks/stage3_codebook.md",
-        "src/05_data/interim/extraction/llm_concept_clusters.json",
+        "src/06_data/interim/extraction/llm_concept_clusters.json",
     ],
     "outputs": [
-        "src/05_data/interim/extraction/llm_concept_clusters.json",
+        "src/06_data/interim/extraction/llm_concept_clusters.json",
     ],
     "sections": [
         {

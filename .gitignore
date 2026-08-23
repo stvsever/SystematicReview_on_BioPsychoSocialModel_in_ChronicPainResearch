@@ -1,18 +1,30 @@
-.DS_Store
+# Secrets and local environment
 .env
+.env.local
+
+# OS and editor cruft
+.DS_Store
 .idea/
+.vscode/
 .claude/
-.venv/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+.venv/
+venv/
 *.egg-info/
+.eggs/
+build/
+dist/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .ipynb_checkpoints/
 
+# LaTeX build products
 paper/report/*.aux
 paper/report/*.bbl
 paper/report/*.blg
@@ -20,7 +32,6 @@ paper/report/*.log
 paper/report/*.out
 paper/report/*.toc
 paper/report/*.xdv
-
 src/02_coding_schemes/**/*.aux
 src/02_coding_schemes/**/*.log
 src/02_coding_schemes/**/*.out
@@ -31,18 +42,27 @@ src/02_coding_schemes/**/*.out
 # rows, the extracted items, the verbatim evidence quotes, and the aggregate
 # tables. An authorized reviewer restores the texts locally with
 # `make fulltext-corpus`, which repeats retrieval and quote verification.
-src/06_review_stages/04_extraction/inputs/fulltext_cache/
-src/05_data/pilot/02_fulltext_level/01_corpus/03_fulltext_txt/*
-!src/05_data/pilot/02_fulltext_level/01_corpus/03_fulltext_txt/.gitkeep
+src/05_test_runs/official/01_corpus/fulltext_txt/*
+!src/05_test_runs/official/01_corpus/fulltext_txt/.gitkeep
 
-# Local vector store for semantic label matching. The embeddings are a cache of
-# the OpenRouter embedding endpoint keyed by label text: regenerating them is one
-# command and a fraction of a cent, so the vectors are not carried in Git.
-src/05_data/interim/embeddings/
+# The API calls behind a run: status, retries, timing, tokens, and cost per call,
+# plus the raw call trail. That is bookkeeping about how the run was produced,
+# not a coding anyone reads, and it names the exact model versions and spend. It
+# stays local; the run manifest and the log go with it.
+src/05_test_runs/official/02_model_codings/04_api_calls/
+src/05_test_runs/official/02_model_codings/03_by_provider/*/04_api_calls.csv
 
-# Internal working sections, kept local and never published. 07_docs holds the
-# project status write-ups, 08_artifacts is scratch space for run logs and
-# validation. Neither carries review data: the committed record of a run lives
-# under src/05_data and src/06_review_stages.
+# The runner's own staging folder. Everything in it is absorbed into the
+# published tables and removed, so it only ever exists mid-run.
+src/05_test_runs/**/_staging/
+
+# Internal working sections, kept local and never published. 06_data holds the
+# retrieval caches and the embedding store; 07_docs the project status write-ups;
+# 08_artifacts scratch space for run logs and validation; 09_review_stages the
+# stage-by-stage working files of the main pipeline. None of them carries a
+# result the team reads: the committed record of a run lives under
+# src/05_test_runs.
+src/06_data/
 src/07_docs/
 src/08_artifacts/
+src/09_review_stages/

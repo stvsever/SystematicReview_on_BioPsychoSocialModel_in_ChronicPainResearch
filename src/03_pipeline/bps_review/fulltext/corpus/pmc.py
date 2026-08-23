@@ -322,7 +322,7 @@ def build_corpus(candidates: pd.DataFrame | None = None, verbose: bool = True) -
                 "abstract_stage3_priority": getattr(candidate, "stage3_priority", ""),
                 "abstract_typology": getattr(candidate, "provisional_typology", ""),
                 "abstract_msk_flag": getattr(candidate, "musculoskeletal_flag", ""),
-                "text_file": f"03_fulltext_txt/{record_id}.txt",
+                "text_file": f"fulltext_txt/{record_id}.txt",
                 "pmc_url": paper["pmc_url"],
                 "abstract": paper["abstract"],
             }

@@ -216,8 +216,8 @@ Stage 3 is where the review's central claim is tested: does a BPS-labelled revie
 - `src/03_pipeline/bps_review/fulltext/coding/runner.py`
 - `src/03_pipeline/bps_review/fulltext/analysis/integrity.py`
 - `src/01_protocol/codebooks/stage3_codebook.md`
-- `src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv`
-- `src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
+- `src/09_review_stages/04_extraction/codebooks/stage3_codebook.csv`
+- `src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
 
 ## Regenerating this dossier
 

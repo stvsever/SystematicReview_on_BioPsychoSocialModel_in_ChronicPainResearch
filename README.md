@@ -69,7 +69,7 @@ Stage 3 deep coding, same 3 models, graded ladders with verbatim evidence
 Mean Fleiss' kappa is 0.60 across the twelve coded fields, and the spread is the finding: substantial agreement on what a paper *is* (ICD-11 pain family 0.76, review type 0.71), fair agreement on what a paper *does* (BPS function 0.35, provisional typology 0.33). The two weakest fields are the ones carrying the review's own argument, which is exactly what the expert evaluation should concentrate on.
 
 - Notebook: [`src/04_notebooks/01_abstractlevel_testrun.ipynb`](src/04_notebooks/01_abstractlevel_testrun.ipynb) or `python -m bps_review run-abstract-testrun`
-- Code: [src/03_pipeline/bps_review/pilot/](src/03_pipeline/bps_review/pilot/README.md) · Results: [src/05_data/pilot/01_abstract_level/](src/05_data/pilot/01_abstract_level/)
+- Code: [src/03_pipeline/bps_review/pilot/](src/03_pipeline/bps_review/pilot/README.md) · Results: [src/05_test_runs/tests/01_pilot_abstract/](src/05_test_runs/tests/01_pilot_abstract/)
 
 ### Test run 2: full text (scheme 3)
 
@@ -82,10 +82,10 @@ The open-access subset of the candidate set the abstract stage produced: 47 full
 - **Overlap on every vocabulary the extraction produces, measured twice.** A scheme 3 item is not a label but a small record, and several of its fields are open vocabularies in their own right: which constructs a coder says carry the biological domain, which measure a construct is tied to, which components a definition of the model lists. Comparing extraction lists by item identity, as reliability metrics normally do, leaves all of that unmeasured. The scheme therefore declares **33 comparison spaces** across three layers, identity, vocabulary, and filtered, and each is scored twice: lexically, and semantically, where every label is embedded once and two labels count as one concept above a cosine threshold. The gap between the two is the share of the apparent disagreement that was only ever wording.
 
   This run answers all 33 (13 identity, 16 vocabulary, 4 filtered) over 6,205 embedded labels, and the mean rises from 0.287 lexical to 0.345 semantic. Where the two columns diverge most is where the lexical reading was most misleading: the relations drawn between concepts score 0.026 by string and 0.284 by meaning, and the integration claims 0.020 against 0.208. Read lexically the providers look like they agree on almost nothing there; what they actually disagree about is how to word an edge, not whether it is in the paper. The largest vocabulary in the run, the 2,092 constructs the coders name as carrying the domains, rises from 0.327 to 0.402. The five spaces whose identity is a closed vocabulary act as the control: their two columns come out identical, which is the check that the method is not manufacturing agreement wherever it is pointed.
-- **An interactive knowledge graph.** The whole run is also a browsable graph: run, field group, entity, coding field, provider, article coding, extracted item, with filters, full-text search over every label and quote, and an inspector that shows the verbatim passage and its verification verdict. The entity level carries the review's own subject: **Biopsychosocial entities** holds the triad as three siblings (biological, psychological, social) and everything the registration adds beyond it under a fourth heading, **Other factors**, with lifestyle and spiritual or existential as its own children. The depth is the argument: lifestyle is not a fourth domain sitting beside biology. The two lists that hold several entities at once (the domain evidence, and the factors beyond the triad) are split so the biological evidence sits under biology rather than inside one undifferentiated list. It is plain local HTML with no server. Open [`src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html`](src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html).
+- **An interactive knowledge graph.** The whole run is also a browsable graph: run, field group, entity, coding field, provider, article coding, extracted item, with filters, full-text search over every label and quote, and an inspector that shows the verbatim passage and its verification verdict. The entity level carries the review's own subject: **Biopsychosocial entities** holds the triad as three siblings (biological, psychological, social) and everything the registration adds beyond it under a fourth heading, **Other factors**, with lifestyle and spiritual or existential as its own children. The depth is the argument: lifestyle is not a fourth domain sitting beside biology. The two lists that hold several entities at once (the domain evidence, and the factors beyond the triad) are split so the biological evidence sits under biology rather than inside one undifferentiated list. It is plain local HTML with no server. Open [`src/05_test_runs/official/05_knowledge_graph/index.html`](src/05_test_runs/official/05_knowledge_graph/index.html).
 
 - Notebook: [`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](src/04_notebooks/02_fulltextlevel_testrun.ipynb) or `python -m bps_review run-fulltext-testrun`
-- Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_data/pilot/02_fulltext_level/](src/05_data/pilot/02_fulltext_level/)
+- Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_test_runs/official/](src/05_test_runs/official/)
 
 ### What the test run found in the pipeline
 
@@ -172,16 +172,19 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/   # project roo
     │   └── tests/                 # the test suite
     ├── 04_notebooks/
     │   ├── 01_abstractlevel_testrun.ipynb
-    │   └── 02_fulltextlevel_testrun.ipynb
-    ├── 05_data/
-    │   ├── raw/ interim/ processed/   # main-pipeline data areas
-    │   └── pilot/                     # both test runs, side by side
-    │       ├── 01_abstract_level/         # 100 abstracts x 3 models
-    │       └── 02_fulltext_level/         # 47 full texts x 3 models, plus the knowledge graph
-    ├── 06_review_stages/      # organized outputs of the main pipeline, by stage
-    │   └── 05_synthesis/semantic_space/  # ontology-aligned embeddings and loadings
-    ├── 07_docs/               # project status (local only)
-    └── 08_artifacts/          # run logs and validation scratch space (local only)
+    │   ├── 02_fulltextlevel_testrun.ipynb
+    │   └── 03_synthesislevel_testrun.ipynb
+    ├── 05_test_runs/          # every run of the workflow, and all of its outputs
+    │   ├── official/              # 47 full texts x 3 models, scheme 3, plus the knowledge graph
+    │   └── tests/01_pilot_abstract/   # 100 abstracts x 3 models, scheme 2
+    │
+    │   ---- everything below is local only, and absent from a fresh clone ----
+    │
+    ├── 06_data/               # raw, interim, and processed data areas, plus the embedding cache
+    ├── 07_docs/               # project status
+    ├── 08_artifacts/          # run logs and validation scratch space
+    └── 09_review_stages/      # stage-by-stage working files of the main pipeline
+        └── 05_synthesis/semantic_space/  # ontology-aligned embeddings and loadings
 ```
 
 ## 🛠️ Setup and Installation
@@ -326,9 +329,10 @@ Figures, tables, generated LaTeX, compiled manuscript
 
 ### Test-run outputs
 
-- `src/05_data/pilot/01_abstract_level/` (sample, codings, reliability tables, figures, candidate set, summary)
-- `src/05_data/pilot/02_fulltext_level/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
-- `src/05_data/pilot/02_fulltext_level/05_knowledge_graph/index.html` (the interactive graph over the coded run)
+- `src/05_test_runs/official/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
+- `src/05_test_runs/official/02_model_codings/` (**start here**: every coding long and wide, per paper, per provider, per extraction category, with every list split into one column per item)
+- `src/05_test_runs/official/05_knowledge_graph/index.html` (the interactive graph over the coded run)
+- `src/05_test_runs/tests/01_pilot_abstract/` (sample, codings, reliability tables, figures, candidate set, summary)
 
 Article full texts are read but never redistributed, so no article body is carried in Git.
 What is carried is the inventory, the identifiers, and everything the coding derived from the
@@ -344,19 +348,21 @@ tables. `make fulltext-corpus` restores the texts locally and repeats quote veri
 
 ### Review-stage outputs
 
-- `src/06_review_stages/02_search/outputs/deduplicated_records.csv`
-- `src/06_review_stages/03_screening/outputs/stage1_screening.csv`
-- `src/06_review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
-- `src/06_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
-- `src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
-- `src/06_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
+These are working files of the main pipeline and stay local, so they are absent from a fresh clone.
+
+- `src/09_review_stages/02_search/outputs/deduplicated_records.csv`
+- `src/09_review_stages/03_screening/outputs/stage1_screening.csv`
+- `src/09_review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
+- `src/09_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
+- `src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
+- `src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv`
 
 ### Semantic outputs
 
-- `src/06_review_stages/05_synthesis/semantic_space/records/semantic_corpus.jsonl`
-- `src/06_review_stages/05_synthesis/semantic_space/records/record_embeddings.npy`
-- `src/06_review_stages/05_synthesis/semantic_space/analysis/record_domain_loadings.csv`
-- `src/06_review_stages/05_synthesis/semantic_space/analysis/pairwise_domain_loadings.csv`
+- `src/09_review_stages/05_synthesis/semantic_space/records/semantic_corpus.jsonl`
+- `src/09_review_stages/05_synthesis/semantic_space/records/record_embeddings.npy`
+- `src/09_review_stages/05_synthesis/semantic_space/analysis/record_domain_loadings.csv`
+- `src/09_review_stages/05_synthesis/semantic_space/analysis/pairwise_domain_loadings.csv`
 
 ### Coding-scheme dossiers
 

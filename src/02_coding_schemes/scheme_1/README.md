@@ -63,7 +63,7 @@ Because everything downstream inherits this decision, the scheme is deliberately
 
 - `src/01_protocol/decision_rules/screening_rules.md`
 - `src/03_pipeline/bps_review/screening/rules.py`
-- `src/06_review_stages/03_screening/README.md`
+- `src/09_review_stages/03_screening/README.md`
 - `src/01_protocol/osf/OSF_registration_HTBMFCPR.md`
 
 ## Regenerating this dossier

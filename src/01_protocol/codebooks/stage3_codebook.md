@@ -14,7 +14,7 @@ ontology the synthesis builds.
 
 The authoritative, machine-readable version of this codebook is generated from the schema the
 pipeline runs, at
-[`src/06_review_stages/04_extraction/codebooks/stage3_codebook.csv`](../../06_review_stages/04_extraction/codebooks/stage3_codebook.csv),
+[`src/09_review_stages/04_extraction/codebooks/stage3_codebook.csv`](../../09_review_stages/04_extraction/codebooks/stage3_codebook.csv),
 and the expert-facing dossier is
 [`src/02_coding_schemes/scheme_3/`](../../02_coding_schemes/scheme_3/). This file is the prose
 summary of the same scheme.

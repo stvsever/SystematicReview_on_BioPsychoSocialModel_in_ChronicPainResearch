@@ -23,7 +23,7 @@ bps_review/
 ## The two test runs
 
 The review is coded twice, at two resolutions, by three cheap models from three
-different providers. Both runs write to `src/05_data/pilot/`.
+different providers. Both runs write to `src/05_test_runs/`.
 
 **`pilot/` is the abstract-level run (scheme 2).** It reads a title and an
 abstract and acts mainly as a routing and relevance filter. Its purpose is to
@@ -42,12 +42,12 @@ passage where the biopsychosocial label does work.
 ## What a full-text run produces
 
 `run_fulltext_testrun_pipeline()` chains the whole thing and writes to
-`src/05_data/pilot/02_fulltext_level/`:
+`src/05_test_runs/official/`:
 
 | Directory | Contents |
 | --- | --- |
-| `01_corpus/` | the retrieved corpus, its manifest, and the retrieval log. The article texts themselves stay local and are never pushed |
-| `02_model_codings/` | every article by provider coding, the item-level extraction table, the raw audit trail, and the usage manifest |
+| `01_corpus/` | the paper list with citations and DOIs, the retrieved corpus, its manifest, and the retrieval log. The article texts themselves stay local and are never pushed |
+| `02_model_codings/` | every coding of the run, in the shapes it is read in: long and wide, per paper, per provider, and one folder per extraction category. `publish.py` writes them, and they are the run's store rather than a copy of one |
 | `03_reliability/` | agreement, consensus, lexical and semantic overlap, ontology coverage, and quote verification |
 | `04_figures/` | the static review figures |
 | `05_knowledge_graph/` | the self-contained interactive knowledge graph, opened by `index.html` |

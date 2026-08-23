@@ -60,10 +60,10 @@ It is not a logistics file. It is a standardized adjudication framework that dec
 ## Canonical source paths
 
 - `src/03_pipeline/bps_review/extraction/stage3_prep.py`
-- `src/06_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv`
-- `src/06_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
-- `src/06_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv`
-- `src/06_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv`
+- `src/09_review_stages/04_extraction/forms/stage3_manual_relevance_checklist.csv`
+- `src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv`
+- `src/09_review_stages/04_extraction/outputs/stage3_manual_fulltext_queue.csv`
+- `src/09_review_stages/04_extraction/outputs/stage3_retrieval_validation.csv`
 
 ## Regenerating this dossier
 

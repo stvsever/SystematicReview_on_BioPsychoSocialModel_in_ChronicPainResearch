@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """Turn the long model-coding table into cross-provider reliability results.
 
-Produces, and persists under ``src/05_data/pilot/01_abstract_level/03_reliability``:
+Produces, and persists under ``src/05_test_runs/tests/01_pilot_abstract/03_reliability``:
 
 * ``01_field_reliability.csv``   - per field: observed agreement, unanimous rate,
   Fleiss' kappa, Krippendorff's alpha, and a Landis-Koch label;

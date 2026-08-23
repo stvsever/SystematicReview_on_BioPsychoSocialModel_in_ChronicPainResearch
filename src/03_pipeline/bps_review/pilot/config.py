@@ -176,12 +176,12 @@ BPS_FUNCTION_ORDER = [
 
 # --------------------------------------------------------------------------
 # Paths. Everything this test run produces lives under
-# src/05_data/pilot/01_abstract_level, next to the full-text test run in
-# src/05_data/pilot/02_fulltext_level, so both stay clearly separated from the
-# main pipeline outputs and from each other.
+# src/05_test_runs/tests/01_pilot_abstract, beside the full-text run in
+# src/05_test_runs/official, so both stay clearly separated from the main
+# pipeline outputs and from each other.
 # --------------------------------------------------------------------------
 def testrun_root():
-    return project_path("data", "pilot", "01_abstract_level")
+    return project_path("test_runs", "tests", "01_pilot_abstract")
 
 
 def corpus_dir():
@@ -213,7 +213,7 @@ def figures_dir():
 
 
 def summary_md():
-    return testrun_root() / "TESTRUN_SUMMARY.md"
+    return testrun_root() / "TEST_RUN_SUMMARY.md"
 
 
 def candidate_set_csv():

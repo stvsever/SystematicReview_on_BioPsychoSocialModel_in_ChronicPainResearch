@@ -16,7 +16,7 @@ because they answer different questions.
 * **Open lists**, compared with Jaccard set overlap over normalized labels,
   because two coders can both be right and still write different strings.
 
-Produces, and persists under ``src/05_data/pilot/02_fulltext_level/03_reliability``:
+Produces, and persists under ``src/05_test_runs/official/03_reliability``:
 ``01_field_reliability.csv``, ``02_pairwise_percent_agreement.csv``,
 ``03_pairwise_cohen_kappa.csv``, ``04_per_model_behavior.csv``,
 ``05_consensus_codings.csv``, ``06_eligibility_depth_distribution.csv``,

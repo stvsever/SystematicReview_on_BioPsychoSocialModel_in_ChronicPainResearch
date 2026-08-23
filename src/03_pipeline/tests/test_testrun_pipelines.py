@@ -1000,7 +1000,7 @@ def test_a_repair_replaces_only_the_failed_cells(tmp_path, monkeypatch):
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(runner, "codings_dir", lambda: out)
+    monkeypatch.setattr(runner, "run_staging_dir", lambda: out)
     monkeypatch.setattr(runner, "long_codings_csv", lambda: out / "all_model_codings_long.csv")
     monkeypatch.setattr(runner, "items_csv", lambda: out / "all_extracted_items_long.csv")
     monkeypatch.setattr(
@@ -1048,7 +1048,7 @@ def test_a_repair_with_nothing_to_fix_is_a_no_op(tmp_path, monkeypatch):
     frame = pd.DataFrame([_serialized_row("P001", model)])
     frame.to_csv(out / "by_model" / f"{model.slug}.csv", index=False)
 
-    monkeypatch.setattr(runner, "codings_dir", lambda: out)
+    monkeypatch.setattr(runner, "run_staging_dir", lambda: out)
     monkeypatch.setattr(runner, "long_codings_csv", lambda: out / "all_model_codings_long.csv")
     monkeypatch.setattr(runner, "items_csv", lambda: out / "all_extracted_items_long.csv")
 

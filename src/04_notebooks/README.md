@@ -6,11 +6,13 @@ level. Both are stored with their outputs, so they can be read without running a
 | Notebook | What it runs | Scale | Cost |
 | --- | --- | --- | --- |
 | [`01_abstractlevel_testrun.ipynb`](01_abstractlevel_testrun.ipynb) | Stage 2 abstract coding scheme, three providers | 100 abstracts x 3 models = 300 codings | 0.13 USD |
-| [`02_fulltextlevel_testrun.ipynb`](02_fulltextlevel_testrun.ipynb) | Stage 3 full-text deep coding scheme, same three providers | 47 full texts x 3 models = 141 codings, 4,080 extracted items | 0.26 USD |
+| [`02_fulltextlevel_testrun.ipynb`](02_fulltextlevel_testrun.ipynb) | Stage 3 full-text deep coding scheme, same three providers | 47 full texts x 3 models = 141 codings, 9,400 extracted items | 0.34 USD |
 | [`03_synthesislevel_testrun.ipynb`](03_synthesislevel_testrun.ipynb) | Reserved until the coding schemes are signed off | | |
 
 They are one chain: notebook 01 exports the consensus candidate set, notebook 02 retrieves the
-open-access full texts of that set and codes them.
+open-access full texts of that set and codes them. Both write their outputs to
+[`src/05_test_runs/`](../05_test_runs/); the full-text run is
+[`src/05_test_runs/official/`](../05_test_runs/official/).
 
 ## Running them
 

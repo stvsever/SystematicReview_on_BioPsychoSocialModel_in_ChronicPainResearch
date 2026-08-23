@@ -1,0 +1,12 @@
+{
+  "run_id": "01_fulltext_coding_open_access_corpus",
+  "completed_at_utc": "2026-08-23T09:34:22+00:00",
+  "n_papers": 47,
+  "n_providers": 3,
+  "n_codings": 141,
+  "n_extracted_items": 9400,
+  "n_failed_codings": 0,
+  "graph_index": "05_knowledge_graph/index.html",
+  "outputs": "02_model_codings",
+  "summary": "TEST_RUN_SUMMARY.md"
+}

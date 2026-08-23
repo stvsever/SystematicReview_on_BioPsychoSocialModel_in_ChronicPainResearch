@@ -17,9 +17,12 @@ The runner is built for a fast, cheap, resilient run:
   than as a fabricated one, so gaps stay visible in the analysis;
 * token usage is recorded per call, so the real cost of the run is reportable.
 
-Outputs, all under ``src/05_data/pilot/02_fulltext_level/02_model_codings``:
-``by_model/<model>.csv``, ``audit/<model>.jsonl``, ``all_model_codings_long.csv``,
-``all_extracted_items_long.csv``, ``run_manifest.json`` and ``run.log``.
+Outputs, all under ``src/05_test_runs/official/02_model_codings``:
+``_staging/by_model/<model>.csv``, ``_staging/audit/<model>.jsonl``,
+``_staging/all_model_codings_long.csv``, ``_staging/all_extracted_items_long.csv``,
+``_staging/run_manifest.json`` and ``_staging/run.log``. Staging is the runner's own
+shape; :mod:`bps_review.fulltext.publish` absorbs it into the published tables and
+removes it, so the coding directory holds one representation of the run, not two.
 """
 
 import json
@@ -54,10 +57,10 @@ from bps_review.fulltext.config import (
     RETRY_BACKOFF_SECONDS,
     TRANSIENT_BACKOFF_CAP_SECONDS,
     TRANSIENT_BACKOFF_SECONDS,
-    codings_dir,
     items_csv,
     long_codings_csv,
     model_runtime,
+    run_staging_dir,
 )
 from bps_review.fulltext.corpus.pmc import load_corpus_records
 from bps_review.llm.openrouter import chat_completion_json_with_usage
@@ -266,7 +269,7 @@ def run_fulltext_testrun(
     models = models or FULLTEXT_MODELS
     records = records if records is not None else load_corpus_records()
 
-    out_dir = codings_dir()
+    out_dir = run_staging_dir()
     by_model_dir = out_dir / "by_model"
     audit_dir = out_dir / "audit"
     if log_path is None:
@@ -384,7 +387,7 @@ def repair_failed_codings(
     records = records if records is not None else load_corpus_records()
     record_by_id = {record["record_id"]: record for record in records}
 
-    out_dir = codings_dir()
+    out_dir = run_staging_dir()
     by_model_dir = out_dir / "by_model"
     audit_dir = out_dir / "audit"
     log_path = out_dir / "run.log"

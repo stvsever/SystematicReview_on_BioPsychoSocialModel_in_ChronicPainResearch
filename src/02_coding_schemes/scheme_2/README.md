@@ -54,12 +54,12 @@ It also sets the Stage 3 candidate gate: a record coded as musculoskeletal or as
 ## Canonical source paths
 
 - `src/01_protocol/codebooks/stage2_codebook.md`
-- `src/06_review_stages/04_extraction/codebooks/stage2_codebook.csv`
+- `src/09_review_stages/04_extraction/codebooks/stage2_codebook.csv`
 - `src/03_pipeline/bps_review/extraction/stage2.py`
 - `src/03_pipeline/bps_review/extraction/llm_stage2.py`
-- `src/06_review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
-- `src/06_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
-- `src/06_review_stages/04_extraction/outputs/llm_stage2_structured_batches.jsonl`
+- `src/09_review_stages/04_extraction/outputs/stage2_abstract_coding.csv`
+- `src/09_review_stages/04_extraction/outputs/stage2_llm_structured_coding.csv`
+- `src/09_review_stages/04_extraction/outputs/llm_stage2_structured_batches.jsonl`
 
 ## Regenerating this dossier
 

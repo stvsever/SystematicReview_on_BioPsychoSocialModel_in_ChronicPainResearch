@@ -67,7 +67,7 @@ Each family aligns one to one with a Scheme 6 psychological subdomain.
 - `src/03_pipeline/bps_review/extraction/coding.py`
 - `src/01_protocol/codebooks/stage2_codebook.md`
 - `src/01_protocol/codebooks/stage3_codebook.md`
-- `src/05_data/interim/extraction/llm_concept_clusters.json`
+- `src/06_data/interim/extraction/llm_concept_clusters.json`
 
 ## Regenerating this dossier
 

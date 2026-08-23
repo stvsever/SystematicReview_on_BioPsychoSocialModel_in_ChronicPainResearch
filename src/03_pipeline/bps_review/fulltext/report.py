@@ -7,8 +7,6 @@ papers were coded, how much the providers agreed on the coverage and integration
 ladders, whether the quoted evidence is real, and what the run cost.
 """
 
-import json
-
 import pandas as pd
 
 from bps_review.fulltext.config import (
@@ -16,9 +14,9 @@ from bps_review.fulltext.config import (
     FIELD_LABELS,
     FULLTEXT_MODELS,
     INTEGRATION_FIELDS,
-    codings_dir,
     summary_md,
 )
+from bps_review.fulltext.publish import load_run_manifest
 from bps_review.utils.io import write_text
 
 
@@ -30,9 +28,7 @@ def _num(value, digits: int = 3) -> str:
     return "n/a" if value is None or pd.isna(value) else f"{value:.{digits}f}"
 
 
-def _run_manifest() -> dict:
-    path = codings_dir() / "run_manifest.json"
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
 
 
 def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus: pd.DataFrame,
@@ -44,7 +40,7 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
     overlap = results["list_overlap"]
     quotes = integrity["quote_verification_by_model"]
     discipline = integrity["summary"]["evidence_discipline"]
-    manifest = _run_manifest()
+    manifest = load_run_manifest()
     usage = manifest.get("token_usage_total", {})
 
     lines: list[str] = []
@@ -246,16 +242,22 @@ def build_summary(long_df: pd.DataFrame, results: dict, integrity: dict, corpus:
     lines.append(f"- Coded typology matches the rule-derived typology in "
                  f"{_pct(summary['typology_coded_matches_derived'])} of codings.")
     lines.append("")
-    lines.append("## Review surfaces")
+    lines.append("## Where the outputs are")
     lines.append("")
-    lines.append("- `01_corpus/`: the retrieved corpus, its manifest, and the retrieval log")
-    lines.append("- `02_model_codings/`: every article by provider coding, the item-level table, "
-                 "the raw audit trail, and the usage manifest")
+    lines.append("- `01_corpus/`: the paper list with full citations and DOIs, the retrieval log, and "
+                 "the corpus manifest; the article text itself stays local")
+    lines.append("- `02_model_codings/`: start here. Every coding of the run, long and wide: the "
+                 "codings, the extracted items per category, and everything per provider")
     lines.append("- `03_reliability/`: agreement, consensus, overlap, ontology coverage, and quote "
                  "verification tables")
     lines.append("- `04_figures/`: the static review figures")
     lines.append("- `05_knowledge_graph/index.html`: the self-contained interactive knowledge graph, "
                  "from the coding scheme down to the quoted sentence behind one extracted item")
+    lines.append("")
+    lines.append("The article full texts are licensed material and are intentionally excluded from Git, "
+                 "together with the API call trail behind the run. Everything the coding derived from "
+                 "the text is committed: the coded rows, the extracted items, the verbatim evidence "
+                 "quotes, and every aggregate table.")
     lines.append("")
     lines.append("## How to read this")
     lines.append("")

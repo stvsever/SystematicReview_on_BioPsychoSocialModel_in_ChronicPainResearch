@@ -19,13 +19,18 @@ WORKSPACE_SECTIONS: dict[str, str] = {
     "config": "03_pipeline/config",
     "tests": "03_pipeline/tests",
     "notebooks": "04_notebooks",
-    "data": "05_data",
-    "review_stages": "06_review_stages",
-    # The semantic space is an output of the synthesis stage, so it lives inside
-    # that stage rather than beside it. Code still asks for it by name.
-    "semantic": "06_review_stages/05_synthesis/semantic_space",
+    "test_runs": "05_test_runs",
+    # Sections 06 and up are local only. They hold inputs, caches, and working
+    # files: the retrieval caches, the embedding store, internal notes, scratch
+    # space, and the stage-by-stage outputs of the main pipeline. None of them is
+    # a result the team reads, and each is reproducible from the code.
+    "data": "06_data",
     "docs": "07_docs",
     "artifacts": "08_artifacts",
+    "review_stages": "09_review_stages",
+    # The semantic space is an output of the synthesis stage, so it lives inside
+    # that stage rather than beside it. Code still asks for it by name.
+    "semantic": "09_review_stages/05_synthesis/semantic_space",
 }
 
 
@@ -34,7 +39,7 @@ def _default_workspace_root() -> Path:
         return Path(_workspace_override).expanduser().resolve()
     src_root = PROJECT_ROOT / "src"
     markers = [src_root / WORKSPACE_SECTIONS[name]
-               for name in ("review_stages", "data", "artifacts", "protocol")]
+               for name in ("test_runs", "pipeline", "protocol", "notebooks")]
     if src_root.exists() and any(marker.exists() for marker in markers):
         return src_root
     return PROJECT_ROOT
