@@ -1,11 +1,86 @@
 (function () {
   "use strict";
 
-  const data = window.BPS_GRAPH_DATA;
+  // --- The payload, restored ------------------------------------------------
+  //
+  // graph_data.js ships every string that occurs more than once written once,
+  // into data.strings, and references it as "~<index>" wherever it appeared, as
+  // a value or as an object key. Three quarters of the file used to be that
+  // repetition: the same article titles, provider names, field names, and
+  // detail-block keys, over 31,339 nodes. Restoring it here is exact, and it is
+  // the only thing this step does. See pack_payload in builder.py.
+  const REFERENCE = /^~(\d+)$/;
+
+  function restore(value, strings) {
+    if (Array.isArray(value)) {
+      return value.map((item) => restore(item, strings));
+    }
+    if (value && typeof value === "object") {
+      const out = {};
+      for (const key of Object.keys(value)) {
+        const match = REFERENCE.exec(key);
+        out[match ? strings[Number(match[1])] : key] = restore(value[key], strings);
+      }
+      return out;
+    }
+    if (typeof value === "string") {
+      const match = REFERENCE.exec(value);
+      if (match) return strings[Number(match[1])];
+    }
+    return value;
+  }
+
+  function unpack(payload) {
+    if (!payload || !Array.isArray(payload.strings)) return payload;
+    const strings = payload.strings;
+    return {
+      meta: payload.meta,
+      nodes: restore(payload.nodes, strings),
+      edges: restore(payload.edges, strings),
+      filters: restore(payload.filters, strings),
+    };
+  }
+
+  // --- The search corpus, rebuilt -------------------------------------------
+  //
+  // What a node can be found by: its label, its article, its provider, its
+  // field, and every key and every leaf value of its detail block. That is the
+  // same text the file used to carry per node, minus the JSON punctuation
+  // between the parts, so every word findable before is findable now and a
+  // phrase spanning two adjacent values now matches as well.
+  function collectLeaves(value, out) {
+    if (Array.isArray(value)) {
+      value.forEach((item) => collectLeaves(item, out));
+    } else if (value && typeof value === "object") {
+      for (const key of Object.keys(value)) {
+        out.push(key);
+        collectLeaves(value[key], out);
+      }
+    } else if (value !== null && value !== undefined) {
+      out.push(String(value));
+    }
+  }
+
+  function buildSearchText(node) {
+    const parts = [
+      node.label || "",
+      node.article_id || "",
+      node.provider || "",
+      node.field || "",
+      node.field_group || "",
+    ];
+    collectLeaves(node.detail || {}, parts);
+    return parts.join(" ").toLowerCase();
+  }
+
+  const data = unpack(window.BPS_GRAPH_DATA);
   if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) {
     document.body.textContent = "The graph data file could not be loaded.";
     return;
   }
+  data.nodes.forEach((node) => {
+    node.search = buildSearchText(node);
+  });
 
   const canvas = document.getElementById("graphCanvas");
   const context = canvas.getContext("2d", { alpha: false });

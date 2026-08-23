@@ -42,8 +42,9 @@ import colorsys
 import hashlib
 import json
 import math
+import re
 import shutil
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -1691,16 +1692,12 @@ def graph_payload(
         add_edge(root_id, group_node, "contains_group")
         emit_branch(branch, group_node, group, (), 2, group_index, [0])
 
-    for node in nodes:
-        searchable = [
-            node.get("label", ""),
-            node.get("article_id", ""),
-            node.get("provider", ""),
-            node.get("field", ""),
-            node.get("field_group", ""),
-            json.dumps(node.get("detail", {}), ensure_ascii=False),
-        ]
-        node["search"] = " ".join(str(part) for part in searchable).lower()
+    # The search corpus of a node is not stored. It is the node's label, article,
+    # provider, and field, plus every key and every leaf value of its detail
+    # block, and the dashboard builds exactly that at load time. Shipping it as
+    # well would have meant carrying the whole detail block twice, once as data
+    # and once as lowercased text, which was 22 MB of the 60 MB payload and not
+    # one word of content. See buildSearchText in dashboard.js.
 
     return {
         "meta": {
@@ -1772,6 +1769,13 @@ def bundle_readme(payload: dict[str, Any]) -> str:
         f"- Coding cells: {payload['meta']['n_codings']}\n"
         f"- Graph nodes: {payload['meta']['n_nodes']}\n"
         f"- Graph links: {payload['meta']['n_edges']}\n\n"
+        "`assets/graph_data.js` holds the whole run. Every string that occurs more than once in it, "
+        "as a value or as a key, is written once into a string table and referenced as `~<index>` "
+        "wherever it appeared, so a file that would otherwise be about 60 MB of mostly repeated "
+        "article titles, provider names, and field names is about 16 MB. The dashboard restores it on "
+        "load, exactly; nothing is summarized or dropped. The search text of a node is not stored at "
+        "all, because it is derived: it is the node's label, article, provider, and field plus every "
+        "key and leaf value of its detail block, and the dashboard builds it when the file opens.\n\n"
         "Search accepts several words at once, all of which must match, and ranks what it finds: a "
         "quoted phrase stays contiguous, a leading minus excludes a word, and field:, group:, "
         "provider:, article:, label:, and type: aim a word at one part of a node. The filter panel "
@@ -1800,6 +1804,110 @@ def bundle_readme(payload: dict[str, Any]) -> str:
         "including hidden descendants expanded later. Manual zoom supports up to 1000 percent. Reset view "
         "returns to the complete scheme overview and clears manual placement.\n"
     )
+
+
+# --------------------------------------------------------------------------
+# Packing the payload for delivery.
+#
+# The graph is one static file that a reviewer opens from disk, so its size is
+# not an abstract concern: it is how long the page takes to appear, and whether
+# the file is comfortable to carry in Git at all. Three quarters of the payload
+# was repetition rather than content. Every node repeated its article title, its
+# provider, its field names, and the keys of its detail block, and 31,339 nodes
+# repeat the same few dozen strings tens of thousands of times.
+#
+# So every string that occurs more than once, as a value or as an object key, is
+# written once into a table and referenced as "~<index>". Nothing is summarized,
+# rounded, or dropped: unpacking restores the payload exactly, which is what
+# ``test_knowledge_graph.py`` asserts. Together with not shipping the derived
+# search text this takes the file from about 60 MB to about 16 MB.
+# --------------------------------------------------------------------------
+PAYLOAD_FORMAT = "interned-strings/1"
+
+# A reference into the string table. A string of this exact shape in the source
+# data would be indistinguishable from a reference, so the packer refuses to run
+# rather than let one corrupt the payload silently.
+_REFERENCE = re.compile(r"^~\d+$")
+
+# Interning a string shorter than this saves nothing: "~1234" is already five
+# characters.
+_MIN_INTERNED_LENGTH = 3
+
+
+def _count_strings(value: object, counts: Counter) -> None:
+    """Count every string in the payload, as an object key or as a value."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            counts[key] += 1
+            _count_strings(item, counts)
+    elif isinstance(value, list):
+        for item in value:
+            _count_strings(item, counts)
+    elif isinstance(value, str):
+        counts[value] += 1
+
+
+def _substitute(value: object, index: dict[str, str]) -> object:
+    if isinstance(value, dict):
+        return {index.get(key, key): _substitute(item, index) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_substitute(item, index) for item in value]
+    if isinstance(value, str):
+        return index.get(value, value)
+    return value
+
+
+def pack_payload(payload: dict) -> dict:
+    """The same payload with its repeated strings written once.
+
+    ``meta`` is left alone: it is a dozen fields a person may want to read
+    straight out of the file, and interning them would save nothing.
+    """
+    counts: Counter = Counter()
+    sections = ("nodes", "edges", "filters")
+    for section in sections:
+        _count_strings(payload.get(section), counts)
+
+    colliding = sorted(text for text in counts if _REFERENCE.match(text))
+    if colliding:
+        raise ValueError(
+            "The graph payload contains strings shaped like a string-table "
+            f"reference, which packing would make ambiguous: {colliding[:5]}"
+        )
+
+    table = [
+        text
+        for text, count in counts.items()
+        if count > 1 and len(text) >= _MIN_INTERNED_LENGTH
+    ]
+    index = {text: f"~{position}" for position, text in enumerate(table)}
+    packed = {"meta": {**payload["meta"], "payload_format": PAYLOAD_FORMAT}, "strings": table}
+    for section in sections:
+        packed[section] = _substitute(payload.get(section), index)
+    return packed
+
+
+def unpack_payload(packed: dict) -> dict:
+    """Restore a packed payload. The inverse of :func:`pack_payload`, exactly."""
+    table = packed.get("strings") or []
+
+    def restore(value: object) -> object:
+        if isinstance(value, dict):
+            return {
+                (table[int(key[1:])] if _REFERENCE.match(key) else key): restore(item)
+                for key, item in value.items()
+            }
+        if isinstance(value, list):
+            return [restore(item) for item in value]
+        if isinstance(value, str) and _REFERENCE.match(value):
+            return table[int(value[1:])]
+        return value
+
+    meta = {key: item for key, item in packed["meta"].items() if key != "payload_format"}
+    return {
+        "meta": meta,
+        **{section: restore(packed.get(section)) for section in ("nodes", "edges", "filters")},
+    }
 
 
 def build_knowledge_graph(
@@ -1832,7 +1940,9 @@ def build_knowledge_graph(
     index_path = output_dir / "index.html"
     ensure_parent(index_path).write_text(index_text, encoding="utf-8")
     (assets_out / "graph_data.js").write_text(
-        "window.BPS_GRAPH_DATA = " + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n",
+        "window.BPS_GRAPH_DATA = "
+        + json.dumps(pack_payload(payload), ensure_ascii=False, separators=(",", ":"))
+        + ";\n",
         encoding="utf-8",
     )
     (output_dir / "README.md").write_text(bundle_readme(payload), encoding="utf-8")

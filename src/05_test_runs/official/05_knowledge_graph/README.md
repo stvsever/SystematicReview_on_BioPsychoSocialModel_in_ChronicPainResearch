@@ -8,6 +8,8 @@ Open `index.html` in a desktop browser. The bundle is fully local and requires n
 - Graph nodes: 31339
 - Graph links: 31338
 
+`assets/graph_data.js` holds the whole run. Every string that occurs more than once in it, as a value or as a key, is written once into a string table and referenced as `~<index>` wherever it appeared, so a file that would otherwise be about 60 MB of mostly repeated article titles, provider names, and field names is about 16 MB. The dashboard restores it on load, exactly; nothing is summarized or dropped. The search text of a node is not stored at all, because it is derived: it is the node's label, article, provider, and field plus every key and leaf value of its detail block, and the dashboard builds it when the file opens.
+
 Search accepts several words at once, all of which must match, and ranks what it finds: a quoted phrase stays contiguous, a leading minus excludes a word, and field:, group:, provider:, article:, label:, and type: aim a word at one part of a node. The filter panel and the inspector each fold away from the toolbar to give the canvas their width.
 
 The first view shows the field groups, the biopsychosocial entities, and all canonical scheme 3 coding fields. The entity level holds the triad as three siblings and everything beyond it under Other factors, which carries lifestyle and spiritual or existential as its own children, so the evidence for one domain sits under that domain rather than in one undifferentiated list.
