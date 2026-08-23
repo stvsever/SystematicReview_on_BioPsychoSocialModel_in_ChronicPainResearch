@@ -4,7 +4,7 @@ Drie taalmodellen hebben elk afzonderlijk het full-text codeerschema toegepast o
 open-access reviews. Dit zijn alle coderingen daarvan: 141 ingevulde formulieren en 9400
 geëxtraheerde items.
 
-Het gebruikte codeerschema is [scheme 3](../../../02_coding_schemes/scheme_3/). Open daar
+Het gebruikte codeerschema is [scheme 3](../../../../02_coding_schemes/scheme_3/). Open daar
 `scheme_3.html` in je browser voor de definitie van elk veld.
 
 Elke tabel begint met de referentie, de titel, de auteurs en de DOI van de paper, niet alleen met
@@ -281,4 +281,4 @@ python -m bps_review run-fulltext-testrun
 
 Het corpus volledig hercoderen vereist `force_coding=True` en roept de drie leveranciers wel aan.
 De generator van deze tabellen is
-[`src/03_pipeline/bps_review/fulltext/publish.py`](../../../03_pipeline/bps_review/fulltext/publish.py).
+[`src/03_pipeline/bps_review/fulltext/publish.py`](../../../../03_pipeline/bps_review/fulltext/publish.py).

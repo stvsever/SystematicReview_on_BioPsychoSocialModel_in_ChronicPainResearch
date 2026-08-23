@@ -20,7 +20,7 @@
     "conceptual_problems": 573,
     "key_quotes": 683
   },
-  "n_api_calls": 141,
+  "n_api_calls": 0,
   "outputs": {
     "workbook": "00_workbook.xlsx",
     "codings": "01_codings/",
@@ -28,6 +28,6 @@
     "by_provider": "03_by_provider/",
     "api_calls": "04_api_calls/",
     "papers": "../01_corpus/papers.csv",
-    "coding_scheme": "../../../02_coding_schemes/scheme_3/"
+    "coding_scheme": "../../../../02_coding_schemes/scheme_3/"
   }
 }

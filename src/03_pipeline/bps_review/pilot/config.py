@@ -177,8 +177,8 @@ BPS_FUNCTION_ORDER = [
 # --------------------------------------------------------------------------
 # Paths. Everything this test run produces lives under
 # src/05_test_runs/tests/01_pilot_abstract, beside the full-text run in
-# src/05_test_runs/official, so both stay clearly separated from the main
-# pipeline outputs and from each other.
+# src/05_test_runs/tests/02_pilot_fulltext, so both stay clearly separated from
+# the main pipeline outputs and from each other.
 # --------------------------------------------------------------------------
 def testrun_root():
     return project_path("test_runs", "tests", "01_pilot_abstract")

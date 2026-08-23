@@ -1,11 +1,15 @@
-# Full-text coding run
+# Full-text coding pilot
 
 Three language models independently applied the full-text coding scheme (scheme 3) to the same 47
 open-access review articles. Each model read every paper on its own and filled in the same
 structured form. This folder holds everything they produced, plus the agreement analysis between
 them.
 
-This is a methods artifact. It is not a conceptual synthesis and not a manuscript result.
+This is a pilot and a methods artifact. It exists to show that the scheme, the code, and the
+reporting hold up on real articles, and to say which parts of the scheme independent coders apply
+the same way. It is not the review's official coding pass, not a conceptual synthesis, and not a
+manuscript result. The official run comes later, into
+[`../../official/`](../../official/), once the coding schemes are signed off.
 
 ## Start here
 
@@ -25,7 +29,7 @@ can be read per paper, per provider, or per extracted item.
 | See which papers were coded | [`01_corpus/papers.csv`](01_corpus/papers.csv) |
 
 [`02_model_codings/README.md`](02_model_codings/README.md) explains every column, in Dutch. The
-coding scheme itself is [`src/02_coding_schemes/scheme_3/`](../../02_coding_schemes/scheme_3/).
+coding scheme itself is [`src/02_coding_schemes/scheme_3/`](../../../02_coding_schemes/scheme_3/).
 
 ## What the run produced
 
@@ -77,7 +81,7 @@ python -m bps_review run-fulltext-testrun
 ```
 
 The notebook walkthrough is
-[`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](../../04_notebooks/02_fulltextlevel_testrun.ipynb).
+[`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](../../../04_notebooks/02_fulltextlevel_testrun.ipynb).
 
 ## How to read the agreement numbers
 

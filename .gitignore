@@ -42,15 +42,15 @@ src/02_coding_schemes/**/*.out
 # rows, the extracted items, the verbatim evidence quotes, and the aggregate
 # tables. An authorized reviewer restores the texts locally with
 # `make fulltext-corpus`, which repeats retrieval and quote verification.
-src/05_test_runs/official/01_corpus/fulltext_txt/*
-!src/05_test_runs/official/01_corpus/fulltext_txt/.gitkeep
+src/05_test_runs/tests/02_pilot_fulltext/01_corpus/fulltext_txt/*
+!src/05_test_runs/tests/02_pilot_fulltext/01_corpus/fulltext_txt/.gitkeep
 
 # The API calls behind a run: status, retries, timing, tokens, and cost per call,
 # plus the raw call trail. That is bookkeeping about how the run was produced,
 # not a coding anyone reads, and it names the exact model versions and spend. It
 # stays local; the run manifest and the log go with it.
-src/05_test_runs/official/02_model_codings/04_api_calls/
-src/05_test_runs/official/02_model_codings/03_by_provider/*/04_api_calls.csv
+src/05_test_runs/tests/02_pilot_fulltext/02_model_codings/04_api_calls/
+src/05_test_runs/tests/02_pilot_fulltext/02_model_codings/03_by_provider/*/04_api_calls.csv
 
 # The runner's own staging folder. Everything in it is absorbed into the
 # published tables and removed, so it only ever exists mid-run.

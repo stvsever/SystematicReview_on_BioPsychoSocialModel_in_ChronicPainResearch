@@ -1493,7 +1493,7 @@ def build_output_tables(
             "by_provider": f"{PROVIDER_DIRNAME}/",
             "api_calls": f"{API_DIRNAME}/",
             "papers": "../01_corpus/papers.csv",
-            "coding_scheme": "../../../02_coding_schemes/scheme_3/",
+            "coding_scheme": "../../../../02_coding_schemes/scheme_3/",
         },
     }
     write_json(out_dir / "outputs_manifest.json", summary)

@@ -4,7 +4,8 @@ Everything under `src/` is grouped into numbered sections that follow the order 
 what it committed to, the instruments it uses, the code that applies them, the notebooks that run
 them, and the runs they produce. Sections 06 and up are working material and stay local.
 
-**Looking for the results? They are in [`05_test_runs/official/`](05_test_runs/official/).**
+**Looking for the results? They are in
+[`05_test_runs/tests/02_pilot_fulltext/`](05_test_runs/tests/02_pilot_fulltext/).**
 
 ```text
 src/
@@ -66,15 +67,16 @@ src/
 │
 ├── 05_test_runs/           # every run of the workflow, and all of its outputs
 │   ├── README.md               # what each run is, and where to start
-│   ├── official/               # THE run: 47 open-access reviews x 3 providers, scheme 3
-│   │   ├── README.md               # start here
-│   │   ├── 01_corpus/              # paper list with DOIs, retrieval log, manifest
-│   │   ├── 02_model_codings/       # every output, long and wide, per provider, per category
-│   │   ├── 03_reliability/         # agreement, consensus, overlap, quote verification
-│   │   ├── 04_figures/
-│   │   └── 05_knowledge_graph/     # open index.html in a browser
-│   └── tests/
-│       └── 01_pilot_abstract/      # 100 abstracts x 3 providers, scheme 2, and its candidate set
+│   ├── official/               # reserved for the official coding pass, empty for now
+│   └── tests/                  # the two pilots, one per coding level
+│       ├── 01_pilot_abstract/      # 100 abstracts x 3 providers, scheme 2, and its candidate set
+│       └── 02_pilot_fulltext/      # THE one to read: 47 open-access reviews x 3 providers, scheme 3
+│           ├── README.md               # start here
+│           ├── 01_corpus/              # paper list with DOIs, retrieval log, manifest
+│           ├── 02_model_codings/       # every output, long and wide, per provider, per category
+│           ├── 03_reliability/         # agreement, consensus, overlap, quote verification
+│           ├── 04_figures/
+│           └── 05_knowledge_graph/     # open index.html in a browser
 │
 │   ---- everything below is local only, and absent from a fresh clone ----
 │
@@ -107,26 +109,26 @@ pipeline. None of them is a result, and each is reproducible from the code.
 
 ## Where to look first
 
-| I want to ...                                       | Go to                                                                 |
-| --------------------------------------------------- | --------------------------------------------------------------------- |
-| Read the full-text run outputs                       | `05_test_runs/official/README.md`                                     |
-| Read one provider's codings and extracted items      | `05_test_runs/official/02_model_codings/`                             |
-| See the biological, psychological, and social factors| `05_test_runs/official/02_model_codings/02_extracted_items/`          |
-| Browse a coded run interactively                     | `05_test_runs/official/05_knowledge_graph/index.html`                 |
-| Read the abstract-level run                          | `05_test_runs/tests/01_pilot_abstract/TEST_RUN_SUMMARY.md`            |
-| Give feedback on a coding scheme                     | `02_coding_schemes/index.html`                                        |
-| Understand the full-text coding scheme               | `03_pipeline/bps_review/fulltext/README.md`, then `coding/schema.py`   |
-| See the exact instructions a coder receives          | `03_pipeline/bps_review/fulltext/coding/prompt.py`                    |
-| See how eligibility and priority are derived         | `03_pipeline/bps_review/fulltext/coding/derive.py`                    |
-| See how a run becomes the published tables           | `03_pipeline/bps_review/fulltext/publish.py`                          |
-| Check whether the coding can be trusted              | `03_pipeline/bps_review/fulltext/analysis/integrity.py`               |
-| Understand the abstract-level scheme                 | `03_pipeline/bps_review/extraction/llm_stage2.py`                     |
-| Run the abstract-level run                           | `04_notebooks/01_abstractlevel_testrun.ipynb`                          |
-| Run the full-text run                                | `04_notebooks/02_fulltextlevel_testrun.ipynb`                          |
-| See how the knowledge graph is built                 | `03_pipeline/bps_review/graph/README.md`                              |
-| Compare providers by meaning rather than by wording  | `03_pipeline/bps_review/fulltext/analysis/semantic.py`                |
-| Change the models or the worker counts               | `03_pipeline/bps_review/pilot/config.py`                              |
-| See the main-pipeline outputs stage by stage         | `09_review_stages/` (local only)                                      |
+| I want to ...                                         | Go to                                                                       |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| Read the full-text run outputs                        | `05_test_runs/tests/02_pilot_fulltext/README.md`                            |
+| Read one provider's codings and extracted items       | `05_test_runs/tests/02_pilot_fulltext/02_model_codings/`                    |
+| See the biological, psychological, and social factors | `05_test_runs/tests/02_pilot_fulltext/02_model_codings/02_extracted_items/` |
+| Browse a coded run interactively                      | `05_test_runs/tests/02_pilot_fulltext/05_knowledge_graph/index.html`        |
+| Read the abstract-level run                           | `05_test_runs/tests/01_pilot_abstract/TEST_RUN_SUMMARY.md`                  |
+| Give feedback on a coding scheme                      | `02_coding_schemes/index.html`                                              |
+| Understand the full-text coding scheme                | `03_pipeline/bps_review/fulltext/README.md`, then `coding/schema.py`        |
+| See the exact instructions a coder receives           | `03_pipeline/bps_review/fulltext/coding/prompt.py`                          |
+| See how eligibility and priority are derived          | `03_pipeline/bps_review/fulltext/coding/derive.py`                          |
+| See how a run becomes the published tables            | `03_pipeline/bps_review/fulltext/publish.py`                                |
+| Check whether the coding can be trusted               | `03_pipeline/bps_review/fulltext/analysis/integrity.py`                     |
+| Understand the abstract-level scheme                  | `03_pipeline/bps_review/extraction/llm_stage2.py`                           |
+| Run the abstract-level run                            | `04_notebooks/01_abstractlevel_testrun.ipynb`                               |
+| Run the full-text run                                 | `04_notebooks/02_fulltextlevel_testrun.ipynb`                               |
+| See how the knowledge graph is built                  | `03_pipeline/bps_review/graph/README.md`                                    |
+| Compare providers by meaning rather than by wording   | `03_pipeline/bps_review/fulltext/analysis/semantic.py`                      |
+| Change the models or the worker counts                | `03_pipeline/bps_review/pilot/config.py`                                    |
+| See the main-pipeline outputs stage by stage          | `09_review_stages/` (local only)                                            |
 
 ## The two pipelines in one line each
 

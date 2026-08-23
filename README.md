@@ -82,10 +82,10 @@ The open-access subset of the candidate set the abstract stage produced: 47 full
 - **Overlap on every vocabulary the extraction produces, measured twice.** A scheme 3 item is not a label but a small record, and several of its fields are open vocabularies in their own right: which constructs a coder says carry the biological domain, which measure a construct is tied to, which components a definition of the model lists. Comparing extraction lists by item identity, as reliability metrics normally do, leaves all of that unmeasured. The scheme therefore declares **33 comparison spaces** across three layers, identity, vocabulary, and filtered, and each is scored twice: lexically, and semantically, where every label is embedded once and two labels count as one concept above a cosine threshold. The gap between the two is the share of the apparent disagreement that was only ever wording.
 
   This run answers all 33 (13 identity, 16 vocabulary, 4 filtered) over 6,205 embedded labels, and the mean rises from 0.287 lexical to 0.345 semantic. Where the two columns diverge most is where the lexical reading was most misleading: the relations drawn between concepts score 0.026 by string and 0.284 by meaning, and the integration claims 0.020 against 0.208. Read lexically the providers look like they agree on almost nothing there; what they actually disagree about is how to word an edge, not whether it is in the paper. The largest vocabulary in the run, the 2,092 constructs the coders name as carrying the domains, rises from 0.327 to 0.402. The five spaces whose identity is a closed vocabulary act as the control: their two columns come out identical, which is the check that the method is not manufacturing agreement wherever it is pointed.
-- **An interactive knowledge graph.** The whole run is also a browsable graph: run, field group, entity, coding field, provider, article coding, extracted item, with filters, full-text search over every label and quote, and an inspector that shows the verbatim passage and its verification verdict. The entity level carries the review's own subject: **Biopsychosocial entities** holds the triad as three siblings (biological, psychological, social) and everything the registration adds beyond it under a fourth heading, **Other factors**, with lifestyle and spiritual or existential as its own children. The depth is the argument: lifestyle is not a fourth domain sitting beside biology. The two lists that hold several entities at once (the domain evidence, and the factors beyond the triad) are split so the biological evidence sits under biology rather than inside one undifferentiated list. It is plain local HTML with no server. Open [`src/05_test_runs/official/05_knowledge_graph/index.html`](src/05_test_runs/official/05_knowledge_graph/index.html).
+- **An interactive knowledge graph.** The whole run is also a browsable graph: run, field group, entity, coding field, provider, article coding, extracted item, with filters, full-text search over every label and quote, and an inspector that shows the verbatim passage and its verification verdict. The entity level carries the review's own subject: **Biopsychosocial entities** holds the triad as three siblings (biological, psychological, social) and everything the registration adds beyond it under a fourth heading, **Other factors**, with lifestyle and spiritual or existential as its own children. The depth is the argument: lifestyle is not a fourth domain sitting beside biology. The two lists that hold several entities at once (the domain evidence, and the factors beyond the triad) are split so the biological evidence sits under biology rather than inside one undifferentiated list. It is plain local HTML with no server. Open [`src/05_test_runs/tests/02_pilot_fulltext/05_knowledge_graph/index.html`](src/05_test_runs/tests/02_pilot_fulltext/05_knowledge_graph/index.html).
 
 - Notebook: [`src/04_notebooks/02_fulltextlevel_testrun.ipynb`](src/04_notebooks/02_fulltextlevel_testrun.ipynb) or `python -m bps_review run-fulltext-testrun`
-- Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_test_runs/official/](src/05_test_runs/official/)
+- Code and its own documentation: [src/03_pipeline/bps_review/fulltext/](src/03_pipeline/bps_review/fulltext/README.md) · Results: [src/05_test_runs/tests/02_pilot_fulltext/](src/05_test_runs/tests/02_pilot_fulltext/)
 
 ### What the test run found in the pipeline
 
@@ -175,8 +175,10 @@ SystematicReview_on_BioPsychoSocialModel_in_ChronicPainResearch/   # project roo
     │   ├── 02_fulltextlevel_testrun.ipynb
     │   └── 03_synthesislevel_testrun.ipynb
     ├── 05_test_runs/          # every run of the workflow, and all of its outputs
-    │   ├── official/              # 47 full texts x 3 models, scheme 3, plus the knowledge graph
-    │   └── tests/01_pilot_abstract/   # 100 abstracts x 3 models, scheme 2
+    │   ├── official/              # reserved for the official coding pass, empty for now
+    │   └── tests/                 # the two pilots
+    │       ├── 01_pilot_abstract/     # 100 abstracts x 3 models, scheme 2
+    │       └── 02_pilot_fulltext/     # 47 full texts x 3 models, scheme 3, plus the knowledge graph
     │
     │   ---- everything below is local only, and absent from a fresh clone ----
     │
@@ -329,9 +331,9 @@ Figures, tables, generated LaTeX, compiled manuscript
 
 ### Test-run outputs
 
-- `src/05_test_runs/official/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
-- `src/05_test_runs/official/02_model_codings/` (**start here**: every coding long and wide, per paper, per provider, per extraction category, with every list split into one column per item)
-- `src/05_test_runs/official/05_knowledge_graph/index.html` (the interactive graph over the coded run)
+- `src/05_test_runs/tests/02_pilot_fulltext/` (corpus, codings, extracted items, reliability, integrity, figures, summary)
+- `src/05_test_runs/tests/02_pilot_fulltext/02_model_codings/` (**start here**: every coding long and wide, per paper, per provider, per extraction category, with every list split into one column per item)
+- `src/05_test_runs/tests/02_pilot_fulltext/05_knowledge_graph/index.html` (the interactive graph over the coded run)
 - `src/05_test_runs/tests/01_pilot_abstract/` (sample, codings, reliability tables, figures, candidate set, summary)
 
 Article full texts are read but never redistributed, so no article body is carried in Git.

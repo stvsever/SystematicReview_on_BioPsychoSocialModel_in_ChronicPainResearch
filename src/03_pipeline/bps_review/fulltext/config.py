@@ -723,13 +723,14 @@ COVERAGE_DEPTH: dict[str, int] = {"absent": 0, "minimal": 1, "mentioned": 2, "el
 
 
 # --------------------------------------------------------------------------
-# Paths. Everything this run produces lives under src/05_test_runs/official,
-# beside the abstract-level run that produced its candidate set. The run is the
-# published record: the tables under 02_model_codings are the store the coding
-# is read back from, not a copy of one kept elsewhere.
+# Paths. Everything this run produces lives under
+# src/05_test_runs/tests/02_pilot_fulltext, beside the abstract-level run that
+# produced its candidate set. The run is the published record: the tables under
+# 02_model_codings are the store the coding is read back from, not a copy of one
+# kept elsewhere.
 # --------------------------------------------------------------------------
 def fulltext_root():
-    return project_path("test_runs", "official")
+    return project_path("test_runs", "tests", "02_pilot_fulltext")
 
 
 def corpus_dir():

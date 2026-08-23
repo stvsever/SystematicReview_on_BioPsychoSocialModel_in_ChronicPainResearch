@@ -886,9 +886,9 @@ SCHEME_3 = {
         "src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
     ],
     "outputs": [
-        "src/05_test_runs/official/02_model_codings/01_codings/01_one_row_per_paper_and_provider.csv",
-        "src/05_test_runs/official/02_model_codings/02_extracted_items/00_all_categories/01_one_row_per_item.csv",
-        "src/05_test_runs/official/03_reliability/",
+        "src/05_test_runs/tests/02_pilot_fulltext/02_model_codings/01_codings/01_one_row_per_paper_and_provider.csv",
+        "src/05_test_runs/tests/02_pilot_fulltext/02_model_codings/02_extracted_items/00_all_categories/01_one_row_per_item.csv",
+        "src/05_test_runs/tests/02_pilot_fulltext/03_reliability/",
         "src/09_review_stages/04_extraction/forms/stage3_fulltext_coding_template.csv",
         "src/09_review_stages/04_extraction/outputs/stage3_candidate_manifest.csv",
     ],

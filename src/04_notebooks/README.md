@@ -12,7 +12,7 @@ level. Both are stored with their outputs, so they can be read without running a
 They are one chain: notebook 01 exports the consensus candidate set, notebook 02 retrieves the
 open-access full texts of that set and codes them. Both write their outputs to
 [`src/05_test_runs/`](../05_test_runs/); the full-text run is
-[`src/05_test_runs/official/`](../05_test_runs/official/).
+[`src/05_test_runs/tests/02_pilot_fulltext/`](../05_test_runs/tests/02_pilot_fulltext/).
 
 ## Running them
 

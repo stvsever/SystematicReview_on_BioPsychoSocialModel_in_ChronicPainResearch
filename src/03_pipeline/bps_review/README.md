@@ -42,7 +42,7 @@ passage where the biopsychosocial label does work.
 ## What a full-text run produces
 
 `run_fulltext_testrun_pipeline()` chains the whole thing and writes to
-`src/05_test_runs/official/`:
+`src/05_test_runs/tests/02_pilot_fulltext/`:
 
 | Directory | Contents |
 | --- | --- |

@@ -17,7 +17,7 @@ The runner is built for a fast, cheap, resilient run:
   than as a fabricated one, so gaps stay visible in the analysis;
 * token usage is recorded per call, so the real cost of the run is reportable.
 
-Outputs, all under ``src/05_test_runs/official/02_model_codings``:
+Outputs, all under ``src/05_test_runs/tests/02_pilot_fulltext/02_model_codings``:
 ``_staging/by_model/<model>.csv``, ``_staging/audit/<model>.jsonl``,
 ``_staging/all_model_codings_long.csv``, ``_staging/all_extracted_items_long.csv``,
 ``_staging/run_manifest.json`` and ``_staging/run.log``. Staging is the runner's own
